@@ -379,12 +379,12 @@ const AccessCard = ({ title, onAccessGranted, onComplete }: AccessCardProps) => 
     return (
         <div ref={scopeRef}>
             {/* access-card */}
-            <div className="access-card abs-center z-50 h-50 w-125 rounded-xl bg-neutral-900/95 flex-center-col gap-11">
+            <div className="access-card abs-center z-50 h-50 w-125 rounded-xl bg-bg-secondary flex-center-col gap-11">
                 {/* title */}
-                <h2 className="access-title text-2xl text-neutral-300 tracking-wide">{title}</h2>
+                <h2 className="access-title text-2xl text-text-primary tracking-wide">{title}</h2>
 
                 {/* input password */}
-                <div className="password-input-container relative flex h-11 w-1/2 items-center justify-start rounded-full border-2 border-neutral-400 px-4 transition-colors focus-within:border-sky-400 overflow-hidden">
+                <div className="password-input-container relative flex h-11 w-1/2 items-center justify-start rounded-full border-2 border-text-secondary px-4 transition-colors focus-within:border-sky-400 overflow-hidden">
                     <input
                         ref={inputRef}
                         type="text"
@@ -399,7 +399,7 @@ const AccessCard = ({ title, onAccessGranted, onComplete }: AccessCardProps) => 
                         spellCheck={false}
                         className={twMerge(
                             "password-input w-full bg-transparent text-md outline-none tracking-wide",
-                            password.length ? "text-neutral-200" : "text-neutral-400"
+                            password.length ? "text-text-primary" : "text-text-secondary"
                         )}
                     />
                     <div
@@ -407,12 +407,12 @@ const AccessCard = ({ title, onAccessGranted, onComplete }: AccessCardProps) => 
                         aria-hidden="true"
                         className={twMerge(
                             "pointer-events-none abs-y-center left-4 right-4 overflow-hidden whitespace-nowrap bg-transparent text-md tracking-wide",
-                            password.length ? "text-neutral-200" : "text-neutral-400"
+                            password.length ? "text-text-primary" : "text-text-secondary"
                         )}
                     />
                     {/* enter button */}
                     <div className={twMerge(
-                        "input-enter-button abs-y-center right-0 h-full w-10 rounded-r-full bg-neutral-800 flex-center cursor-pointer",
+                        "input-enter-button abs-y-center right-0 h-full w-10 rounded-r-full bg-bg-tertiary flex-center cursor-pointer",
                     )}
                         data-cursor="pointer-2"
                         role="button"

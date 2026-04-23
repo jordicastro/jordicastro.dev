@@ -6,7 +6,6 @@ import { ScrollTrigger } from "gsap/all";
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import AccessCard from "./AccessCard";
-import { useMount } from "@/hooks/useMount";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -15,12 +14,12 @@ interface LogoBounceProps {
 }
 
 const LogoBounce = ({ onComplete }: LogoBounceProps) => {
-    const { hasMounted } = useMount();
     const speed = 0.5;
     const tolerance = 5; // how close to the wall to consider it a corner for proper bouncing
     const scopeRef = useRef<HTMLDivElement>(null);
     const tlRef = useRef<gsap.core.Timeline | null>(null);
     const killRef = useRef<boolean>(false);
+    const isActiveRef = useRef<boolean>(false);
     const timeoutIdsRef = useRef<number[]>([]);
     const x = useRef(0);
     const y = useRef(0);
@@ -40,7 +39,7 @@ const LogoBounce = ({ onComplete }: LogoBounceProps) => {
 
     const { contextSafe } = useGSAP(
         () => {
-            if (!hasMounted) return;
+            isActiveRef.current = true;
             tlRef.current = gsap.timeline({
                 scrollTrigger: {
                     trigger: scopeRef.current,
@@ -84,8 +83,25 @@ const LogoBounce = ({ onComplete }: LogoBounceProps) => {
             }
 
             const scheduleNextBounce = (bounceLogo: BounceLogo) => {
+                if (
+                    killRef.current ||
+                    !isActiveRef.current ||
+                    !scopeRef.current ||
+                    !bounceLogo.el ||
+                    !bounceLogo.el.isConnected
+                ) {
+                    bounceLogo.stop();
+                    return;
+                }
+
                 const { el, x: currX, y: currY, angle: currAngle } = bounceLogo;
-                const { targetX, targetY, wall, isCorner } = getNextBounce(currX, currY, currAngle, el!);
+                const nextBounce = getNextBounce(currX, currY, currAngle, el);
+                if (!nextBounce) {
+                    bounceLogo.stop();
+                    return;
+                }
+
+                const { targetX, targetY, wall } = nextBounce;
                 const distance = Math.sqrt((targetX - currX) ** 2 + (targetY - currY) ** 2);
                 const duration = distance / (300 * speed); // 1000 pixels per second at normal speed
 
@@ -100,6 +116,16 @@ const LogoBounce = ({ onComplete }: LogoBounceProps) => {
                         }
                     },
                     onComplete: () => {
+                        if (
+                            killRef.current ||
+                            !isActiveRef.current ||
+                            !scopeRef.current ||
+                            !el.isConnected
+                        ) {
+                            bounceLogo.stop();
+                            return;
+                        }
+
                         // update x, y, angle to the new position and angle
                         bounceLogo.x = targetX;
                         bounceLogo.y = targetY;
@@ -122,12 +148,17 @@ const LogoBounce = ({ onComplete }: LogoBounceProps) => {
             }
 
             const getNextBounce = (currX: number, currY: number, angle: number, el: HTMLElement) => {
+                const scopeElement = scopeRef.current;
+                if (!scopeElement || !el.isConnected) {
+                    return null;
+                }
+
                 // calculate the container border targetX and targetY based on current position and angle
                 const angleToRad = angle * (Math.PI / 180);
                 const dx = Math.cos(angleToRad);
                 const dy = Math.sin(angleToRad);
-                const scopeWidth = scopeRef.current!.clientWidth - el.clientWidth;
-                const scopeHeight = scopeRef.current!.clientHeight - el.clientHeight;
+                const scopeWidth = scopeElement.clientWidth - el.clientWidth;
+                const scopeHeight = scopeElement.clientHeight - el.clientHeight;
 
                 // calculate time to hit each wall
                 let tX, wallX;
@@ -226,7 +257,9 @@ const LogoBounce = ({ onComplete }: LogoBounceProps) => {
                     if (this.el) {
                         gsap.killTweensOf(this.el);
                         gsap.to(this.el, { autoAlpha: 0, scale: 0, duration: 0.5, ease: "power2.in", onComplete: () => {
-                            this.container.removeChild(this.el!);
+                            if (this.el && this.container.contains(this.el)) {
+                                this.container.removeChild(this.el);
+                            }
                             this.el = null;
                         } });
                     }
@@ -243,10 +276,11 @@ const LogoBounce = ({ onComplete }: LogoBounceProps) => {
             }
 
             return () => {
+                isActiveRef.current = false;
                 clearScheduledBounces();
                 tlRef.current?.kill();
             }
-        }, {scope: scopeRef, dependencies: [hasMounted]}
+        }, {scope: scopeRef }
         
     );
 

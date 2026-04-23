@@ -8,16 +8,14 @@ import { useMount } from '@/hooks/useMount';
 const MaintenancePage = () => {
     const router = useRouter();
     const { isAuthenticated, setIsAuthenticated, isLoading, setIsLoading } = useAuth();
-    const { hasMounted, setHasMounted } = useMount();
 
     useEffect(() => {
         // check if user is authenticated
         const storedIsAuthenticated = localStorage.getItem("isAuthenticated");
         if (storedIsAuthenticated && storedIsAuthenticated === "true") {
             setIsAuthenticated(true);
+            router.replace("/");
         }
-        router.replace("/");
-        setHasMounted(true);
     }, []);
 
     const onComplete = () => {

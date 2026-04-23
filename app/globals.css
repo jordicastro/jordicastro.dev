@@ -4,7 +4,13 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* colors and whatnot */
+  /* colors shadcn to tw shorthand */
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-gradient: var(--text-gradient);
+
 }
 
 html,
@@ -15,20 +21,55 @@ body,
 }
 
 @layer base {
+  /* light mode styles */
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
-  }
 
+    --bg-secondary: color-mix(in oklch, var(--color-neutral-100) 95%, transparent);
+    --bg-tertiary: var(--color-neutral-800);
+    --text-primary: var(--color-neutral-800);
+    --text-secondary: var(--color-neutral-500);
+    --text-gradient: linear-gradient(150deg, var(--color-neutral-900), var(--color-neutral-400));
+    /* purple -> pink */
+    --gradient-p: var(--text-gradient);
+    
+  }
+  /* dark mode styles */
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
+
+    --bg-secondary: color-mix(in oklch, var(--color-neutral-900) 95%, transparent);
+    --bg-tertiary: var(--color-neutral-800);
+    --text-primary: var(--color-neutral-200);
+    --text-secondary: var(--color-neutral-400);
+    --text-gradient: linear-gradient(150deg, var(--color-neutral-200), var(--color-neutral-400));
+    /* purple -> pink */
+    --gradient-p: linear-gradient(150deg, #c084fc, #fb7185);
+    /* cyan -> blue */
+    /* --text-gradient: linear-gradient(150deg, #22d3ee, #3b82f6); */
   }
 }
 
 @layer base {
   body {
     @apply bg-[--background] text-[--foreground];
+  }
+  h1 {
+    @apply text-9xl/tight font-bold w-fit text-gradient;
+  }
+  h2 {
+    @apply text-6xl/tight font-bold w-fit text-gradient-p;
+  }
+  h3 {
+    @apply text-4xl/tight font-bold w-fit text-gradient;
+  }
+  h4 {
+    @apply text-[16px] font-bold tracking-wider w-fit text-neutral-300;
+  }
+  p {
+    @apply text-text-secondary text-[16px];
   }
 }
 
@@ -64,6 +105,20 @@ body,
 
 @utility border-debug-p {
     @apply border border-indigo-500;
+}
+
+@utility text-gradient {
+  background-image: var(--text-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-gradient-p {
+  background-image: var(--gradient-p);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 @layer components {

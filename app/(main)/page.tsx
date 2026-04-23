@@ -42,14 +42,27 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <h2 className="text-neutral-500 dark:text-amber-500">
-        hi
+    <div className="h-svh w-full border-debug-p flex flex-col gap-4 px-4">
+      <h1 className="">
+        h1: Jordi Castro
+      </h1>
+      <h2>
+        h2: In December 2025, Jordi
+        <br />
+        completed a marathon in
       </h2>
-      <ToggleTheme />
-      <div className="w-48 h-12 border-debug" role="button" onClick={() => router.push("/meow")}>
-        meow
-      </div>
+      <h3>
+        h3: Timeline
+      </h3>
+      <h4>
+        h4: SUB SECTION HEADING
+      </h4>
+      <p>
+        p: this is a paragraph text example. lorem ipsum dolor sit amet, consectetur 
+        <br />
+        voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo
+      </p>
+      <ToggleTheme className=""/>
     </div>
   );
 }
