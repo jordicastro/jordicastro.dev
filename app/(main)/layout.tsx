@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { redirect } from "next/navigation";
+import Navigation from "./_components/Navigation";
 
 const MainLayout = ({
     children
@@ -23,8 +24,8 @@ const MainLayout = ({
     // }
 
     return (
-        <div>
-            sidebar
+        <div className="h-full flex">
+            <Navigation />
             {children}
         </div>
     )

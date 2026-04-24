@@ -7,6 +7,7 @@ import { CornerDownLeft } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
+import Logo from "@/components/Logo";
 
 gsap.registerPlugin(useGSAP, CustomEase, CustomWiggle, SplitText, MotionPathPlugin);
 
@@ -423,15 +424,8 @@ const AccessCard = ({ title, onAccessGranted, onComplete }: AccessCardProps) => 
                 </div>
             </div>
             {/* logo on access (correctPassword) */}
-            <div className="welcome-wrapper abs-center z-60 w-[140px] h-[140px] hidden">
-                <Image
-                    src="/images/JordPle.png"
-                    alt="logo"
-                    width={81}
-                    height={81}
-                    className="welcome-logo abs-center pointer-events-auto select-none"
-                    draggable={false}
-                />
+            <div className="welcome-wrapper abs-center z-60 w-35 h-35 hidden">
+                <Logo className="welcome-logo abs-center" width={81} height={81}/>
                 <h2 className="welcome-text abs-x-center bottom-0 w-max whitespace-nowrap text-2xl tracking-widest text-neutral-200 pointer-events-auto font-medium select-none">
                     Welcome
                 </h2>

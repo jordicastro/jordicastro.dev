@@ -1,0 +1,17 @@
+{
+	"emmet.showExpandedAbbreviation": "always",
+	"emmet.showSuggestionsAsSnippets": true,
+	"emmet.triggerExpansionOnTab": true,
+	"editor.snippetSuggestions": "top",
+	"editor.suggest.showSnippets": true,
+	"[typescriptreact]": {
+		"editor.tabCompletion": "onlySnippets",
+		"editor.suggest.showSnippets": true,
+		"editor.suggestSelection": "first"
+	},
+	"[javascriptreact]": {
+		"editor.tabCompletion": "onlySnippets",
+		"editor.suggest.showSnippets": true,
+		"editor.suggestSelection": "first"
+	}
+}

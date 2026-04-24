@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/all";
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import AccessCard from "./AccessCard";
+import Logo from "@/components/Logo";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -308,14 +309,7 @@ const LogoBounce = ({ onComplete }: LogoBounceProps) => {
     });
     return (
         <div ref={scopeRef} className="relative w-full h-full">
-            <Image
-                src="/images/JordPle.png"
-                alt="logo"
-                width={64}
-                height={64}
-                className="bounce-logo absolute pointer-events-auto select-none hidden"
-                draggable={false}
-            />
+            <Logo className="bounce-logo absolute hidden"/>
             <AccessCard
                 title="App currently under maintenance."
                 onAccessGranted={() => {

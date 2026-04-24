@@ -3,10 +3,15 @@
 @import "shadcn/tailwind.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
+@theme inline {
   /* colors shadcn to tw shorthand */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-bg-primary: hsl(var(--background));
   --color-bg-secondary: var(--bg-secondary);
   --color-bg-tertiary: var(--bg-tertiary);
+
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-gradient: var(--text-gradient);
@@ -27,12 +32,15 @@ body,
     --foreground: 0 0% 3.9%;
 
     --bg-secondary: color-mix(in oklch, var(--color-neutral-100) 95%, transparent);
-    --bg-tertiary: var(--color-neutral-800);
+    --bg-tertiary: var(--color-neutral-200);
+
     --text-primary: var(--color-neutral-800);
     --text-secondary: var(--color-neutral-500);
     --text-gradient: linear-gradient(150deg, var(--color-neutral-900), var(--color-neutral-400));
     /* purple -> pink */
-    --gradient-p: var(--text-gradient);
+    --gradient-p: linear-gradient(150deg, #c084fc, #fb7185);
+    /* cyan -> blue */
+    --gradient-b: linear-gradient(150deg, #3b82f6, #22d3ee);
     
   }
   /* dark mode styles */
@@ -48,19 +56,19 @@ body,
     /* purple -> pink */
     --gradient-p: linear-gradient(150deg, #c084fc, #fb7185);
     /* cyan -> blue */
-    /* --text-gradient: linear-gradient(150deg, #22d3ee, #3b82f6); */
+    --gradient-b: linear-gradient(150deg, #3b82f6, #22d3ee);
   }
 }
 
 @layer base {
   body {
-    @apply bg-[--background] text-[--foreground];
+    @apply bg-background text-foreground;
   }
   h1 {
     @apply text-9xl/tight font-bold w-fit text-gradient;
   }
   h2 {
-    @apply text-6xl/tight font-bold w-fit text-gradient-p;
+    @apply text-6xl/tight font-bold w-fit text-gradient-b dark:text-gradient-p;
   }
   h3 {
     @apply text-4xl/tight font-bold w-fit text-gradient;
@@ -81,6 +89,10 @@ body,
 }
 @utility flex-start {
     @apply flex justify-start items-center;
+}
+
+@utility flex-between {
+    @apply flex items-center justify-between;
 }
 
 @utility col-center {
@@ -116,6 +128,13 @@ body,
 
 @utility text-gradient-p {
   background-image: var(--gradient-p);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-gradient-b {
+  background-image: var(--gradient-b);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
