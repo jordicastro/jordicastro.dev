@@ -27,8 +27,8 @@ const SidebarSection = ({ title, items, activeItem }: SidebarSectionProps) => {
                         key={i}
                         className={twMerge(
                             "group/navItem relative flex w-full h-9 items-center gap-x-7 select-none",
-                            `hover:cursor-pointer transition-all duration-200`,
-                            activeItem === item.label ? "text-gradient-b dark:text-gradient-p" :  "hover:dark:text-neutral-400 hover:text-neutral-500",
+                            `hoverable`,
+                            activeItem === item.label ? "text-gradient-b dark:text-gradient-p" :  "hoverable-sidebar-items",
                         )}
                     >
                         {/* abs to fix items-center discrepancy */}

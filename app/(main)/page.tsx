@@ -42,7 +42,7 @@ export default function Home() {
   }
 
   return (
-    <div className="h-svh w-full flex flex-col gap-4 px-4">
+    <div className="h-svh w-full flex flex-col gap-4">
       <h1 className="">
         h1: Jordi Castro
       </h1>

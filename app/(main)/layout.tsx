@@ -24,9 +24,11 @@ const MainLayout = ({
     // }
 
     return (
-        <div className="h-full flex">
+        <div className="w-full h-full flex">
             <Navigation />
-            {children}
+            <main className="w-full pt-4 px-4">
+                {children}
+            </main>
         </div>
     )
 }

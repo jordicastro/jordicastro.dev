@@ -81,6 +81,16 @@ body,
   }
 }
 
+/* hoverable unless onMobile */
+@media (hover: hover) and (pointer: fine) {
+  .hoverable {
+    @apply hover:cursor-pointer transition-all duration-200;
+  }
+  .hoverable-sidebar-items {
+    @apply hover:dark:text-neutral-400 hover:text-neutral-500;
+  }
+}
+
 @utility flex-center {
     @apply flex justify-center items-center;
 }
