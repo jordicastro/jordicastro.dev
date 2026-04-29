@@ -3,6 +3,7 @@ import { ToggleTheme } from "@/components/ToggleTheme";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Hero from "./_components/Hero";
 
 export default function Home() {
   const { isAuthenticated, setIsAuthenticated, isLoading, setIsLoading } = useAuth();
@@ -41,28 +42,9 @@ export default function Home() {
     return null;
   }
 
-  return (
-    <div className="h-svh w-full flex flex-col gap-4">
-      <h1 className="">
-        h1: Jordi Castro
-      </h1>
-      <h2>
-        h2: In December 2025, Jordi
-        <br />
-        completed a marathon in
-      </h2>
-      <h3>
-        h3: Timeline
-      </h3>
-      <h4>
-        h4: SUB SECTION HEADING
-      </h4>
-      <p>
-        p: this is a paragraph text example. lorem ipsum dolor sit amet, consectetur 
-        <br />
-        voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo
-      </p>
-      <ToggleTheme className=""/>
+  return ( // subtract the p-4 (16px) from the main layout on the hero section
+    <div>
+      <Hero />
     </div>
   );
 }

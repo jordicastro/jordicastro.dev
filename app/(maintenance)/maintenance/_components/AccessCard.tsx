@@ -382,7 +382,7 @@ const AccessCard = ({ title, onAccessGranted, onComplete }: AccessCardProps) => 
             {/* access-card */}
             <div className="access-card abs-center z-50 h-50 w-125 rounded-xl bg-bg-secondary flex-center-col gap-11">
                 {/* title */}
-                <h2 className="access-title text-2xl text-text-primary tracking-wide">{title}</h2>
+                <h2 className="access-title text-2xl text-text-primary tracking-wide font-medium">{title}</h2>
 
                 {/* input password */}
                 <div className="password-input-container relative flex h-11 w-1/2 items-center justify-start rounded-full border-2 border-text-secondary px-4 transition-colors focus-within:border-sky-400 overflow-hidden">
