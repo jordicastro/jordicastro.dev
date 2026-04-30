@@ -68,7 +68,7 @@ body,
     @apply bg-background text-foreground;
   }
   h1 {
-    @apply font-bold w-fit text-gradient md:text-9xl/tight sm:text-8xl/tight text-7xl/tight;
+    @apply font-bold w-fit md:text-9xl/tight sm:text-8xl/tight text-7xl/tight;
   }
   h2 {
     @apply text-6xl/tight font-bold w-fit text-gradient-b dark:text-gradient-p;

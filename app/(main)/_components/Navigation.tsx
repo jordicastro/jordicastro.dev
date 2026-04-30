@@ -165,7 +165,7 @@ const Navigation = () => {
                         isMobileViewport && !isCollapsed && "left-0 w-full"
                     )}
                 >
-                    <nav className="bg-transparent px-3 py-2 w-full">
+                    <nav className="bg-transparent px-3 py-6 w-full">
                         {isCollapsed && 
                             <MenuIcon role="button" onClick={resetWidth} className="h-6 w-6 text-neutral-600 dark:text-neutral-300 hoverable" />
                         }
