@@ -17,6 +17,11 @@
   --color-text-tertiary: var(--text-tertiary);
   --color-text-gradient: var(--text-gradient);
 
+  --color-lavender: #c084fc;
+  --color-salmon: #fb7185;
+  --color-blue: #3b82f6;
+  --color-cyan: #22d3ee;
+
 }
 
 html,
@@ -36,8 +41,8 @@ body,
     --bg-tertiary: var(--color-neutral-200);
 
     --text-primary: var(--color-neutral-800);
-    --text-secondary: var(--color-neutral-500);
-    --text-tertiary: var(--color-neutral-300);
+    --text-secondary: var(--color-neutral-600);
+    --text-tertiary: var(--color-neutral-500);
     --text-gradient: linear-gradient(150deg, var(--color-neutral-900), var(--color-neutral-400));
     /* purple -> pink */
     --gradient-p: linear-gradient(150deg, #c084fc, #fb7185);
@@ -52,6 +57,7 @@ body,
 
     --bg-secondary: color-mix(in oklch, var(--color-neutral-900) 95%, transparent);
     --bg-tertiary: var(--color-neutral-800);
+    
     --text-primary: var(--color-neutral-200);
     --text-secondary: var(--color-neutral-400);
     --text-tertiary: var(--color-neutral-500);
@@ -71,7 +77,7 @@ body,
     @apply font-bold w-fit md:text-9xl/tight sm:text-8xl/tight text-7xl/tight;
   }
   h2 {
-    @apply text-6xl/tight font-bold w-fit text-gradient-b dark:text-gradient-p;
+    @apply font-bold w-fit text-gradient-b dark:text-gradient-p md:text-6xl/tight sm:text-5xl/tight text-4xl/tight;
   }
   h3 {
     @apply text-4xl/tight font-bold w-fit text-gradient;
@@ -172,6 +178,18 @@ body,
   main {
     @apply w-full overflow-x-hidden;
   }
+
+  #rolling-text-container {
+        .tube {
+            @apply relative w-35 h-15;
+            .line {
+                @apply abs-center text-7xl whitespace-nowrap text-center tracking-tighter font-bold;
+            }
+            .split-char-class {
+                @apply bg-linear-to-r from-cyan to-blue dark:from-lavender dark:to-salmon bg-clip-text text-transparent;
+            }
+        }
+    }
 }
 
 
