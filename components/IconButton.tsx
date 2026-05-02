@@ -88,7 +88,7 @@ const IconButton = ({ text, icon:Icon, activeColor="#2b7fff", drawBorder=false, 
         <div
             ref={scopeRef}
             className={cn(
-                'w-75 h-18.75 rounded-full relative bg-bg-tertiary',
+                'icon-btn w-75 h-18.75 rounded-full relative bg-bg-tertiary',
                 className,
                 widthHeight
             )}
