@@ -92,8 +92,13 @@ body,
 
 /* hoverable unless onMobile */
 @media (hover: hover) and (pointer: fine) {
+  [data-custom-cursor="true"],
+  [data-custom-cursor="true"] * {
+    cursor: none !important;
+  }
+
   .hoverable {
-    @apply hover:cursor-pointer transition-all duration-200;
+    @apply hover:cursor-pointer transition-colors duration-200;
   }
   .hoverable-sidebar-items {
     @apply hover:dark:text-neutral-400 hover:text-neutral-500;

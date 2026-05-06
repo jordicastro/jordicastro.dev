@@ -1,8 +1,10 @@
 "use client";
 
 import { useAuth } from "@/hooks/useAuth";
+import { useCursor } from "@/hooks/useCursor";
 import { redirect } from "next/navigation";
 import Navigation from "./_components/Navigation";
+import CustomCursor from "./_components/CustomCursor";
 
 const MainLayout = ({
     children
@@ -10,6 +12,7 @@ const MainLayout = ({
     children: React.ReactNode;
 }) => {
     const { isAuthenticated, isLoading } = useAuth(); // replace this with the server Auth when db is set up
+    const { cursor } = useCursor();
 
     // if (isLoading) { // show spinning logo or something
     //     return (
@@ -24,7 +27,11 @@ const MainLayout = ({
     // }
 
     return (
-        <div className="flex min-h-svh w-full">
+        <div
+            className="flex min-h-svh w-full"
+            data-custom-cursor={cursor ? "true" : "false"}
+        >
+            <CustomCursor />
             <Navigation />
             <main className="w-full min-w-0 overflow-x-clip overflow-y-visible pt-4 px-4">
                 {children}

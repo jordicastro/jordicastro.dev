@@ -1,17 +1,26 @@
 "use client";
 
+import { useScrollMask } from "@/hooks/useScrollMask";
 import { NavSectionItem } from "@/types/types";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 interface SidebarSectionProps {
     title: string;
     items: NavSectionItem[];
-    activeItem?: string;
 }
 
-const SidebarSection = ({ title, items, activeItem }: SidebarSectionProps) => {
-    const hoverClass = "text-text-gradient-p";
+const SidebarSection = ({ title, items }: SidebarSectionProps) => {
+    const { activeSectionId } = useScrollMask();
+    const pathname = usePathname();
+    // home should be exclusively highlighted on '/' unless the '#stories' section is active
+    const adjustedActiveSectionId = pathname === "/" ? (
+        activeSectionId === "stories" ? "stories": "home"
+    ) : pathname === "/stories/*" && (
+        "stories"
+    )
+
     return (
         <div className="w-full mt-5">
             {/* top divider */}
@@ -28,17 +37,22 @@ const SidebarSection = ({ title, items, activeItem }: SidebarSectionProps) => {
                         className={twMerge(
                             "group/navItem relative flex w-full h-9 items-center gap-x-7 select-none",
                             `hoverable`,
-                            activeItem === item.label ? "text-gradient-b dark:text-gradient-p" :  "hoverable-sidebar-items",
+                            adjustedActiveSectionId === item.id ? "" :  "hoverable-sidebar-items",
                         )}
+                        onClick={item.onClick}
+                        data-cursor='pointer'
                     >
                         {/* abs to fix items-center discrepancy */}
                         <span className={twMerge(
                             `abs-y-center text-inherit`,
-                            activeItem === item.label ? "text-[#3b82f6] dark:text-[#c084fc]" : "",
+                            adjustedActiveSectionId === item.id ? "transition-all duration-1000 ease-in-out text-blue dark:text-lavender " : "",
                         )}>
                             {item.icon}
                         </span>
-                        <span className="text-sm text-inherit ml-11">
+                        <span className={twMerge(
+                            "text-sm text-inherit ml-11",
+                            adjustedActiveSectionId === item.id ? "transition-all duration-1000 ease-in-out text-gradient-b dark:text-gradient-p" : "",
+                        )}>
                             {item.label}
                         </span>
                     </div>

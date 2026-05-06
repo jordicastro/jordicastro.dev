@@ -1,8 +1,8 @@
 
 export type NavSectionItem = {
     icon: React.ReactNode;
+    id?: string;
     label: string;
-    href?: string;
     onClick?: () => void;
 }
 
@@ -12,3 +12,9 @@ export type NavSectionData = {
 }
 
 export type FlourishBuilder = () => gsap.core.Tween | gsap.core.Timeline | null;
+
+export type Section = {
+    id: string;
+    label: string;
+    activeColor?: string;
+}

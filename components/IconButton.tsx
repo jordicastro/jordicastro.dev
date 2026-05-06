@@ -101,7 +101,7 @@ const IconButton = ({ text, icon:Icon, activeColor="#2b7fff", drawBorder=false, 
                 )}
                 role="button"
                 onClick={onClick}
-                data-cursor="pointer-2"
+                data-cursor='pointer'
                 onMouseEnter={() => onHover()}
                 onMouseLeave={() => onHoverLeave()}
             >

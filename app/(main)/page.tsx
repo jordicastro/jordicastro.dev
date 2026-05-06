@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Hero from "./_components/Hero";
 import CalloutMarathon from "./_components/CalloutMarathon";
+import ToC from "@/components/ToC";
+import { homeSections } from "@/constants/constants";
 
 export default function Home() {
   const { isAuthenticated, setIsAuthenticated, isLoading, setIsLoading } = useAuth();
@@ -45,8 +47,11 @@ export default function Home() {
 
   return ( // subtract the p-4 (16px) from the main layout on the hero section
     <>
-      <Hero />
-      <CalloutMarathon />
+      <ToC sections={homeSections} />
+
+      <Hero id={homeSections[0].id}/>
+      <CalloutMarathon id={homeSections[1].id}/>
+      <div className="h-svh w-full flex-center" />
     </>
   );
 }

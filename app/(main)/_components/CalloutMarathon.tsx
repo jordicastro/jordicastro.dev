@@ -11,7 +11,7 @@ import { useTheme } from 'next-themes';
 import { FlourishBuilder } from '@/types/types';
 import CameraBurst from './CameraBurst';
 
-const CalloutMarathon = () => {
+const CalloutMarathon = ({ id }: { id?:string }) => {
     const scopeRef = useRef<HTMLDivElement>(null);
     const rollingTimeAnimRef = useRef<Record<string, FlourishBuilder>>({});
     const { theme } = useTheme();
@@ -61,7 +61,6 @@ const CalloutMarathon = () => {
 
             const underlineSVG = createWordUnderlineSVG(marathon);
             const underlinePath = underlineSVG.querySelector("path") as SVGPathElement;
-            console.log("underlinePath", underlinePath);
             gsap.set(underlinePath, { drawSVG: "0%" });
 
             splitTextTl.fromTo(firstThree, {
@@ -243,7 +242,7 @@ const CalloutMarathon = () => {
     };
 
     return (
-        <div ref={scopeRef} className="mt-section callout-marathon-section w-full h-[50svh] flex-center relative"> 
+        <div ref={scopeRef} id={id} className="mt-section callout-marathon-section w-full h-[50svh] flex-center relative"> 
             <div className="w-280 h-88 mt-section">
                 <div className={cn(
                     'relative h-full max-w-185 flex flex-col items-start',

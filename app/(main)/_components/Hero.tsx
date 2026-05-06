@@ -5,7 +5,7 @@ import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react';
 import { SplitText, CustomEase, ScrollTrigger } from "gsap/all";
 
-const Hero = () => {
+const Hero = ({ id }: { id?: string }) => {
     const scopeRef = useRef<HTMLDivElement>(null);
     const gridItemIds = ["title", "cards-right", "cards-left", "about"]
     const isMobile = useMediaQuery("(max-width: 992px)"); // usually 768, but need to start mobile breakpoint earlier
@@ -48,7 +48,16 @@ const Hero = () => {
 
             if (!titleEl || !subtitleEl || !photoCards) return;
 
-            const tl = gsap.timeline({ ease: "power2.out" });
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: scopeRef.current,
+                    start: "top +=20",
+                    end: "bottom top",
+                    toggleActions: "play complete none none",
+                    
+                },
+                ease: "power2.out"
+            });
 
             const getDesktopAnimation = () => {
                 const desktopTl = gsap.timeline();
@@ -319,7 +328,7 @@ const Hero = () => {
     });
 
     return (
-        <div ref={scopeRef}>
+        <div ref={scopeRef} id={id}>
             {/* Desktop layout */}
             { !isMobile ? (
                 <div className="desktop-wrapper h-[calc(100svh-16px)] w-full flex flex-col gap-card overflow-y-hidden">
