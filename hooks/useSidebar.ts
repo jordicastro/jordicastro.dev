@@ -1,5 +1,9 @@
+import { useEffect, useState } from "react";
+
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+
+const SIDEBAR_TRANSITION_MS = 300;
  
 type SidebarStore = {
     isCollapsed: boolean;
@@ -34,9 +38,30 @@ export const useSidebar = create<SidebarStore>()(
 export const useResolvedSidebar = () => {
     const { isCollapsed, hasHydrated, setIsCollapsed } = useSidebar();
     const resolvedIsCollapsed = hasHydrated ? isCollapsed : true;
+    const [isCollapsedSettled, setIsCollapsedSettled] = useState(resolvedIsCollapsed);
+
+    // isCollapsedSettled sets a 300ms timeout when isCollapsed changes to account for the sidebar transition.
+        // This is used to trigger a recalculation of the Timeline points
+    useEffect(() => {
+        if (!hasHydrated) {
+            setIsCollapsedSettled(true);
+            return;
+        }
+
+        setIsCollapsedSettled(false);
+        // when isCollapsed is toggled, after the timeout isCollapsedSettled is trueCollapse
+        const timeoutId = window.setTimeout(() => {
+            setIsCollapsedSettled(true);
+        }, SIDEBAR_TRANSITION_MS);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+    }, [resolvedIsCollapsed, hasHydrated]);
 
     return {
         isCollapsed: resolvedIsCollapsed,
+        isCollapsedSettled,
         setIsCollapsed,
         hasHydrated,
     }

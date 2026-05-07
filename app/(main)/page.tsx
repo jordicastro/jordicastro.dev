@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Hero from "./_components/Hero";
 import CalloutMarathon from "./_components/CalloutMarathon";
+import ProgrammingTimeline from "./_components/ProgrammingTimeline";
 import ToC from "@/components/ToC";
 import { homeSections } from "@/constants/constants";
 
@@ -50,7 +51,7 @@ export default function Home() {
       <ToC sections={homeSections} />
         <Hero id={homeSections[0].id}/>
         <CalloutMarathon id={homeSections[1].id}/>
-        <div className="h-svh w-full flex-center" />
+        <ProgrammingTimeline id={homeSections[2].id}/>
     </>
   );
 }

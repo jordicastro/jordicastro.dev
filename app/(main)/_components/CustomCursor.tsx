@@ -33,7 +33,6 @@ const CustomCursor = () => {
 
     useEffect(() => {
         if (!cursor) return;
-        console.log('isCollapsed! or cursor mounted ', isCollapsed);
 
         if (isCollapsed) {
             isMouseDown.current = false;

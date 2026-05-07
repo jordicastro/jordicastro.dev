@@ -18,3 +18,10 @@ export type Section = {
     label: string;
     activeColor?: string;
 }
+
+export type timelineCardDataType = {
+    title: string;
+    subtitle?: string;
+    company: string;
+    year: string;
+}
