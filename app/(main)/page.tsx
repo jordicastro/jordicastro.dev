@@ -48,10 +48,9 @@ export default function Home() {
   return ( // subtract the p-4 (16px) from the main layout on the hero section
     <>
       <ToC sections={homeSections} />
-
-      <Hero id={homeSections[0].id}/>
-      <CalloutMarathon id={homeSections[1].id}/>
-      <div className="h-svh w-full flex-center" />
+        <Hero id={homeSections[0].id}/>
+        <CalloutMarathon id={homeSections[1].id}/>
+        <div className="h-svh w-full flex-center" />
     </>
   );
 }

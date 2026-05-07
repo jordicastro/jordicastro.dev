@@ -36,7 +36,7 @@ const CameraBurst = ({ path2Pictures, imageCount, className }: CameraBurstProps)
                 transformOrigin: "center",
             });
 
-            const shotGap = 0.5;
+            const shotGap = 0.45;
             const initialBurstDelay = 0.35;
             const pictureSequenceDuration = 1;
             const cycleDuration = imageCount * shotGap;
@@ -74,7 +74,7 @@ const CameraBurst = ({ path2Pictures, imageCount, className }: CameraBurstProps)
                 })
                     .to(picture, {
                         y: gsap.utils.random(-40, -60),
-                        duration: 0.5,
+                        duration: 0.45,
                         ease: CustomEase.create("burstGravity", "M0,0 C0,0.258 0.179,0.902 0.439,1.143 0.571,1.265 0.953,1.207 1,1 "),
                         rotate: gsap.utils.random(-10, 10),
                         delay: gsap.utils.random(0, 0.05),

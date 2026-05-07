@@ -1,5 +1,5 @@
 import PhotoCard from '@/components/PhotoCard'
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react';
@@ -8,6 +8,7 @@ import { SplitText, CustomEase, ScrollTrigger } from "gsap/all";
 const Hero = ({ id }: { id?: string }) => {
     const scopeRef = useRef<HTMLDivElement>(null);
     const gridItemIds = ["title", "cards-right", "cards-left", "about"]
+    const [hasCompletedIntro, setHasCompletedIntro] = useState(false);
     const isMobile = useMediaQuery("(max-width: 992px)"); // usually 768, but need to start mobile breakpoint earlier
     const sm = useMediaQuery("(max-width: 640px)");
 
@@ -56,7 +57,8 @@ const Hero = ({ id }: { id?: string }) => {
                     toggleActions: "play complete none none",
                     
                 },
-                ease: "power2.out"
+                defaults: { ease: "power2.out" },
+                onComplete: () => setHasCompletedIntro(true)
             });
 
             const getDesktopAnimation = () => {
@@ -279,8 +281,6 @@ const Hero = ({ id }: { id?: string }) => {
                 return aboutTl;
             }
 
-
-
             if (isMobile) {
                 tl.add(getMobileAnimation());
             } else {
@@ -292,6 +292,88 @@ const Hero = ({ id }: { id?: string }) => {
             };
         },
         { scope: scopeRef, dependencies: [] }
+    )
+
+    useGSAP( // hook called when the intro animation is complete to start the paralax scroll trigger animation
+        () => {
+            if (!hasCompletedIntro) return;
+
+            const photoCards = gsap.utils.selector(scopeRef.current)('.photo-card-wrapper');
+            if (!photoCards.length) return;
+
+            const parallaxTl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: scopeRef.current,
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: 1.5,
+                    invalidateOnRefresh: true,
+                },
+                defaults: { ease: "none" },
+            });
+
+            if (!isMobile) {
+                const rightCards = photoCards.slice(0, 4);
+                const leftCards = photoCards.slice(4, 8);
+
+                parallaxTl.to(rightCards, {
+                    y: 50,
+                    stagger: {
+                        each: 0.04,
+                        from: "end",
+                    }
+                })
+                .to(leftCards, {
+                    y: -50,
+                    stagger: {
+                        each: 0.04,
+                        from: "start",
+                    }
+                }, "");
+            } else {
+                const visiblePhotoCards = photoCards.filter((_, i) => {
+                    return i !== 2 && i !== 3 && i !== 6 && i !== 7;
+                });
+                const animatableCards = sm ? visiblePhotoCards : photoCards;
+
+                if (animatableCards.length === 8) { // md breakpoint with 8 photoCards
+                    const col1 = [animatableCards[2], animatableCards[3]];
+                    const col2 = [animatableCards[0], animatableCards[1]];
+                    const col3 = [animatableCards[4], animatableCards[5]];
+                    const col4 = [animatableCards[6], animatableCards[7]];
+
+                    parallaxTl.to(col1, {
+                        y: 30,
+                    })
+                    .to(col3, {
+                        y: 30,
+                    }, "<=0.05")
+                    .to(col4, {
+                        y: -30,
+                    }, 0)
+                    .to(col2, {
+                        y: -30,
+                    }, "<=0.05");
+                } else { // sm breakpoint with 4 photoCards
+                    const col1 = [animatableCards[0], animatableCards[1]];
+                    const col2 = [animatableCards[2], animatableCards[3]];
+
+                    parallaxTl.to(col1, {
+                        y: -30,
+                    })
+                    .to(col2, {
+                        y: 30,
+                    }, "<=0.05");
+                }
+            }
+
+            return () => {
+                parallaxTl.scrollTrigger?.kill();
+                parallaxTl.kill();
+                gsap.set(photoCards, { clearProps: "transform" });
+            };
+        },
+        { scope: scopeRef, dependencies: [hasCompletedIntro, isMobile, sm, ], revertOnUpdate: true }
     )
 
     const setup = contextSafe(() => {
@@ -428,7 +510,7 @@ const HeroGridItem = ({ id }: { id: string }) => {
     else if (id === "cards-right") return (
         <div className="hero-grid-item relative">
             {/* photo cards wrapper */}
-            <div className="flex h-full w-full items-end gap-card overflow-x-hidden">
+            <div className="flex h-full w-full items-end gap-card overflow-hidden">
                 <div className="flex shrink-0 justify-start items-end">
                     <PhotoCard src="/images/hero/chilean-volcano.png" liveSrc="/videos/hero/chilean-volcano.mp4" alt="chilean-volcano" width={185} height={246} className="w-46 h-auto"/>
                 </div>

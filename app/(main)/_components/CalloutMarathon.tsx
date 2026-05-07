@@ -255,7 +255,7 @@ const CalloutMarathon = ({ id }: { id?:string }) => {
                     <IconButton className="kudos-btn" text="give kudos" icon={ThumbsUp} activeColor="#FC5200" drawBorder={true} autoResize={true} onClick={() => goTo("https://www.strava.com/activities/16668281692")}/>
                 </div>
             </div>
-            <CameraBurst className="camera-burst hidden md:block absolute bottom-16 lg:right-32 md:right-12" path2Pictures="/images/hero/marathon_pictures" imageCount={11} />
+            <CameraBurst className="camera-burst hidden md:block absolute bottom-16 lg:right-32 md:right-12" path2Pictures="/images/hero/marathon_pictures" imageCount={10} />
         </div>
     )
 }
