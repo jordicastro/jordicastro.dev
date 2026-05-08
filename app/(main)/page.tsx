@@ -52,6 +52,7 @@ export default function Home() {
         <Hero id={homeSections[0].id}/>
         <CalloutMarathon id={homeSections[1].id}/>
         <ProgrammingTimeline id={homeSections[2].id}/>
+        <div className="w-full h-svh border-debug-p" />
     </>
   );
 }

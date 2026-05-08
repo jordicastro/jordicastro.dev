@@ -48,7 +48,6 @@ const LogoBounce = ({ onComplete }: LogoBounceProps) => {
                     end: "bottom bottom",
                     pin: true,
                     onEnter: () => {
-                        console.log('LogoBounce: onEnter');
                         setupAnimation();
                     },
                     onLeave: () => tlRef.current?.kill(),
