@@ -29,10 +29,11 @@ const MotionPathTimeline = () => {
     const [handedOff, setHandedOff] = useState<boolean>(false);
     const { isAnimating, setIsAnimating } = useScrollMask();
     const downScrollCounter = useRef<number>(0);
-    const { isCollapsedSettled } = useResolvedSidebar();
-    const isDebounceComplete = useRef<boolean>(false);
-    const onDownDebounceMs = 100;
-    let lockedScrollY = 0;
+    const { isCollapsedSettled, isCollapsed } = useResolvedSidebar();
+    const handedOffRef = useRef<boolean>(false);
+    const isAnimatingRef = useRef<boolean>(isAnimating);
+    const isFirstScroll = useRef<boolean>(true);
+    const scrollDirection = useRef<"up" | "down" | null>("down");
 
 
     gsap.registerPlugin(useGSAP, ScrollTrigger, MotionPathPlugin, Observer);
@@ -43,6 +44,14 @@ const MotionPathTimeline = () => {
         window.addEventListener("resize", onResize);
         return () => window.removeEventListener("resize", onResize);
     }, []);
+
+    useEffect(() => {
+        handedOffRef.current = handedOff;
+    }, [handedOff]);
+
+    useEffect(() => {
+        isAnimatingRef.current = isAnimating;
+    }, [isAnimating]);
 
     // title fade in
     useGSAP(
@@ -103,28 +112,12 @@ const MotionPathTimeline = () => {
                         (timelineNodeStartRec.top + timelineNodeStartRec.height / 2),
                 };
             });
-            const snapFunc = (value: number, self?: ScrollTrigger): number => {
 
-                if (self && self.progress >= 0.88) { // if the user has scrolled pasted 90%, snap to the end to help the observer handoff
-                    return 1;
-                }
-                return value;
-
-            }
-
-            let observer: Observer | null = null;
             let downDebounceTimer: ReturnType<typeof setTimeout> | null = null;
-
-            const queueDownAction = () => {
-                if (downDebounceTimer !== null) {
-                    clearTimeout(downDebounceTimer);
-                }
-
-                downDebounceTimer = setTimeout(() => {
-                    isDebounceComplete.current = true;
-                    downDebounceTimer = null;
-                }, onDownDebounceMs);
-            };
+            let timelineST: ScrollTrigger | undefined;
+            let preventScroll: Observer | undefined;
+            let previousBodyOverflow = "";
+            let isScrollLocked = false;
 
             const clearDownAction = () => {
                 if (downDebounceTimer !== null) {
@@ -133,24 +126,82 @@ const MotionPathTimeline = () => {
                 }
             };
 
+            const updateHandedOff = (value: boolean) => {
+                handedOffRef.current = value;
+                setHandedOff(value);
+            };
+
+            const lockScroll = () => {
+                if (isScrollLocked) return;
+
+                clearDownAction();
+                previousBodyOverflow = document.body.style.overflow;
+                preventScroll?.enable();
+                // nuke wheel scroll, touch, and momentum
+                document.body.style.overflow = "hidden";
+                isScrollLocked = true;
+            };
+
+            const unlockScroll = () => {
+                if (!isScrollLocked) return;
+
+                clearDownAction();
+                preventScroll?.disable();
+                // undo nuke
+                document.body.style.overflow = previousBodyOverflow;
+                isScrollLocked = false;
+            };
+
+            preventScroll = ScrollTrigger.observe({
+                target: root,
+                type: "wheel, touch",
+                preventDefault: true,
+                allowClicks: true,
+                onToggleY: (self) => { // determine the scroll direction for onStop
+                    if (self.deltaY > 0) scrollDirection.current = "down";
+                    else if (self.deltaY < 0) scrollDirection.current = "up";
+                    console.log(scrollDirection.current);
+                },
+                onUp: () => { // break free from the scroll lock
+                    clearDownAction();
+                    console.log('onUp');
+                    isFirstScroll.current = true;
+                    if (!handedOffRef.current) {
+                        unlockScroll();
+                    }
+                },
+                onDown: () => { // continue to the next section after the "first" scroll lock
+                    if (isFirstScroll.current) return; 
+                    console.log('inside onDown with isFirstScroll: ', isFirstScroll.current);
+                    !isAnimatingRef.current && setIsAnimating(true, "down");
+                    isFirstScroll.current = true;
+                    updateHandedOff(true);
+                },
+                onStop: () => { // wait for momentum from first scroll to end before allowing the next scroll in onDown
+                    console.log('inside onStop with scrollDirection: ', scrollDirection.current);
+
+                    if (tl.progress() > 0.9 && scrollDirection.current === "down") {
+                        isFirstScroll.current = false;
+                    }
+                },
+                onStopDelay: 0, // allow the user to continue as soon as possible after momentum ends
+
+            });
+
+            downScrollCounter.current === 0 && preventScroll.disable();
+
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: root,
                     start: "top 15%",
                     end: "bottom 85%",
                     scrub: 1.5,
-                    snap: {
-                        snapTo: snapFunc,
-                        duration: { min: 0.2, max: 0.6 },
-                        delay: 0.1,
-                        ease: "power1.inOut",
-                    },
                     // markers: true,
                     invalidateOnRefresh: true,
                     fastScrollEnd: true,
                     onUpdate: (self) => {
                         const v = self.getVelocity();
-                        if (!handedOff && self.progress > 0.88) {
+                        if (!handedOffRef.current && self.progress > 0.88) {
                             // fastest scroll velocity skips the scroll mask animation completely
                             if (v > 10000) {
                                 console.log('extreme v', v);
@@ -158,25 +209,22 @@ const MotionPathTimeline = () => {
                             }
                             if (v > 5000) {
                                 console.log('fast v', v);
-                                setHandedOff(true);
-                                !isAnimating && setIsAnimating(true, "down", 0.75);
+                                updateHandedOff(true);
+                                !isAnimatingRef.current && setIsAnimating(true, "down", 0.75);
                             }
                         } 
-                        if (!handedOff && self.progress === 1.0) {
+                        if (!handedOffRef.current && self.progress === 1.0) {
                             // if slow scroll velocity, enable observer to watch for scroll direction
                             lockScroll();
-                            if (v >= 0) {
-                                setHandedOff(false);
-                            }
                         }
                         if (self.progress < 0.8) {
                             unlockScroll();
-                            setHandedOff(false);
+                            updateHandedOff(false);
                         }
                     }
                 },
             });
-            const timelineST = tl.scrollTrigger;
+            timelineST = tl.scrollTrigger;
             if (!timelineST) return;
 
 
@@ -211,58 +259,12 @@ const MotionPathTimeline = () => {
 
             ScrollTrigger.refresh();
 
-            let preventScroll = ScrollTrigger.observe({
-                target: root,
-                type: "wheel, touch",
-                preventDefault: true,
-                allowClicks: true,
-                onEnable: (self) => { // save the scroll position
-                    lockedScrollY = self.scrollY();
-                    console.log('lockedScrollY: ', self.scrollY());
-                },
-                onChangeY: (self) => { // refuse to scroll
-                    if (self.event) self.event.preventDefault(); // shut off momentum (i think)
-                    self.scrollY(lockedScrollY);
-                },
-                onUp: () => {
-                    clearDownAction();
-                    isDebounceComplete.current = false;
-                    console.log('onUp');
-                    if (!handedOff) {
-                        unlockScroll();
-                    }
-                },
-                onDown: () => {
-                    if (!isDebounceComplete.current) {
-                        queueDownAction();
-                        return;
-                    } else {
-                        console.log('onDown');
-                        setHandedOff(true);
-                        isDebounceComplete.current = false;
-                        !isAnimating && setIsAnimating(true, "down");
-                    }
-                }
-            });
-
-            const lockScroll = () => {
-                lockedScrollY = timelineST.scroll();
-                preventScroll?.enable();
-                // nuke wheel scroll, touch, and momentum 
-                document.body.style.overflow = "hidden";
-            }
-
-            const unlockScroll = () => {
-                preventScroll?.disable();
-                // undo nuke
-                document.body.style.overflow = "";
-            }
-
-            downScrollCounter.current === 0 && preventScroll.disable();
-
             return () => {
                 clearDownAction();
+                unlockScroll();
                 preventScroll?.kill();
+                tl.kill();
+                timelineST?.kill();
             };
         },
         { scope: scopeRef, dependencies: [width, isCollapsedSettled], revertOnUpdate: true }
@@ -316,7 +318,7 @@ const MotionPathTimeline = () => {
                 <div className="keyframe-container fourth">
                     <div className="marker" />
                     <TimelineCard
-                        position={width >= 1500 ? "left" : "right"}
+                        position={width >= 1500 && (isCollapsedSettled && isCollapsed) ? "left" : "right"}
                         data={timelineCardsData[3]}
                         index={4}
                     />
@@ -349,8 +351,8 @@ interface TimelineCardProps {
 }
 
 const TimelineCard = ({ position, data, index }: TimelineCardProps) => {
-    const { theme } = useTheme();
-    const fill = theme === "dark" ? "#171717" : "#f5f5f5";
+    const { resolvedTheme } = useTheme();
+    const fill = resolvedTheme === "dark" ? "#171717" : "#f5f5f5";
 
     return (
         <div

@@ -166,18 +166,14 @@ const CalloutMarathon = ({ id }: { id?:string }) => {
                     from: "start",
                 }
             })
-
-
-
-
-            
             
             const masterTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: scopeRef.current,
                     start: "top 70%",
+                    end: "bottom 30%",
                     toggleActions: "play pause play pause",
-                    // markers: true,
+                    fastScrollEnd: true,
                 }
              });
 

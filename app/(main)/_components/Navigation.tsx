@@ -14,8 +14,12 @@ import { scrollTo } from "@/lib/utils";
 import ToggleThemeMorphSvg, { ToggleThemeMorphSvgHandle } from "./ToggleThemeMorphSvg";
 import ToggleCursorMorphSvg, { ToggleCursorMorphSvgHandle } from "./ToggleCursorMorphSvg";
 import { useResolvedSidebar, useSidebar } from "@/hooks/useSidebar";
+import { useScrollMask } from "@/hooks/useScrollMask";
+import { useScrollLock } from 'usehooks-ts';
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
-
+gsap.registerPlugin(useGSAP);
 
 const Navigation = () => {
     const pathname = usePathname();
@@ -30,6 +34,7 @@ const Navigation = () => {
 
     const [isResetting, setIsResetting] = useState(false);
     const { isCollapsed, setIsCollapsed, hasHydrated } = useResolvedSidebar();
+    const { isAnimating, duration } = useScrollMask();
 
 
     const className="w-4 h-4"
@@ -93,12 +98,10 @@ const Navigation = () => {
             ]
         }
     ]
-
+    
     useEffect(() => {
-        if (isMobile) {
-            collapse();
-        }
-    }, [isMobile]);
+        setHasMounted(true);
+    }, []);
 
     useEffect(() => {
         if (isMobile) {
@@ -106,9 +109,30 @@ const Navigation = () => {
         }
     }, [pathname, isMobile]);
 
-    useEffect(() => {
-        setHasMounted(true);
-    }, []);
+    useEffect(() => { // used to lock the main content scroll underneath the fully expanded mobile nav
+        if (!isCollapsed && isMobile) {
+            document.body.style.overflow = "hidden";
+        } else if (isCollapsed && isMobile) {
+            document.body.style.overflow = "auto";
+        }
+    }, [isCollapsed, isMobile]);
+
+    useGSAP(() => { // used to fade the collapsed menu icon in and out during scroll mask animation
+        if (!isAnimating) return;
+        const collapsedMenuIcon = document.getElementById("collapsed-menu-icon");
+        if (!collapsedMenuIcon) return;
+
+        if (isAnimating) {
+            // hide the collapsed icon
+            const tl = gsap.timeline();
+            const revealDelay = duration == 1 ? (duration + 0.6) : (duration + 0.5);
+
+            tl
+                .to(collapsedMenuIcon, { autoAlpha: 0, duration: 0.3, ease: "power1.inOut", delay: 0.3 })
+                .to(collapsedMenuIcon, { autoAlpha: 1, duration: 0.3, ease: "power1.inOut" }, `<=${revealDelay}`)
+        }
+    }, [isAnimating]);
+
 
     const isMobileViewport = hasMounted && isMobile;
 
@@ -297,6 +321,7 @@ const Navigation = () => {
                                 onClick={resetWidth}
                                 className="h-6 w-6 text-neutral-600 dark:text-neutral-300 hoverable"
                                 data-cursor='pointer'
+                                id="collapsed-menu-icon"
                             />
                         }
                     </nav>

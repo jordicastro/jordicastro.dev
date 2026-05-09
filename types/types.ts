@@ -25,3 +25,5 @@ export type timelineCardDataType = {
     company: string;
     year: string;
 }
+
+export type directionType = "up" | "down" | null;

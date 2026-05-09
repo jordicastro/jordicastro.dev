@@ -8,6 +8,7 @@ import CalloutMarathon from "./_components/CalloutMarathon";
 import ProgrammingTimeline from "./_components/ProgrammingTimeline";
 import ToC from "@/components/ToC";
 import { homeSections } from "@/constants/constants";
+import ScrollMask from "@/components/ScrollMask";
 
 export default function Home() {
   const { isAuthenticated, setIsAuthenticated, isLoading, setIsLoading } = useAuth();
@@ -48,6 +49,7 @@ export default function Home() {
 
   return ( // subtract the p-4 (16px) from the main layout on the hero section
     <>
+      <ScrollMask />
       <ToC sections={homeSections} />
         <Hero id={homeSections[0].id}/>
         <CalloutMarathon id={homeSections[1].id}/>

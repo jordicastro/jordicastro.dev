@@ -5,6 +5,7 @@ import { useCursor } from "@/hooks/useCursor";
 import { redirect } from "next/navigation";
 import Navigation from "./_components/Navigation";
 import CustomCursor from "./_components/CustomCursor";
+import ScrollMask from "@/components/ScrollMask";
 
 const MainLayout = ({
     children
@@ -33,7 +34,7 @@ const MainLayout = ({
         >
             <CustomCursor />
             <Navigation />
-            <main className="w-full min-w-0 overflow-x-clip overflow-y-visible pt-4 px-4">
+            <main className="w-full min-w-0 overflow-x-clip overflow-y-visible pt-4 px-4" id="main-content">
                 {children}
             </main>
         </div>
