@@ -7,7 +7,7 @@ const TagStyles = () => {
             <h1 className="">
             h1: Jordi Castro
             </h1>
-            <h2>
+            <h2 className="text-gradient-b dark:text-gradient-p">
             h2: In December 2025, Jordi
             <br />
             completed a marathon in

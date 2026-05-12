@@ -4,6 +4,7 @@ export const homeSections: Section[] = [
     { id: "home", label: "Home", activeColor: "#155dfc"}, // bg-blue-600
     { id: "marathon", label: "Marathon" },
     { id: "timeline", label: "Timeline" },
+    { id: "identity", label: "Identity" }
 ]
 
 export const timelineCardsData: timelineCardDataType[] = [
@@ -39,3 +40,7 @@ export const timelineCardsData: timelineCardDataType[] = [
         year: "2026"
     }
 ]
+
+export const cursorThemeCn = "text-neutral-800 dark:text-neutral-200"
+
+export const codeTextStyling = "p-2 bg-neutral-100 dark:bg-neutral-900 rounded-[10px] font-mono text-sm sm:text-[16px] lg:text-[18px] text-red-code"

@@ -9,6 +9,7 @@ import ProgrammingTimeline from "./_components/ProgrammingTimeline";
 import ToC from "@/components/ToC";
 import { homeSections } from "@/constants/constants";
 import ScrollMask from "@/components/ScrollMask";
+import IdentitySection from "./_components/IdentitySection";
 
 export default function Home() {
   const { isAuthenticated, setIsAuthenticated, isLoading, setIsLoading } = useAuth();
@@ -54,7 +55,7 @@ export default function Home() {
         <Hero id={homeSections[0].id}/>
         <CalloutMarathon id={homeSections[1].id}/>
         <ProgrammingTimeline id={homeSections[2].id}/>
-        <div className="w-full h-svh border-debug-p" />
+        <IdentitySection id={homeSections[3].id}/>
     </>
   );
 }

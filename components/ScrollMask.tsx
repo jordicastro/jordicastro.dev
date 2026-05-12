@@ -65,7 +65,7 @@ const ScrollMask = () => {
 
     return (
         <div
-            className="fixed bottom-0 px-0 pt-0 w-full h-full bg-neutral-950 opacity-50 pointer-events-none z-50"
+            className="fixed bottom-0 px-0 pt-0 w-full h-full bg-neutral-50 dark:bg-neutral-950 opacity-50 pointer-events-none z-50"
             id="scroll-mask"
             style={{ visibility: "hidden" }}
         />

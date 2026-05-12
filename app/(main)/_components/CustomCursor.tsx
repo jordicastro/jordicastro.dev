@@ -6,6 +6,8 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef } from "react";
 import { useResolvedSidebar } from "@/hooks/useSidebar";
+import { CustomGrab, CustomHand, CustomMouse, CustomPointer } from "@/components/svgs/svgs";
+import { cursorThemeCn } from "@/constants/constants";
 // import { ScrollToPlugin, ScrollTrigger } from "gsap/all";
 
 gsap.registerPlugin(useGSAP);
@@ -16,7 +18,6 @@ const CustomCursor = () => {
     const { resolvedTheme } = useTheme();
     const { isCollapsed } = useResolvedSidebar();
     const { cursor } = useCursor();
-    const className = "text-neutral-800 dark:text-neutral-300";
     const fill = resolvedTheme === "light"
         ? "oklch(0.92 0.01 255 / 0.25)"
         : "oklch(0.32 0.02 255 / 0.25)";
@@ -152,69 +153,15 @@ const CustomCursor = () => {
 
     return cursor ? 
         <div ref={scopeRef} className="custom-cursor-wrapper hidden md:block fixed top-0 left-0 z-99 pointer-events-none">
-            <CustomMouse className={className} fill={fill} />
-            <CustomPointer className={cn('abs-center scale-0', className)} fill={fill} />
-            <CustomHand className={cn('abs-center scale-0', className)} fill={fill} />
-            <CustomGrab className={cn('abs-center scale-0', className)} fill={fill} />
+            <CustomMouse className={cursorThemeCn} fill={fill} />
+            <CustomPointer className={cn('abs-center scale-0', cursorThemeCn)} fill={fill} />
+            <CustomHand className={cn('abs-center scale-0', cursorThemeCn)} fill={fill} />
+            <CustomGrab className={cn('abs-center scale-0', cursorThemeCn)} fill={fill} />
         </div>
         : null;
 
 }
 
-interface CustomMouseProps {
-    className?: string;
-    fill?: string | undefined;
-}
 
-const CustomMouse = ({ fill, className }: CustomMouseProps) => {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            className={cn("custom-mouse", className)}
-        >
-            <path
-                d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"
-                fill={fill}
-            />
-        </svg>
-    )
-}
-const CustomPointer = ({ fill, className }: CustomMouseProps) => {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            className={cn("custom-pointer", className)}
-        >
-            <path d="M22 14a8 8 0 0 1-8 8"/>
-            <path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/>
-            <path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/>
-            <path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/>
-            <path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
-        </svg>
-    )
-}
-const CustomHand = ({ fill, className }: CustomMouseProps) => {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            className={cn("custom-hand", className)}
-        >
-            <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/>
-            <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/>
-            <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/>
-            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
-        </svg>
-    )
-}
-const CustomGrab = ({ fill, className }: CustomMouseProps) => {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            className={cn("custom-grab", className)}
-        >
-            <path d="M18 11.5V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1.4"/>
-            <path d="M14 10V8a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/>
-            <path d="M10 9.9V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v5"/>
-            <path d="M6 14a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/>
-            <path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8 2 2 0 1 1 4 0"/>
-        </svg>
-    )
-}
 
 export default CustomCursor

@@ -23,3 +23,11 @@ export const getNextSectionId = (currentSectionId: string, direction: directionT
     homeSections[Math.min(currentIndex + 1, homeSections.length - 1)].id :
     homeSections[Math.max(currentIndex - 1, 0)].id; 
 }
+
+export const getElCenter = (el: HTMLElement) => {
+    const rect = el.getBoundingClientRect();
+    return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+    };
+}

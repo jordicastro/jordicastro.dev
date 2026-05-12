@@ -292,10 +292,10 @@ const LogoBounce = ({ onComplete }: LogoBounceProps) => {
         return angle;
     });
 
-    const getWeightedRandomLogo = contextSafe(() => { // 60% default, 30% old, 10% oldest
+    const getWeightedRandomLogo = contextSafe(() => { // 75% default, 20% old, 5% oldest
         const rand = gsap.utils.random(0, 1); // 0 to 1
 
-        return rand < 0.6 ? logoVariants[0] : rand < 0.8 ? logoVariants[1] : logoVariants[2]
+        return rand < 0.75 ? logoVariants[0] : rand < 0.95 ? logoVariants[1] : logoVariants[2]
     });
 
     const getRandomPosition = contextSafe(() => {
