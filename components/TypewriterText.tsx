@@ -2,10 +2,9 @@
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { codeTextStyling } from "@/constants/constants";
 import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
 
 type TypewriterBuilder = () => gsap.core.Timeline | null;
 type twFonts = "font-sans" | "font-serif" | "font-mono";
@@ -27,8 +26,6 @@ interface TypewriterTextProps {
 }
 
 const TypewriterText = ({ text, parentWidth=440, fontSize=30, speed=0.15, lineDelay=0, codeText=false, variableTimeScale=false, randomBackspace=true, className, animationKey, registerAnimation, font }: TypewriterTextProps) => {
-    const { resolvedTheme } = useTheme();
-    const codeBgColor = resolvedTheme === "light" ? "oklch(97% 0 0)": "oklch(20.5% 0 0)";
     const textRef = useRef<HTMLDivElement>(null);
     const barColor = codeText ? "#EC6765" : "#FFFFFF";
     const barColorSecondary = codeText ? "#222222" : "#222222";
@@ -73,7 +70,7 @@ const TypewriterText = ({ text, parentWidth=440, fontSize=30, speed=0.15, lineDe
                 if (codeText) {
                     const rowEls = gsap.utils.toArray<HTMLElement>("[class*='code-row-']", el);
                     rowEls.forEach((rowEl) => {
-                        gsap.set(rowEl, { padding: 0, backgroundColor: "transparent", borderRadius: "10 0 0 10" });
+                        gsap.set(rowEl, { padding: 0, autoAlpha: 0, borderRadius: "10 0 0 10" });
                     });
                 }
             };
@@ -100,7 +97,7 @@ const TypewriterText = ({ text, parentWidth=440, fontSize=30, speed=0.15, lineDe
                 // initial state: width 0 (left edge) and blinking cursor hidden
                 gsap.set(lineEl, { width: 0, "--whiteBar": "transparent" });
                 if (codeText && rowEl) {
-                    gsap.set(rowEl, { padding: 0, backgroundColor: "transparent", borderRadius: "10 0 0 10" });
+                    gsap.set(rowEl, { padding: 0, autoAlpha: 0, borderRadius: "10 0 0 10" });
                 }
 
                 const tl = gsap.timeline();
@@ -119,8 +116,8 @@ const TypewriterText = ({ text, parentWidth=440, fontSize=30, speed=0.15, lineDe
                     }
                 );
                 if (codeText && rowEl) {
-                    // animate the code bg row separately
-                    tl.set(rowEl, { padding: 8, backgroundColor: codeBgColor}, 0);
+                    // let CSS own the theme background; GSAP only reveals the row.
+                    tl.set(rowEl, { padding: 8, autoAlpha: 1 }, 0);
                 }
                 let blinkTween: gsap.core.Tween | null = null;
                 tl.add(() => {

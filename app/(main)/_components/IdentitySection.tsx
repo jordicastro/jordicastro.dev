@@ -3,23 +3,49 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Observer, SplitText, ScrollTrigger, CustomEase } from "gsap/all";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useScrollMask } from "@/hooks/useScrollMask";
 import { RefreshCcw } from "lucide-react";
 import { GitFlourish, ReactButtonFlourish, SQLFlourish, TagFlourish } from "./_flourishes/SoftwareEngineerFlourishes";
 import { FlourishBuilder, FlourishKey } from "@/types/types";
 import { BounceTimelineFlourish, EditTextFlourish, GridFlourish, PenSquiggleFlourish } from "./_flourishes/CreativeDesignerFlourishes";
+import { useTheme } from "next-themes";
 
 
 const IdentitySection = ({ id }: { id?: string }) => {
     const scopeRef = useRef<HTMLDivElement>(null);
-    const animatingRef = useRef<boolean>(true);
     const { isAnimating, setIsAnimating } = useScrollMask();
-    const tlRef = useRef<gsap.core.Timeline | null>(null);
+    const masterTlRef = useRef<gsap.core.Timeline | null>(null);
     const flourishBuildersRef = useRef<Partial<Record<FlourishKey, FlourishBuilder>>>({});
     const [flourishRegistryVersion, setFlourishRegistryVersion] = useState(0);
     const [iteration, setIteration] = useState(0);
+    const { resolvedTheme } = useTheme();
+    const { activeSectionId, prevSectionId } = useScrollMask();
     const cycleDelay = 0.5; // delay between identity sections
+    const isFirstIteration = useRef(true);
+
+    useEffect(() => { // handle play/pause of the masterTl based on scrollMask and activeSectionId
+        if (activeSectionId !== id && prevSectionId === id) { // pause/seek after exiting the section
+            console.log('exiting section')
+            isFirstIteration.current ? 
+                masterTlRef.current?.pause('start') :
+                masterTlRef.current?.pause('afterIAm');
+            setIteration((iter) => iter + 1); // trigger flourish reset
+            
+            return;
+        }
+        if (isAnimating && activeSectionId === id) { // pause when exiting the section through scroll Mask
+            console.log('pause')
+            masterTlRef.current?.pause();
+            return;
+        }
+        if (isAnimating || activeSectionId !== id) return; // wait for the scrollMask to finish updating
+
+        console.log('play')
+        masterTlRef.current?.play();
+        isFirstIteration.current = false;
+
+    }, [isAnimating, activeSectionId]);
 
 
     const registerFlourish = useCallback((key: FlourishKey, build: FlourishBuilder) => {
@@ -72,27 +98,18 @@ const IdentitySection = ({ id }: { id?: string }) => {
                 mask: "lines",
             }) : null;
 
-            const cycleIdentitiesTl = gsap.timeline({
-                repeat: -1,
-                repeatDelay: cycleDelay,
-                onRepeat: () => {
-                    setIteration((iter) => iter + 1);
-                },
-            });
-
+            const cycleIdentitiesTl = gsap.timeline();
 
             const masterTL = gsap.timeline({
-                defaults: { overwrite: "auto" },
+                defaults: { overwrite: "auto"},
+                paused: true,
                 onComplete: () => {
-                    animatingRef.current = false;
+                    // trigger flourish reset
+                    setIteration((iter) => iter + 1);
+                    // restart the cycle
+                    gsap.delayedCall(cycleDelay, () => {masterTlRef.current?.seek('afterIAm');});
                 },
-                scrollTrigger: {
-                    trigger: scopeRef.current,
-                    start: "top 90%",
-                    end: "bottom 10%",
-                    toggleActions: "play reset play reset",
-                }
-            });
+            }).addLabel('start', 0);
             // iAmText animation
             if (iAmSplit?.chars) {
                 masterTL.fromTo(iAmSplit.chars,
@@ -101,14 +118,14 @@ const IdentitySection = ({ id }: { id?: string }) => {
                         autoAlpha: 1,
                         yPercent: 0,
                         duration: 1,
-                        delay: 2,
                         ease: CustomEase.create("rainbow-char", "M0,0 C0.063,0.191 0.284,0.85 0.496,1.051 0.706,1.254 0.909,1 1,1 "),
                         stagger: { each: 0.08, from: "start" },
                     }, 
                 )
+                .addLabel('afterIAm');
             }
+
             // software engineer timeline
-    
             const seTimeline = gsap.timeline();
             seTimeline
                 .fromTo( // animate the heading
@@ -122,7 +139,7 @@ const IdentitySection = ({ id }: { id?: string }) => {
                         stagger: { each: 0.02, from: "random" },
                     }, // "<=1.25" // delay on first enter: 1.25, otherwise 0.25
                 )
-                .to(headings, { autoAlpha: 1, duration: 0.25 }, "<=0.25") // 
+                .to(headings[0], { autoAlpha: 1, duration: 0.25 }, "<=0.25")
 
             // add the child SE flourish tweens to the timeline
             const gitFlourishTween = flourishBuildersRef.current.git?.();
@@ -209,7 +226,7 @@ const IdentitySection = ({ id }: { id?: string }) => {
 
             masterTL.add(cycleIdentitiesTl);
 
-            tlRef.current = masterTL;
+            masterTlRef.current = masterTL;
             
             // pin the section and animate the timeline node along the path
             const observer = Observer.create({
@@ -219,15 +236,11 @@ const IdentitySection = ({ id }: { id?: string }) => {
                 tolerance: 10,
                 onUp: (self) => {
                     !isAnimating && setIsAnimating(true, "up")
-                        // update iteration so the flourishes reset
-                        // console.log('scrolling up, updating iteration')
-                    // setIteration((iter) => iter + 1);
+                    // isFirstIteration.current = false;
                 },
                 onDown: () => {
                     !isAnimating && setIsAnimating(true, "down")
-                    // update iteration so the flourishes reset
-                    // console.log('scrolling down, updating iteration')
-                    // setIteration((iter) => iter + 1);
+                    // isFirstIteration.current = false;
                 },
             })
 
@@ -235,21 +248,19 @@ const IdentitySection = ({ id }: { id?: string }) => {
                 splitHeadings.forEach((split) => split.revert());
                 iAmSplit?.revert();
                 observer.kill();
+                seTimeline.kill();
+                cdTimeline.kill();
+                cycleIdentitiesTl.kill();
+                masterTlRef.current?.kill();
+                masterTlRef.current = null;
             };
 
         },
         { scope: scopeRef, dependencies: [flourishRegistryVersion] }
     );
 
-    const replayAnimation = contextSafe(() => {
-        tlRef.current?.restart();
-    });
-
     return (
         <div ref={scopeRef} id={id} className="relative h-svh w-full bg-neutral-50 dark:bg-neutral-950 font-semibold overflow-hidden text-center"> 
-            <div className="absolute top-12 right-12 w-12 h-12 rounded-full flex-center hover:cursor-pointer z-10" data-cursor="pointer-2" onClick={replayAnimation}>
-                <RefreshCcw className="text-neutral-500"/>
-            </div>
             <p className="absolute top-12 left-12 lg:top-20 lg:left-40 text-2xl/normal md:text-3xl/normal lg:text-3xl/normal i-am-text font-medium z-10">I am a ...</p>
             <SESection registerFlourish={registerFlourish}/>
             <CDSection registerFlourish={registerFlourish} iteration={iteration}/>

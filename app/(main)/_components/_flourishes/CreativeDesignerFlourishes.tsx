@@ -31,9 +31,19 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
     const [isReady, setIsReady] = useState(false);
     const isMobileRef = useRef(false);
     const { resolvedTheme } = useTheme();
-    const borderThemeCn = resolvedTheme === "light" ? "#d4d4d4" : "#404040" // bg-neutral-300 : bg-neutral-700
-    const toBorderColor = resolvedTheme === "light" ? "#a1a1a1" : "#262626"; // bg-neutral-400 : bg-neutral-800
-    const staticTextColor = resolvedTheme === "light" ? "#262626" : "#e5e5e5";
+    const themeStyles = useMemo(() => resolvedTheme === "light"
+        ? {
+            staticTextColor: "#262626",
+            borderThemeColor: "#d4d4d4",
+            toBorderColor: "#a1a1a1",
+        }
+        : {
+            staticTextColor: "#e5e5e5",
+            borderThemeColor: "#404040",
+            toBorderColor: "#262626",
+        }, [resolvedTheme]);
+    const themeStylesRef = useRef(themeStyles);
+    themeStylesRef.current = themeStyles;
     // typography popover states
     const [colorIndex, setColorIndex] = useState(0);
     const textColorArr = [
@@ -49,6 +59,7 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
     const fontArr = ["Mono", "Inter", "Sans", "Serif"] as fontsArr;
     const currFontRef = useRef<fontsArr[number]>("Mono");
     const nextFontRef = useRef<fontsArr[number] | null>("Serif");
+    const typographyTlRef = useRef<gsap.core.Timeline | null>(null);
 
     useEffect(() => {
         setupEditTextFlourish();
@@ -84,6 +95,21 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
         }
     })
 
+    useGSAP(() => { // change gsap owned colors when theme changes (gsap owns these colors so the color transitions are smooth)
+        const container = scopeRef.current;
+        if (!container) return;
+        const staticTextEl = gsap.utils.toArray<HTMLElement>(".static-text-el", container)[0];
+        const colorTextEl = gsap.utils.toArray<HTMLElement>(".color-text-item", container)[0];
+        const typographyTl = typographyTlRef.current;
+        const { staticTextColor, borderThemeColor } = themeStylesRef.current;
+        if (!staticTextEl || !colorTextEl || !typographyTl) return;
+
+        if (typographyTl.time() < typographyTl.labels["before-initial-color-click"]) { // only allow the color theme change before the initial colors are animated onto staticTextEl
+            gsap.set(staticTextEl, { color: staticTextColor });
+        }
+        gsap.set(colorTextEl, { borderColor: borderThemeColor });
+    }, [resolvedTheme, iteration]);
+
     const { contextSafe } = useGSAP(
         () => {
             if (!isReady) return;
@@ -111,10 +137,10 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
                 const typewriterTl = buildTypewriterTl();
                 // typographyPopoverTl animates the typography popover in and the cursor interacting with it while the static text el changes in real time
                 const typographyPopoverTl = buildTypographyPopoverTl(cursorObj, isMobile);
+                typographyTlRef.current = typographyPopoverTl;
                 
                 const tl = gsap.timeline({ onComplete: () => {
                     // clean gsap, update states, and allow interactability with the popover (drag.enable && pointer events)
-                    // console.log('edit text flourish complete');
                 } });
 
                 tl.add(textAreaTl, 0);
@@ -133,6 +159,8 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
         if (!container) {
             return gsap.timeline();
         }
+
+        const { staticTextColor, borderThemeColor } = themeStylesRef.current;
 
         // cursor
         const cursorWrapper = gsap.utils.toArray<HTMLElement>(".edit-text-cursor", container)[0];
@@ -182,7 +210,7 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
         if (popoverTitle) gsap.set(popoverTitle, { autoAlpha: 0 });
         gsap.set(typographyPopover, { autoAlpha: 0, y: 20 });
         gsap.set(popoverItems, { autoAlpha: 0, y: 15 });
-        gsap.set(colorTextEl, { borderColor: borderThemeCn });
+        gsap.set(colorTextEl, { borderColor: borderThemeColor });
         gsap.set(colorTextEl.querySelector("span"), { color: "#A1A1A1" });
         gsap.set(boldTextSVG, { stroke: "#A1A1A1" });
         // prev font and curr font
@@ -395,7 +423,8 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
                     y: colorTextCenter.y - cursorOriginY - yOffset,
                     duration: cursorStepDuration,
                 }, ">")
-                .to(colorTextEl, { borderColor: toBorderColor, duration: 0.5 }, "-=0.5")
+                .to(colorTextEl, { borderColor: () => themeStylesRef.current.toBorderColor, duration: 0.5 }, "-=0.5")
+                .addLabel('before-initial-color-click', ">")
                 .add(gsap.effects.click(cursorWrapper, {}), ">") // click for red
                 .to(colorTextEl.querySelector("span"), { color: "#FF6467", duration: 0.25 }, "<") // change the A text color to red
                 .to(staticTextEl, { color: "#FF6467", duration: 0.25 }, "<") // text el change to red
@@ -415,7 +444,7 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
                     duration: 0.75,
                 }, ">")
                 .to(boldTextEl, { backgroundColor: "rgba(115, 115, 115, 0.2)", duration: 0.5 }, "-=0.5") // active hover
-                .to(colorTextEl, { borderColor: borderThemeCn, duration: 0.5 }, "<") // reset the colorTextEl border color
+                .to(colorTextEl, { borderColor: () => themeStylesRef.current.borderThemeColor, duration: 0.5 }, "<") // reset the colorTextEl border color
                 .to(boldTextSVG, { stroke: "#a1a1a1", duration: 0.5 }, "<") // change the bold icon color to onhover
                 .add(gsap.effects.click(cursorWrapper, {}), ">") // click bold
                 .to(boldTextEl, { backgroundColor: "rgba(20, 71, 230, 0.2)", duration: 0.5 }, "<") // active
@@ -536,7 +565,6 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
         const tl = gsap.timeline({ onComplete: () => {
             nextFontRef.current = prevFont;
             currFontRef.current = currFont;
-            // console.log('font changed from ', prevFont, ' to ', currFont);
         }});
         tl.to(nextFontEl, {
             y: 31,
@@ -672,7 +700,7 @@ const DragHandle = ({ className }: { className?: string }) => (
 )
 
 const ColorTextItem = () => (
-    <div className="popover-item-el w-8 h-8 rounded-sm border-2 border-neutral-300 dark:border-neutral-700 flex-center hover:border-neutral-200 hover:dark:border-neutral-600">
+    <div className="popover-item-el color-text-item w-8 h-8 rounded-sm border-2 border-neutral-300 dark:border-neutral-700 flex-center hover:border-neutral-200 hover:dark:border-neutral-600">
         <span className="text-[14px] font-mono text-neutral-400 select-none">
             A
         </span>
@@ -753,12 +781,14 @@ const IncrementInput = ({ type = "number", default: defaultValue = 0, units = ""
 
 const PenSquiggleFlourish = ({ flourishKey, register, iteration }: FlourishRegisterProps) => {
     const scopeRef = useRef<HTMLDivElement>(null);
+    const { resolvedTheme } = useTheme();
     const pathNodePos = [
         "bottom-12 left-0",
         "top-0 left-40",
         "bottom-0 right-30",
         "abs-y-center right-0"
     ]
+    const nodeFill = resolvedTheme === "light" ? "#fafafa": "#171717"; // neutral-50 in light, neutral-950 in dark
 
     useEffect(() => {
         setupPenSquiggleFlourish();
@@ -864,12 +894,10 @@ const PenSquiggleFlourish = ({ flourishKey, register, iteration }: FlourishRegis
                         delay: i === 0 ? 0 : 0.25,
                     })
                     penToolPathTl.add(gsap.effects.click(penTool, {}), ">")
-                    .call( () => {
-                        gsap.set(pathNodes[i], { autoAlpha: 1, backgroundColor: "#2B7FFF"})
-                        if (i > 0) {
-                            gsap.set(pathNodes[i - 1], { backgroundColor: "#101010" })
-                        }
-                    });
+                    .set(pathNodes[i], { autoAlpha: 1, backgroundColor: "#2B7FFF" });
+                    if (i > 0) {
+                        penToolPathTl.set(pathNodes[i - 1], { backgroundColor: nodeFill }, "<");
+                    }
                     // reveal the edge connecting the previous node to this one (no edge for i=0)
                     if (i > 0) {
                         penToolPathTl.to(pathEdges[i - 1], { drawSVG: "100%", duration: 0.05, ease: "power1.inOut" }, "<");
@@ -939,9 +967,8 @@ const PenSquiggleFlourish = ({ flourishKey, register, iteration }: FlourishRegis
         const pathEdges = gsap.utils.toArray<SVGLineElement>(".path-edge", scopeRef.current);
         const penTool = gsap.utils.toArray<HTMLElement>(".pen-tool", scopeRef.current)[0];
         const blueSquigglePath = scopeRef.current!.querySelector<SVGPathElement>(".blue-squiggle-path")!
-        console.log('running setupPenSquiggleFlourish')
 
-        gsap.set(pathNodes, { autoAlpha: 0 });
+        gsap.set(pathNodes, { autoAlpha: 0, backgroundColor: nodeFill });
         gsap.set(pathEdges, { drawSVG: "0%" });
         gsap.set(penTool, { autoAlpha: 0, x: 0, y: 0 });
         gsap.set(blueSquigglePath, { drawSVG: "0%" });

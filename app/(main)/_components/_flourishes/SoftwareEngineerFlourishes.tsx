@@ -14,7 +14,7 @@ const GitFlourish = ({ flourishKey, register }: FlourishRegisterProps) => {
     ];
     const scopeRef = useRef<HTMLDivElement>(null);
     const lineBuildersRef = useRef<Record<string, FlourishBuilder>>({});
-    const lineSpeed = [0.15, 0.10, 0.20]; // typing speed for each line
+    const lineSpeed = [0.15, 0.09, 0.20]; // typing speed for each line
 
     const registerGitLineAnimation = useCallback((key: string, build: FlourishBuilder) => {
         lineBuildersRef.current[key] = build;

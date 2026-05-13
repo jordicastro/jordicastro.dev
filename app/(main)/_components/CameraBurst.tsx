@@ -122,7 +122,7 @@ const CameraBurst = ({ path2Pictures, imageCount, className }: CameraBurstProps)
 
     return (
         <div className={`` + className} ref={scopeRef}>
-            <div className="camera-wrapper relative">
+            <div className="camera-wrapper relative select-none">
                 {Array.from({ length: imageCount }, (_, i) => (
                     <img
                         key={i}
