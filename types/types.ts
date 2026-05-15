@@ -1,3 +1,4 @@
+import { LucideIcon } from "lucide-react";
 
 export type NavSectionItem = {
     icon: React.ReactNode;
@@ -38,7 +39,28 @@ export type timelineCardDataType = {
 
 export type directionType = "up" | "down" | null;
 
-export type DropdownOptions = {
+export type FilterOption = "projects" | "industry" | "research";
+export type SortOption = "Newest" | "Oldest" | "A-Z";
+
+export type DropdownOption = {
+    id: FilterOption | SortOption;
     label: string;
     onClick: () => void;
+}
+
+export type ShapeType = "landscape" | "portrait" | "square";
+
+export type storyCard = {
+    id: string;
+    title: string;
+    icon?: LucideIcon | React.ReactNode;
+    subtitle?: string;
+    description?: string; // onHover: the desc overlay expands to show this text (maybe)
+    year: string;
+    thumbnail: React.ReactNode; // a react component: gsap flourish, mp4, etc.
+    onClick: () => void;
+    type: FilterOption;
+    notAllowed?: boolean; // hover: "coming soon" stripe overlay
+    shape: ShapeType;
+    className?: string;
 }

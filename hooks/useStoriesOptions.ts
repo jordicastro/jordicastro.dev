@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
-
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { FilterOption, SortOption } from "@/types/types";
 
 type StoriesOptionsStore = {
-    activeFilters: string[];
-    activeSort: string;
+    activeFilters: FilterOption[];
+    activeSort: SortOption;
     hasHydrated: boolean;
-    setActiveFilters: (filters: string[]) => void;
-    setActiveSort: (sort: string) => void;
+    setActiveFilters: (filters: FilterOption[]) => void;
+    setActiveSort: (sort: SortOption) => void;
     setHasHydrated: (value: boolean) => void;
 };
 

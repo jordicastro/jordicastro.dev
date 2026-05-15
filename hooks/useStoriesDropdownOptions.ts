@@ -1,27 +1,29 @@
 "use client";
 
-import { storyFilterLabels, storySortLabels } from "@/constants/constants";
+import { storyFilterLabels, storyFilterOptions, storySortLabels } from "@/constants/constants";
 import { useStoriesOptions } from "@/hooks/useStoriesOptions";
-import { DropdownOptions } from "@/types/types";
+import { DropdownOption } from "@/types/types";
 
 export const useStoriesDropdownOptions = (): {
-    filterOptions: DropdownOptions[];
-    sortOptions: DropdownOptions[];
+    filterOptions: DropdownOption[];
+    sortOptions: DropdownOption[];
 } => {
     const { activeFilters, setActiveFilters, setActiveSort } = useStoriesOptions();
 
-    const filterOptions = storyFilterLabels.map((label) => ({
-        label,
+    const filterOptions = storyFilterOptions.map((option) => ({
+        id: option,
+        label: storyFilterLabels[option], // convert from "projects" to "Projects" for display
         onClick: () => {
-            const nextActiveFilters = activeFilters.includes(label)
-                ? activeFilters.filter((activeFilter) => activeFilter !== label)
-                : [...activeFilters, label];
+            const nextActiveFilters = activeFilters.includes(option)
+                ? activeFilters.filter((activeFilter) => activeFilter !== option)
+                : [...activeFilters, option];
 
             setActiveFilters(nextActiveFilters);
         },
     }));
 
     const sortOptions = storySortLabels.map((label) => ({
+        id: label,
         label,
         onClick: () => {
             setActiveSort(label);

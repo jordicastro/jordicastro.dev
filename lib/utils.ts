@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge"
 import gsap from "gsap";
 import { directionType } from "@/types/types";
 import { homeSections } from "@/constants/constants";
+import { storyCards } from "@/app/(main)/_components/sections/StoriesSection";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -30,4 +31,9 @@ export const getElCenter = (el: HTMLElement) => {
         x: rect.left + rect.width / 2,
         y: rect.top + rect.height / 2,
     };
+}
+
+export const getVisibleStories = () => {
+    // for now, just return all stories. later, filter based on active filters
+    return storyCards;
 }

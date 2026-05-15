@@ -2,8 +2,8 @@
 
 import { optionHoverCn } from "@/constants/constants";
 import { cn } from "@/lib/utils";
-import { DropdownOptions } from "@/types/types";
-import { LucideIcon, Square, SquareCheck, SquareCheckBig } from "lucide-react";
+import { DropdownOption, FilterOption } from "@/types/types";
+import { LucideIcon, Square, SquareCheck } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
@@ -13,7 +13,7 @@ import { useStoriesOptions } from "@/hooks/useStoriesOptions";
 interface DropdownButtonProps {
     label: string;
     icon: LucideIcon;
-    options: DropdownOptions[];
+    options: DropdownOption[];
     checkBoxes?: boolean;
     className?: string;
 }
@@ -97,7 +97,7 @@ const DropdownButton = ({ label, icon: Icon, options, checkBoxes=false, classNam
 }
 
 interface DropdownMenuProps {
-    options: DropdownOptions[];
+    options: DropdownOption[];
     checkBoxes?: boolean;
     dropdownRef: React.RefObject<HTMLDivElement | null>;
     label: "Filter" | "Sort" | string;
@@ -105,25 +105,25 @@ interface DropdownMenuProps {
 }
 
 const DropdownMenu = ({ options, checkBoxes, dropdownRef, label, className }: DropdownMenuProps ) => {
-    const { activeFilters, setActiveFilters, activeSort, setActiveSort } = useStoriesOptions();
+    const { activeFilters, activeSort } = useStoriesOptions();
     const checkBoxCn = "w-5 h-5"
 
-    // const activeOption = checkBoxes ? null : options[0]; // Placeholder for active option logic
-    // const activeCheckBox = checkBoxes ? options[0] : null; // Placeholder for active checkbox logic"
     const isSort = label === "Sort";
-    let activeOption = isSort ? activeSort : null;
-    let activeCheckBoxes: string[] = !isSort ? activeFilters : [];
-    console.log('label', label, "with activeOption", activeOption, "and activeCheckBoxes", activeCheckBoxes)
+    const activeOption = isSort ? activeSort : null;
+    const activeCheckBoxes = isSort ? [] : activeFilters;
+    const isChecked = (optionId: DropdownOption["id"]) => {
+        return !isSort && activeCheckBoxes.includes(optionId as FilterOption);
+    };
 
     return (
         <div ref={dropdownRef} className={cn(
-            "w-[150px] h-[200px] dropdownMenu-wrapper rounded-lg bg-bg-secondary flex flex-col items-start justify-start gap-0 px-2 py-3 backdrop-blur shadow-lg",
+            "w-[150px] h-[200px] dropdownMenu-wrapper rounded-lg bg-bg-secondary flex flex-col items-start justify-start gap-0 px-2 py-3 backdrop-blur shadow-lg z-80",
             "border border-neutral-300 bg-white/85 dark:border-neutral-800 dark:bg-neutral-900/85",
             className
         )}>
-            {options.map((option, index) => (
+            {options.map((option) => (
                 <button
-                    key={index}
+                    key={option.id}
                     className={cn(
                         "dropdown-option w-full h-9 text-left text-sm text-text-secondary flex flex-row items-center justify-start gap-3",
                         optionHoverCn,
@@ -137,17 +137,17 @@ const DropdownMenu = ({ options, checkBoxes, dropdownRef, label, className }: Dr
                         <div className="check-box-wrapper shrink-0 group-hover/option:text-neutral-600 transition-all duration-250 ease-out">
                             <Square className={cn(
                                 checkBoxCn,
-                                activeCheckBoxes.includes(option.label) ? "hidden" : "block"
+                                isChecked(option.id) ? "hidden" : "block"
                             )}/>
                             <SquareCheck className={cn(
                                 checkBoxCn,
-                                activeCheckBoxes.includes(option.label) ? "block" : "hidden"
+                                isChecked(option.id) ? "block" : "hidden"
                             )}/>
                         </div>
                     )}  
                     <p className={cn(
                         "min-w-0 flex-1 truncate text-sm transition-all duration-250 ease-out",
-                        activeOption === option.label ? "text-blue-600" : "text-text-secondary group-hover/option:text-neutral-600 "
+                        activeOption === option.id ? "text-blue-600" : "text-text-secondary group-hover/option:text-neutral-600 "
                     )}>
                         {option.label}
                     </p>

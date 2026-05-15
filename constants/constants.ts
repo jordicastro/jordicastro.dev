@@ -1,4 +1,5 @@
-import { Section, timelineCardDataType } from "@/types/types";
+import { FilterOption, Section, ShapeType, SortOption, storyCard, timelineCardDataType } from "@/types/types";
+import { ChevronLeftSquareIcon } from "lucide-react";
 
 export const homeSections: Section[] = [
     { id: "home", label: "Home", activeColor: "#155dfc"}, // bg-blue-600
@@ -48,6 +49,18 @@ export const cursorThemeCn = "text-neutral-800 dark:text-neutral-200"
 
 export const codeTextStyling = "p-2 bg-neutral-100 dark:bg-neutral-900 rounded-[10px] font-mono text-sm sm:text-[16px] lg:text-[18px] text-red-code"
 
-export const storyFilterLabels = ["Projects", "Internships"] as const;
+export const storyFilterOptions: FilterOption[] = ["projects", "industry", "research"];
 
-export const storySortLabels = ["Newest", "Oldest", "Alphabetical"] as const;
+export const storyFilterLabels: Record<FilterOption, string> = {
+    projects: "Projects",
+    industry: "Industry",
+    research: "Research"
+}
+
+export const storySortLabels: SortOption[] = ["Newest", "Oldest", "A-Z"] as const;
+
+export const shapeClasses: Record<ShapeType, string> = {
+    landscape: "col-span-1 h-58 sm:row-span-9 lg:max-w-[500px]",
+    portrait:  "col-span-1 h-114 sm:row-span-17 lg:max-w-[300px]",
+    square:    "col-span-1 h-58 sm:row-span-9 lg:max-w-[300px]"
+}
