@@ -37,3 +37,8 @@ export type timelineCardDataType = {
 }
 
 export type directionType = "up" | "down" | null;
+
+export type DropdownOptions = {
+    label: string;
+    onClick: () => void;
+}

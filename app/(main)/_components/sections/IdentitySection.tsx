@@ -6,9 +6,9 @@ import { Observer, SplitText, ScrollTrigger, CustomEase } from "gsap/all";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useScrollMask } from "@/hooks/useScrollMask";
 import { RefreshCcw } from "lucide-react";
-import { GitFlourish, ReactButtonFlourish, SQLFlourish, TagFlourish } from "./_flourishes/SoftwareEngineerFlourishes";
+import { GitFlourish, ReactButtonFlourish, SQLFlourish, TagFlourish } from "../flourishes/SoftwareEngineerFlourishes";
 import { FlourishBuilder, FlourishKey } from "@/types/types";
-import { BounceTimelineFlourish, EditTextFlourish, GridFlourish, PenSquiggleFlourish } from "./_flourishes/CreativeDesignerFlourishes";
+import { BounceTimelineFlourish, EditTextFlourish, GridFlourish, PenSquiggleFlourish } from "../flourishes/CreativeDesignerFlourishes";
 import { useTheme } from "next-themes";
 
 

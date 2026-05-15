@@ -4,8 +4,11 @@ export const homeSections: Section[] = [
     { id: "home", label: "Home", activeColor: "#155dfc"}, // bg-blue-600
     { id: "marathon", label: "Marathon" },
     { id: "timeline", label: "Timeline" },
-    { id: "identity", label: "Identity" }
+    { id: "identity", label: "Identity" },
+    { id: "stories", label: "Stories" },
 ]
+
+export const optionHoverCn = "w-full rounded-lg px-2 py-1 text-start text-sm hover:bg-neutral-100/90 dark:hover:bg-neutral-800/90 hover:cursor-pointer transition-all duration-250 ease-out"
 
 export const timelineCardsData: timelineCardDataType[] = [
     {
@@ -44,3 +47,7 @@ export const timelineCardsData: timelineCardDataType[] = [
 export const cursorThemeCn = "text-neutral-800 dark:text-neutral-200"
 
 export const codeTextStyling = "p-2 bg-neutral-100 dark:bg-neutral-900 rounded-[10px] font-mono text-sm sm:text-[16px] lg:text-[18px] text-red-code"
+
+export const storyFilterLabels = ["Projects", "Internships"] as const;
+
+export const storySortLabels = ["Newest", "Oldest", "Alphabetical"] as const;

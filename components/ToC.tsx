@@ -9,6 +9,7 @@ import { twMerge } from "tailwind-merge";
 import { useScrollMask } from "@/hooks/useScrollMask";
 import { useTheme } from "next-themes";
 import { cn, scrollTo } from "@/lib/utils";
+import { optionHoverCn } from "@/constants/constants";
 
 interface ToCInterface {
     sections: Section[];
@@ -93,7 +94,7 @@ const ToC = ({ sections }: ToCInterface) => {
                             key={s.id}
                             style={s.id === activeSectionId ? { color: activeColor } : undefined}
                             className={cn(
-                                'w-full rounded-lg px-2 py-1 text-start line-clamp-1 text-ellipsis text-sm hover:bg-neutral-100/90 dark:hover:bg-neutral-800/90 hover:cursor-pointer transition-all duration-250 ease-out',
+                                optionHoverCn,
                                 s.id === activeSectionId
                                 ? "" 
                                 : "text-neutral-500 hover:text-neutral-600"

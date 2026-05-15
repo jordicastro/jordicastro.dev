@@ -11,7 +11,7 @@ import { useScrollMask } from "@/hooks/useScrollMask";
 import Logo from "@/components/Logo";
 import { useResolvedSidebar } from "@/hooks/useSidebar";
 import { useTheme } from "next-themes";
-import ThreeDGridBackground from "./ThreeDGridBackground";
+import ThreeDGridBackground from "../ThreeDGridBackground";
 
 const ProgrammingTimeline = ({ id }: { id?: string }) => {
     return (
@@ -160,11 +160,9 @@ const MotionPathTimeline = () => {
                 onToggleY: (self) => { // determine the scroll direction for onStop
                     if (self.deltaY > 0) scrollDirection.current = "down";
                     else if (self.deltaY < 0) scrollDirection.current = "up";
-                    console.log(scrollDirection.current);
                 },
                 onUp: () => { // break free from the scroll lock
                     clearDownAction();
-                    console.log('onUp');
                     isFirstScroll.current = true;
                     if (!handedOffRef.current) {
                         unlockScroll();
@@ -172,13 +170,11 @@ const MotionPathTimeline = () => {
                 },
                 onDown: () => { // continue to the next section after the "first" scroll lock
                     if (isFirstScroll.current) return; 
-                    console.log('inside onDown with isFirstScroll: ', isFirstScroll.current);
                     !isAnimatingRef.current && setIsAnimating(true, "down");
                     isFirstScroll.current = true;
                     updateHandedOff(true);
                 },
                 onStop: () => { // wait for momentum from first scroll to end before allowing the next scroll in onDown
-                    console.log('inside onStop with scrollDirection: ', scrollDirection.current);
 
                     if (tl.progress() > 0.9 && scrollDirection.current === "down") {
                         isFirstScroll.current = false;
@@ -204,11 +200,9 @@ const MotionPathTimeline = () => {
                         if (!handedOffRef.current && self.progress > 0.88) {
                             // fastest scroll velocity skips the scroll mask animation completely
                             if (v > 10000) {
-                                console.log('extreme v', v);
                                 return;
                             }
                             if (v > 5000) {
-                                console.log('fast v', v);
                                 updateHandedOff(true);
                                 !isAnimatingRef.current && setIsAnimating(true, "down", 0.75);
                             }

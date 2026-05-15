@@ -2,14 +2,14 @@ import IconButton from '@/components/IconButton';
 import { ThumbsUp } from 'lucide-react';
 import { useMediaQuery } from 'usehooks-ts';
 import { cn } from '@/lib/utils';
-import MarathonRollingTime from './MarathonRollingTime';
+import MarathonRollingTime from '../MarathonRollingTime';
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react';
 import { SplitText, ScrollTrigger, CustomWiggle, DrawSVGPlugin } from "gsap/all";
 import { useCallback, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { FlourishBuilder } from '@/types/types';
-import CameraBurst from './CameraBurst';
+import CameraBurst from '../CameraBurst';
 
 const CalloutMarathon = ({ id }: { id?:string }) => {
     const scopeRef = useRef<HTMLDivElement>(null);
