@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { directionType } from "@/types/types";
 import { homeSections } from "@/constants/constants";
 import { storyCards } from "@/app/(main)/_components/sections/StoriesSection";
+import { useStoriesOptions } from "@/hooks/useStoriesOptions";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -34,6 +35,26 @@ export const getElCenter = (el: HTMLElement) => {
 }
 
 export const getVisibleStories = () => {
-    // for now, just return all stories. later, filter based on active filters
-    return storyCards;
+    const { activeFilters, activeSort } = useStoriesOptions(); // get active filters from the dropdown options hook
+    // if no filters are active, show all stories
+    if (activeFilters.length === 0) return storyCards;
+
+    // else filter stories based on active filters
+    let filteredStories = storyCards.filter((story) => {
+        if (activeFilters.includes("projects") && story.type === "projects") return true;
+        if (activeFilters.includes("industry") && story.type === "industry") return true;
+        if (activeFilters.includes("research") && story.type === "research") return true;
+        return false;
+    });
+
+    // 2nd filter for active sort option
+    if (activeSort === "Newest") {
+        filteredStories.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+    } else if (activeSort === "Oldest") {
+        filteredStories.sort((a, b) => parseInt(a.year) - parseInt(b.year));
+    } else if (activeSort === "A-Z") {
+        filteredStories.sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    return filteredStories;
 }

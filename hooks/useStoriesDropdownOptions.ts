@@ -4,7 +4,11 @@ import { storyFilterLabels, storyFilterOptions, storySortLabels } from "@/consta
 import { useStoriesOptions } from "@/hooks/useStoriesOptions";
 import { DropdownOption } from "@/types/types";
 
-export const useStoriesDropdownOptions = (): {
+type UseStoriesDropdownOptionsProps = {
+    onBeforeOptionsChange?: () => void;
+};
+
+export const useStoriesDropdownOptions = ({ onBeforeOptionsChange }: UseStoriesDropdownOptionsProps = {}): {
     filterOptions: DropdownOption[];
     sortOptions: DropdownOption[];
 } => {
@@ -18,6 +22,7 @@ export const useStoriesDropdownOptions = (): {
                 ? activeFilters.filter((activeFilter) => activeFilter !== option)
                 : [...activeFilters, option];
 
+            onBeforeOptionsChange?.();
             setActiveFilters(nextActiveFilters);
         },
     }));
@@ -26,6 +31,7 @@ export const useStoriesDropdownOptions = (): {
         id: label,
         label,
         onClick: () => {
+            onBeforeOptionsChange?.();
             setActiveSort(label);
         },
     }));

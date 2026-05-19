@@ -3,16 +3,62 @@
 import DropdownButton from '@/components/DropdownButton'
 import { shapeClasses } from '@/constants/constants'
 import { useStoriesDropdownOptions } from '@/hooks/useStoriesDropdownOptions'
-import { cn, getVisibleStories } from '@/lib/utils'
-import { storyCard } from '@/types/types'
+import { cn } from '@/lib/utils'
+import { FilterOption, storyCard } from '@/types/types'
 import { ArrowDownUp, ListFilter } from 'lucide-react'
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap"
+import { useRef } from 'react'
+import { useStoriesOptions } from '@/hooks/useStoriesOptions'
+import Masonry, {ResponsiveMasonry} from "react-responsive-masonry"
+
+gsap.registerPlugin(useGSAP);
 
 const StoriesSection = ({ id }: { id?: string }) => {
+    const scopeRef = useRef<HTMLDivElement>(null);
+    const { activeFilters, activeSort } = useStoriesOptions();
+    const visibleStories = getVisibleStories(activeFilters, activeSort);
+
+    useGSAP(
+        () => {
+            const cards = scopeRef.current?.querySelectorAll(".story-card");
+            if (!cards || cards.length === 0) return;
+
+            gsap.killTweensOf(cards);
+            gsap.fromTo(
+                cards,
+                {
+                    opacity: 0,
+                    scale: 0.96,
+                    y: 14,
+                },
+                {
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                    duration: 0.45,
+                    ease: "power2.out",
+                    stagger: {
+                        each: 0.04,
+                        from: "start",
+                    },
+                    overwrite: "auto",
+                    clearProps: "opacity,transform",
+                }
+            );
+
+            return () => {
+                gsap.killTweensOf(cards);
+                gsap.set(cards, { clearProps: "opacity,transform" });
+            };
+        },
+        { scope: scopeRef, dependencies: [activeFilters, activeSort] }
+    )
 
     return (
-        <div id={id} className="w-full min-h-screen flex flex-col gap-15 border-debug-p pt-20 px-10 lg:px-20">
+        <div ref={scopeRef} id={id} className="w-full min-h-screen flex flex-col gap-15 border-debug-p pt-20 px-5 sm:px-10 lg:px-20">
             <StoriesHeader />
-            <Stories />
+            <Stories visibleStories={visibleStories} />
         </div>
     )
 }
@@ -31,34 +77,37 @@ const StoriesHeader = () => {
     )
 }
 
-const Stories = () => {
-
-    const visibleStories: storyCard[] = getVisibleStories();
-
+const Stories = ({ visibleStories }: { visibleStories: storyCard[] }) => {
+    console.log('visibleStories: ', visibleStories);
     return (
-        <div className="grid w-full min-h-svh grid-cols-1 gap-5 sm:auto-rows-[8px] sm:grid-cols-2 lg:justify-center lg:grid-cols-[350px_275px_350px] xl:grid-cols-[400px_300px_400px] 2xl:grid-cols-[500px_300px_500px]">
-            {visibleStories.map((story) => (
-                <StoryCard
-                    key={story.id}
-                    storyData={story}
-                />
-            ))}
+        <div className="stories-container w-full min-h-svh">
+            <div className="masonic-wrapper w-full">
+                <ResponsiveMasonry
+                    columnsCountBreakPoints={{350: 1, 750: 2, 1150: 3}}
+                    gutterBreakPoints={{350: 12, 750: 16, 1150: 24}}
+                >
+                    <Masonry>
+                        {visibleStories.map((story) => (
+                            <StoryCard key={story.id} storyData={story} />
+                        ))}
+                    </Masonry>
+                </ResponsiveMasonry>
+            </div>
         </div>
     )
 }
 
 const StoryCard = ({ storyData }: { storyData: storyCard }) => {
-    const { title, subtitle, description, year, thumbnail, onClick, notAllowed, shape, className, type } = storyData;
-
+    const { subtitle, year, shape, className, type } = storyData;
     return (
-        <div className={cn("relative w-full justify-self-center border-debug-p", shapeClasses[shape], className )}>
-            <div className="thumbnail-wrapper flex-center">
+        <div className={cn("story-card relative self-start flex max-w-full flex-col gap-4 border-debug-p p-4", shapeClasses[shape], className)}>
+            <div className="thumbnail-wrapper flex-center min-h-0 flex-1">
                 {shape}
             </div>
             <div
                 className={cn(
-                    "absolute w-full text-text-tertiary flex flex-col gap-2 px-4",
-                    shape === "landscape" ? "h-[150px] -bottom-20" : shape === "portrait" ? "h-[150px] -bottom-20" : "h-[150px] -bottom-15",
+                    "abs-x-center w-full text-text-tertiary flex flex-col gap-2 px-4",
+                    shape === "landscape" ? "h-37.5 -bottom-20" : shape === "portrait" ? "h-37.5 -bottom-20" : "h-37.5 -bottom-20",
                 )}
             >
                 {type}
@@ -77,6 +126,23 @@ const TempThumbnail = () => (
     </div>
 )
 const TempIcon = TempThumbnail;
+
+const getVisibleStories = (activeFilters: FilterOption[], activeSort: string): storyCard[] => {
+    const visibleStories = (activeFilters.length > 0
+        ? storyCards.filter((story) => activeFilters.includes(story.type))
+        : storyCards
+    ).slice();
+
+    if (activeSort === "Newest") {
+        visibleStories.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+    } else if (activeSort === "Oldest") {
+        visibleStories.sort((a, b) => parseInt(a.year) - parseInt(b.year));
+    } else if (activeSort === "A-Z") {
+        visibleStories.sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    return visibleStories;
+}
 
 export const storyCards:storyCard[] = [
     {
@@ -124,8 +190,6 @@ export const storyCards:storyCard[] = [
         onClick: () => console.log("Clicked Running card"),
         type: "projects",
         shape: "landscape",
-        // override the default widths so its slightly smaller and aligned to the right: adds a cool asymmetry to the layout
-        className: "lg:max-w-[300px] xl:max-w-[350px] 2xl:max-w-[400px] justify-self-end"
     },
     {
         id: "hogspot",
@@ -137,7 +201,6 @@ export const storyCards:storyCard[] = [
         onClick: () => console.log("Clicked HogSpot card"),
         type: "projects",
         shape: "portrait",
-        className: "justify-self-start"
     },
     {
         id: "licenseplate",
@@ -148,7 +211,7 @@ export const storyCards:storyCard[] = [
         thumbnail: <TempThumbnail />,
         onClick: () => console.log("Clicked License Plate card"),
         type: "research",
-        shape: "square"
+        shape: "landscape"
     },
     {
         id: "pqc",
@@ -159,9 +222,7 @@ export const storyCards:storyCard[] = [
         thumbnail: <TempThumbnail />,
         onClick: () => console.log("Clicked PQC card"),
         type: "research",
-        shape: "square",
-        // make the card bigger square 1:1 ratio
-        className: "lg:max-w-[260px] lg:h-[260px] lg:row-span-10 xl:max-w-[300px] xl:h-[300px] xl:row-span-11 2xl:max-w-[300px] 2xl:h-[300px] 2xl:row-span-11 justify-self-end"
+        shape: "landscape",
     },
     {
         id: "spotify",
@@ -173,7 +234,6 @@ export const storyCards:storyCard[] = [
         onClick: () => console.log("Clicked Spotify card"),
         type: "projects",
         shape: "landscape",
-        className: "lg:col-span-2 justify-self-start"
     },
     {
         id: "portfoliov1",
@@ -184,8 +244,7 @@ export const storyCards:storyCard[] = [
         thumbnail: <TempThumbnail />,
         onClick: () => console.log("Clicked Portfolio v1 card"),
         type: "projects",
-        shape: "square",
-        className: "justify-self-end sm:col-span-2 lg:col-span-1 xl:mt-2"
+        shape: "landscape",
     },
 ]
 

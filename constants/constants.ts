@@ -60,7 +60,6 @@ export const storyFilterLabels: Record<FilterOption, string> = {
 export const storySortLabels: SortOption[] = ["Newest", "Oldest", "A-Z"] as const;
 
 export const shapeClasses: Record<ShapeType, string> = {
-    landscape: "col-span-1 h-58 sm:row-span-9 lg:max-w-[500px]",
-    portrait:  "col-span-1 h-114 sm:row-span-17 lg:max-w-[300px]",
-    square:    "col-span-1 h-58 sm:row-span-9 lg:max-w-[300px]"
+    landscape: "h-58 w-full",
+    portrait:  "h-128 w-full",
 }

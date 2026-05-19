@@ -48,7 +48,7 @@ export type DropdownOption = {
     onClick: () => void;
 }
 
-export type ShapeType = "landscape" | "portrait" | "square";
+export type ShapeType = "landscape" | "portrait";
 
 export type storyCard = {
     id: string;
@@ -63,4 +63,5 @@ export type storyCard = {
     notAllowed?: boolean; // hover: "coming soon" stripe overlay
     shape: ShapeType;
     className?: string;
+    isHidden?: boolean;
 }
