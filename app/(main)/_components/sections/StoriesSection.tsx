@@ -4,13 +4,16 @@ import DropdownButton from '@/components/DropdownButton'
 import { shapeClasses } from '@/constants/constants'
 import { useStoriesDropdownOptions } from '@/hooks/useStoriesDropdownOptions'
 import { cn } from '@/lib/utils'
-import { FilterOption, storyCard } from '@/types/types'
+import { FilterOption, storyCard, StoryThumbnailProps } from '@/types/types'
 import { ArrowDownUp, ListFilter } from 'lucide-react'
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap"
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useStoriesOptions } from '@/hooks/useStoriesOptions'
 import Masonry, {ResponsiveMasonry} from "react-responsive-masonry"
+import SPThumbnail from '../storythumbnails/SPThumbnail'
+import { useTheme } from 'next-themes'
+import { useRouter } from 'next/navigation'
 
 gsap.registerPlugin(useGSAP);
 
@@ -78,7 +81,6 @@ const StoriesHeader = () => {
 }
 
 const Stories = ({ visibleStories }: { visibleStories: storyCard[] }) => {
-    console.log('visibleStories: ', visibleStories);
     return (
         <div className="stories-container w-full min-h-svh">
             <div className="masonic-wrapper w-full">
@@ -98,29 +100,231 @@ const Stories = ({ visibleStories }: { visibleStories: storyCard[] }) => {
 }
 
 const StoryCard = ({ storyData }: { storyData: storyCard }) => {
-    const { subtitle, year, shape, className, type } = storyData;
+    const scopeRef = useRef<HTMLDivElement>(null);
+    const expandDescriptionTl = useRef<gsap.core.Timeline | null>(null);
+    const notAllowedTl = useRef<gsap.core.Timeline | null>(null);
+    const hoverCardTl = useRef<gsap.core.Timeline | null>(null);
+    const { slug, title, icon, subtitle, year, description, thumbnail: Thumbnail, shape, className, onHover, onHoverEnd, notAllowed } = storyData;
+    const [isHovered, setIsHovered] = useState(false);
+    const notAllowedWords = ["SOON", "COMING", "SOON", "COMING"];
+    const { resolvedTheme } = useTheme();
+    const router = useRouter();
+
+    gsap.registerPlugin(useGSAP);
+
+    
+
+    // sets up the timeline refs and initial gsap states
+    const { contextSafe } = useGSAP(
+        () => {
+            if (!resolvedTheme) return;
+            const descriptionWrapper = scopeRef.current?.querySelector(".description-wrapper");
+            const descriptionBg = descriptionWrapper?.querySelector(".description-bg");
+            if (!descriptionWrapper || !descriptionBg) return;
+
+            gsap.set(descriptionBg, { opacity: 0.25 });
+
+            hoverCardTl.current = gsap.timeline({ paused: true })
+            .to(scopeRef.current, {
+                y: -4,
+                scale: 1.02,
+                duration: 0.3,
+                ease: "power1.out",
+            });
+
+            if (description) {
+                expandDescriptionTl.current = gsap.timeline({ paused: true})
+                .to(descriptionWrapper, {
+                    y: -46,
+                    duration: 0.3,
+                    ease: "power1.out",
+                })
+                .to(descriptionBg, {
+                    opacity: 0.5,
+                    duration: 0.3,
+                    ease: "power1.out",
+                }, "<");
+            }
+            if (notAllowed) {
+                const notAllowedWrapper = scopeRef.current?.querySelector(".not-allowed-wrapper");
+                const notAllowedTrack = notAllowedWrapper?.querySelector(".not-allowed-track");
+                const randomColors = gsap.utils.shuffle([
+                    "var(--color-rose-400)",
+                    "var(--color-orange-400)",
+                    "var(--color-yellow-400)",
+                    "var(--color-green-400)",
+                    "var(--color-teal-400)",
+                    "var(--color-cyan-400)",
+                    "var(--color-blue-400)",
+                    "var(--color-indigo-400)",
+                    "var(--color-purple-400)",
+                    "var(--color-fuchsia-400)",
+                    "var(--color-pink-400)"
+                ])
+                if (!notAllowedWrapper || !notAllowedTrack) return;
+
+                const notAllowedLoopWidth = notAllowedTrack.scrollWidth / 2;
+                if (!notAllowedLoopWidth) return;
+
+                gsap.set(notAllowedWrapper, {
+                    autoAlpha: 0,
+                    borderColor: gsap.utils.random(randomColors),
+                });
+                gsap.set(notAllowedTrack, { x: -notAllowedLoopWidth });
+
+                notAllowedTl.current?.kill();
+
+                notAllowedTl.current = gsap.timeline({ paused: true })
+
+                .set(notAllowedWrapper, {
+                    autoAlpha: 1,
+                })
+                .to(notAllowedTrack, {
+                    x: `+=${notAllowedLoopWidth}`,
+                    duration: 5,
+                    ease: "none",
+                    repeat: -1,
+                    modifiers: {
+                        x: gsap.utils.unitize((x) => gsap.utils.wrap(-notAllowedLoopWidth, 0, parseFloat(x))),
+                    },
+                });
+
+            }
+
+            return () => {
+                expandDescriptionTl.current?.kill();
+                notAllowedTl.current?.kill();
+            }
+        },
+        { scope: scopeRef, dependencies: [resolvedTheme] }
+    );
+
+    const onHoverDesc = contextSafe(() => {
+        expandDescriptionTl.current?.play();
+    });
+    const onHoverEndDesc = contextSafe(() => {
+        expandDescriptionTl.current?.reverse();
+    });
+
+    const handlePointerEnter = contextSafe((event: React.PointerEvent<HTMLDivElement>) => {
+        // update state
+        setIsHovered(true);
+        onHover && onHover();
+
+        // play the hover animation
+        hoverCardTl.current?.play();
+
+        if (notAllowed) { // animate the coming soon carousel in
+            const notAllowedWrapper = scopeRef.current?.querySelector(".not-allowed-wrapper");
+            if (!notAllowedWrapper) return;
+
+            gsap.to(notAllowedWrapper, {
+                autoAlpha: 1,
+                duration: 0.2,
+                ease: "power1.out",
+                overwrite: true,
+            });
+            notAllowedTl.current?.restart();
+        }
+
+    });
+
+    const handlePointerLeave = contextSafe((event: React.PointerEvent<HTMLDivElement>) => {
+        // update state
+        setIsHovered(false);
+        onHoverEnd && onHoverEnd();
+
+        // reverse the hover animation
+        hoverCardTl.current?.reverse();
+
+        if (notAllowed) { // fade out coming soon carousel
+            const notAllowedWrapper = scopeRef.current?.querySelector(".not-allowed-wrapper");
+            if (!notAllowedWrapper) return;
+            gsap.to(notAllowedWrapper, {
+                autoAlpha: 0,
+                duration: 0.2,
+                ease: "power1.in",
+                onComplete: () => {
+                    notAllowedTl.current?.pause(0);
+                }
+            })
+        }
+    });
+
+    const handleClick = () => {
+        if (notAllowed) return;
+        if (slug) {
+            router.push(`/stories/${slug}`);
+            return;
+        }
+    }
+
     return (
-        <div className={cn("story-card relative self-start flex max-w-full flex-col gap-4 border-debug-p p-4", shapeClasses[shape], className)}>
-            <div className="thumbnail-wrapper flex-center min-h-0 flex-1">
-                {shape}
-            </div>
+        <div
+            ref={scopeRef}
+            className={cn(
+                "story-card-shell relative self-start max-w-full",
+                shapeClasses[shape],
+                notAllowed ? "cursor-not-allowed" : "cursor-pointer"
+            )}
+            onClick={handleClick}
+            onPointerEnter={(event) => {
+                handlePointerEnter(event);
+            }}
+            onPointerLeave={(event) => {
+                handlePointerLeave(event);
+            }}
+            data-cursor={storyData.notAllowed ? "not-allowed" : "pointer"}
+        >
             <div
                 className={cn(
-                    "abs-x-center w-full text-text-tertiary flex flex-col gap-2 px-4",
-                    shape === "landscape" ? "h-37.5 -bottom-20" : shape === "portrait" ? "h-37.5 -bottom-20" : "h-37.5 -bottom-20",
+                    "story-card relative flex h-full max-w-full flex-col gap-4 overflow-hidden rounded-lg border-2 border-neutral-300 p-4 dark:border-neutral-800",
+                    className,
                 )}
             >
-                {type}
-                <div className="flex items-center justify-between text-text-tertiary">
-                    <p className="text-inherit text-sm">{subtitle}</p>
-                    <p className="text-inherit text-sm">{year}</p>
+                <div className="thumbnail-wrapper flex-center min-h-0 flex-1">
+                    <Thumbnail isHovered={isHovered} />
+                </div>
+                {notAllowed && (
+                    <div className="not-allowed-wrapper absolute -left-20 top-10 flex h-7 w-60 items-center overflow-hidden -rotate-45 border border-red-500">
+                        <div className="not-allowed-track flex h-full w-max items-center whitespace-nowrap">
+                            {[...notAllowedWords, ...notAllowedWords].map((word, index) => (
+                                <span key={index} className="not-word shrink-0 px-1.5 text-[10px] font-bold tracking-[0.15rem] text-text-primary">
+                                    {word}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                <div
+                    className={cn(
+                        "description-wrapper abs-x-center w-full text-text-secondary flex flex-col items-start justify-start gap-4 px-4 py-4",
+                        shape === "landscape" ? "h-30.5 -bottom-11.5" : shape === "portrait" ? "h-30.5 -bottom-11.5" : "h-30.5 -bottom-11.5",
+                    )}
+                    onPointerEnter={onHoverDesc}
+                    onPointerLeave={onHoverEndDesc}
+                >
+                    <div className="description-bg bg-bg-secondary backdrop-blur-3xl absolute inset-0 z-0" />
+                    <div className={cn("z-10 w-full flex flex-col", icon ? "gap-0.5": "gap-2")}>
+                        {icon && <span className="">{icon}</span>}
+                        <span className="line-clamp-1 text-sm">
+                            {title}
+                        </span>
+                        <div className="flex items-center justify-between text-text-tertiary">
+                            <p className="text-inherit text-xs line-clamp-1">{subtitle}</p>
+                            <p className="text-inherit text-xs">{year}</p>
+                        </div>
+                    </div>
+                    <div className="z-10 line-clamp-2">
+                        <p className="text-xs line-clamp-3 text-text-tertiary">{description}</p>
+                    </div>
                 </div>
             </div>
         </div>
     )
 }
 
-const TempThumbnail = () => (
+const TempThumbnail = ({}: StoryThumbnailProps) => (
     <div className="">
         temp ReactNode
     </div>
@@ -147,71 +351,77 @@ const getVisibleStories = (activeFilters: FilterOption[], activeSort: string): s
 export const storyCards:storyCard[] = [
     {
         id: "supplypike",
+        slug: "supplypike-internship",
         title: "SupplyPike (SPS Commerece)",
         subtitle: " Software Engineer Intern",
         year: "2025",
         description: "Features I implemented as a software engineer intern at SP.",
-        thumbnail: <TempThumbnail />,
-        onClick: () => console.log("Clicked SupplyPike card"),
+        thumbnail: SPThumbnail,
         type: "industry",
-        shape: "landscape"
+        shape: "landscape",
+        onHover: () => { },
+        onHoverEnd: () => { },
     },
     {
         id: "veggievision",
+        slug: "veggie-vision-ai",
         title: "Walmart AI Workshop",
         subtitle: "Veggie Vision",
         year: "2025",
         description: "A computer vision model that classifies bagged produce.",
-        thumbnail: <TempThumbnail />,
-        onClick: () => console.log("Clicked Veggie Vision card"),
+        thumbnail: TempThumbnail,
         type: "projects",
+        shape: "portrait",
         notAllowed: true,
-        shape: "portrait"
     },
     {
         id: "shakespeare",
+        slug: "shakespearean-text-inference",
         title: "",
-        icon: <TempIcon />,
+        icon: <img src="/images/shakey.png" alt="Shakey Icon" className="h-6 w-6" />,
         subtitle: "Shakespearean Text Inference",
         year: "2025",
         description: "Natural language processing research to create a predictive model.",
-        thumbnail: <TempThumbnail />,
-        onClick: () => console.log("Clicked Shakespeare card"),
+        thumbnail: TempThumbnail,
         type: "research",
         shape: "landscape",
+        notAllowed: true,
     },
     {
         id: "running",
+        slug: "marathon-training",
         title: "Running",
         subtitle: "Training for the Little Rock Marathon",
         year: "2025",
         description: "Dedicating a year to training to see how fast I can run 26.2 miles.",
-        thumbnail: <TempThumbnail />,
-        onClick: () => console.log("Clicked Running card"),
+        thumbnail: TempThumbnail,
         type: "projects",
         shape: "landscape",
+        notAllowed: true,
     },
     {
         id: "hogspot",
+        slug: "hogspot-mobile",
         title: "Mobile Development",
         subtitle: "HogSpot Mobile",
         year: "2024",
         description: "An Android app for students to find landmarks at the University of Arkansas.",
-        thumbnail: <TempThumbnail />,
-        onClick: () => console.log("Clicked HogSpot card"),
+        thumbnail: TempThumbnail,
         type: "projects",
         shape: "portrait",
+        notAllowed: true,
     },
     {
         id: "licenseplate",
+        slug: "license-plate-detection",
         title: "Machine Learning",
         subtitle: "License Plate Detection",
         year: "2025",
         description: "Training a robust computer vision model to detect license plates in various conditions.",
-        thumbnail: <TempThumbnail />,
-        onClick: () => console.log("Clicked License Plate card"),
+        thumbnail: TempThumbnail,
         type: "research",
-        shape: "landscape"
+        shape: "landscape",
+        notAllowed: true,
     },
     {
         id: "pqc",
@@ -219,10 +429,10 @@ export const storyCards:storyCard[] = [
         subtitle: "Post-Quantum Cryptography App",
         year: "2024",
         description: "A POC app that allows users to utilize the university's cryptography equipment remotely",
-        thumbnail: <TempThumbnail />,
-        onClick: () => console.log("Clicked PQC card"),
+        thumbnail: TempThumbnail,
         type: "research",
         shape: "landscape",
+        notAllowed: true,
     },
     {
         id: "spotify",
@@ -230,10 +440,10 @@ export const storyCards:storyCard[] = [
         subtitle: "Redesigning the Spotify UI",
         year: "2023",
         description: "Learning Figma and React with Tailwind by redesigning the Spotify interface",
-        thumbnail: <TempThumbnail />,
-        onClick: () => console.log("Clicked Spotify card"),
+        thumbnail: TempThumbnail,
         type: "projects",
         shape: "landscape",
+        notAllowed: true,
     },
     {
         id: "portfoliov1",
@@ -241,10 +451,10 @@ export const storyCards:storyCard[] = [
         subtitle: "My first portfolio website",
         year: "2023",
         description: "Built with Vite and vanilla css, this was my first personal website.",
-        thumbnail: <TempThumbnail />,
-        onClick: () => console.log("Clicked Portfolio v1 card"),
+        thumbnail: TempThumbnail,
         type: "projects",
         shape: "landscape",
+        notAllowed: true,
     },
 ]
 

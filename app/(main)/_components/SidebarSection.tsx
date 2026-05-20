@@ -14,12 +14,11 @@ interface SidebarSectionProps {
 const SidebarSection = ({ title, items }: SidebarSectionProps) => {
     const { activeSectionId } = useScrollMask();
     const pathname = usePathname();
+
     // home should be exclusively highlighted on '/' unless the '#stories' section is active
     const adjustedActiveSectionId = pathname === "/" ? (
         activeSectionId === "stories" ? "stories": "home"
-    ) : pathname === "/stories/*" && (
-        "stories"
-    )
+    ) : pathname.startsWith("/stories") ? "stories" : undefined;
 
     return (
         <div className="w-full mt-5">

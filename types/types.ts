@@ -48,20 +48,28 @@ export type DropdownOption = {
     onClick: () => void;
 }
 
+export type CursorVariant = "default" | "pointer" | "hand" | "grab" | "notAllowed";
+
 export type ShapeType = "landscape" | "portrait";
 
 export type storyCard = {
     id: string;
+    slug?: string;
     title: string;
-    icon?: LucideIcon | React.ReactNode;
+    icon?: React.ReactNode;
     subtitle?: string;
     description?: string; // onHover: the desc overlay expands to show this text (maybe)
     year: string;
-    thumbnail: React.ReactNode; // a react component: gsap flourish, mp4, etc.
-    onClick: () => void;
+    thumbnail: React.ComponentType<StoryThumbnailProps>;
     type: FilterOption;
     notAllowed?: boolean; // hover: "coming soon" stripe overlay
     shape: ShapeType;
     className?: string;
     isHidden?: boolean;
+    onHover?: () => void;
+    onHoverEnd?: () => void;
+}
+
+export type StoryThumbnailProps = {
+    isHovered?: boolean;
 }

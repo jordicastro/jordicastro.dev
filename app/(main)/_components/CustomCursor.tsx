@@ -6,13 +6,14 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef } from "react";
 import { useResolvedSidebar } from "@/hooks/useSidebar";
-import { CustomGrab, CustomHand, CustomMouse, CustomPointer } from "@/components/svgs/svgs";
+import { CustomGrab, CustomHand, CustomMouse, CustomNotAllowed, CustomPointer } from "@/components/svgs/svgs";
 import { cursorThemeCn } from "@/constants/constants";
+import { CursorVariant } from "@/types/types";
 // import { ScrollToPlugin, ScrollTrigger } from "gsap/all";
 
 gsap.registerPlugin(useGSAP);
 
-type CursorVariant = "default" | "pointer" | "hand" | "grab";
+
 
 const CustomCursor = () => {
     const { resolvedTheme } = useTheme();
@@ -56,13 +57,15 @@ const CustomCursor = () => {
             const customPointer = selectWithin(".custom-pointer");
             const customHand = selectWithin(".custom-hand");
             const customGrab = selectWithin(".custom-grab");
-            if (!customMouse.length || !customPointer.length || !customHand.length || !customGrab.length) return;
+            const customNotAllowed = selectWithin(".custom-not-allowed");
+            if (!customMouse.length || !customPointer.length || !customHand.length || !customGrab.length || !customNotAllowed) return;
 
             const variantElements: Record<CursorVariant, gsap.TweenTarget> = {
                 default: customMouse,
                 pointer: customPointer,
                 hand: customHand,
                 grab: customGrab,
+                notAllowed: customNotAllowed,
             };
 
             gsap.set(customWrapper, { xPercent: -25, yPercent: -25, autoAlpha: 1});
@@ -121,6 +124,8 @@ const CustomCursor = () => {
                     return "pointer";
                 } else if (hoveredElement.closest("[data-cursor='hand']")) {
                     return "hand";
+                } else if (hoveredElement.closest("[data-cursor='not-allowed']")) {
+                    return "notAllowed";
                 }
 
                 return "default";
@@ -157,6 +162,7 @@ const CustomCursor = () => {
             <CustomPointer className={cn('abs-center scale-0', cursorThemeCn)} fill={fill} />
             <CustomHand className={cn('abs-center scale-0', cursorThemeCn)} fill={fill} />
             <CustomGrab className={cn('abs-center scale-0', cursorThemeCn)} fill={fill} />
+            <CustomNotAllowed className={cn('abs-center scale-0', cursorThemeCn)} fill={fill} />
         </div>
         : null;
 

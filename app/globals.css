@@ -157,6 +157,10 @@ body,
     @apply border border-indigo-500;
 }
 
+@utility border-debug-l {
+  @apply border border-lime-500;
+}
+
 @utility text-gradient {
   background-image: var(--text-gradient);
   -webkit-background-clip: text;
