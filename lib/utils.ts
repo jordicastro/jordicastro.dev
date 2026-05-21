@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const scrollTo = (id: string ) => {
+export const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
     

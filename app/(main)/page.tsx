@@ -55,8 +55,8 @@ export default function Home() {
       <ToC sections={homeSections} />
         <Hero id={homeSections[0].id}/>
         <CalloutMarathon id={homeSections[1].id}/>
-        {/* <ProgrammingTimeline id={homeSections[2].id}/> */}
-        {/* <IdentitySection id={homeSections[3].id}/> */}
+        <ProgrammingTimeline id={homeSections[2].id}/>
+        <IdentitySection id={homeSections[3].id}/>
         <StoriesSection id={homeSections[4].id}/>
     </> 
   );

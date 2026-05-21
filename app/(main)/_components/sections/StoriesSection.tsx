@@ -7,28 +7,106 @@ import { cn } from '@/lib/utils'
 import { FilterOption, storyCard, StoryThumbnailProps } from '@/types/types'
 import { ArrowDownUp, ListFilter } from 'lucide-react'
 import { useGSAP } from "@gsap/react";
+import { Observer, ScrollTrigger } from "gsap/all";
 import gsap from "gsap"
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useStoriesOptions } from '@/hooks/useStoriesOptions'
 import Masonry, {ResponsiveMasonry} from "react-responsive-masonry"
 import SPThumbnail from '../storythumbnails/SPThumbnail'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/navigation'
+import { useScrollMask } from '@/hooks/useScrollMask'
 
-gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(useGSAP, Observer, ScrollTrigger);
 
-const StoriesSection = ({ id }: { id?: string }) => {
+const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
     const scopeRef = useRef<HTMLDivElement>(null);
     const { activeFilters, activeSort } = useStoriesOptions();
     const visibleStories = getVisibleStories(activeFilters, activeSort);
+    const tlRef = useRef<gsap.core.Timeline | null>(null);
+    const preventScrollRef = useRef<Observer | null>(null);
+    const { isAnimating, activeSectionId, setIsAnimating } = useScrollMask();
+    const scrollDirection = useRef<"up" | "down" | null>("down");
+    const isFirstScroll = useRef<boolean>(true);
+    const isAnimatingRef = useRef<boolean>(isAnimating);
+    const [handedOff, setHandedOff] = useState<boolean>(false);
+    const handedOffRef = useRef<boolean>(false);
+    const downDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const previousBodyOverflowRef = useRef("");
+    const isScrollLockedRef = useRef(false);
+    // flag to determine whether to play or pause the thumbnail timeline refs
+    const shouldPlayThumbnails = activeSectionId === thisSectionId && !isAnimating;
+
+    useEffect(() => {
+        isAnimatingRef.current = isAnimating;
+    }, [isAnimating]);
+
+    useEffect(() => {
+        handedOffRef.current = handedOff;
+    }, [handedOff]);
+
+
+    useGSAP(() => {
+        if (!tlRef.current) return;
+
+        if (activeSectionId === thisSectionId && isAnimating) {
+            tlRef.current.pause();
+            gsap.delayedCall(0.5, () => { // pause in place, reset when the mask hides the section
+                tlRef.current?.pause(0);
+            })
+            return;
+        }
+
+        if (activeSectionId === thisSectionId && !isAnimating) {
+            tlRef.current.play();
+            lockScroll();
+            return;
+        }
+
+        tlRef.current.pause(0);
+        unlockScroll();
+    }, [activeSectionId, isAnimating])
+
+
+    const { contextSafe } = useGSAP(
+        () => {},
+        { scope: scopeRef, dependencies: []}
+    );
+
+    const clearDownAction = () => {
+        if (downDebounceTimerRef.current !== null) {
+            clearTimeout(downDebounceTimerRef.current);
+            downDebounceTimerRef.current = null;
+        }
+    };
+
+    const lockScroll = contextSafe(() => {
+        if (isScrollLockedRef.current) return;
+
+        clearDownAction();
+        previousBodyOverflowRef.current = document.body.style.overflow;
+        preventScrollRef.current?.enable();
+        document.body.style.overflow = "hidden";
+        isScrollLockedRef.current = true;
+    });
+    const unlockScroll = contextSafe(() => {
+        if (!isScrollLockedRef.current) return;
+
+        clearDownAction();
+        preventScrollRef.current?.disable();
+        document.body.style.overflow = previousBodyOverflowRef.current;
+        isScrollLockedRef.current = false;
+    });
 
     useGSAP(
         () => {
             const cards = scopeRef.current?.querySelectorAll(".story-card");
             if (!cards || cards.length === 0) return;
 
+            tlRef.current?.kill();
             gsap.killTweensOf(cards);
-            gsap.fromTo(
+            tlRef.current = gsap.timeline({ paused: true })
+            .fromTo(
                 cards,
                 {
                     opacity: 0,
@@ -50,18 +128,98 @@ const StoriesSection = ({ id }: { id?: string }) => {
                 }
             );
 
+            const thresholdTl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: scopeRef.current,
+                    start: "top-=1 top",
+                    end: "top+=10 top",
+                    // markers: true,
+                    onEnter: (self) => {
+                        lockScroll();
+                        if (self.getVelocity() > 0) {
+                            isFirstScroll.current = false;
+                        }
+                    },
+                    onLeave: () => {
+                        unlockScroll();
+                    },
+                    onEnterBack: (self) => {
+                        const v = Math.abs(self.getVelocity());
+                        
+                        if (v > 3000) {
+                            console.log('very fast scroll, skipping mask: ', v)
+                            tlRef.current?.pause(0);
+                        } else if (v > 2000) {
+                            console.log('fast scroll, animating mask in: ', v)
+                            handedOffRef.current = false;
+                            !isAnimatingRef.current && setIsAnimating(true, "up", 0.75);
+                        } else {
+                            console.log('entering back, locking scroll')
+                            lockScroll();
+                        }
+                    },
+                    onLeaveBack: () => {
+                        console.log('unlockScroll')
+                        unlockScroll();
+                    },
+                }
+            })
+
+            if (activeSectionId === thisSectionId && !isAnimating) {
+                tlRef.current.play(0);
+            }
+            const updateHandedOff = (value: boolean) => {
+                handedOffRef.current = value;
+                setHandedOff(value);
+            };
+
+            preventScrollRef.current = ScrollTrigger.observe({
+                target: scopeRef.current,
+                type: "wheel,touch",
+                preventDefault: true,
+                allowClicks: true,
+                onToggleY: (self) => { // determine the scroll direction for onStop
+                    if (self.deltaY > 0) scrollDirection.current = "down";
+                    else if (self.deltaY < 0) scrollDirection.current = "up";
+                },
+                onUp: () => { // continue to the prev section after the "first" scroll lock
+                    if (isFirstScroll.current) return; 
+                    !isAnimatingRef.current && setIsAnimating(true, "up");
+                    isFirstScroll.current = true;
+                    updateHandedOff(true);
+                },
+                onDown: () => { // break free from the scroll lock to view more stories
+                    clearDownAction();
+                    isFirstScroll.current = true;
+                    unlockScroll();
+                },
+                onStop: () => { // wait for momentum from first scroll to end before allowing the next scroll in onDown
+
+                    if (scrollDirection.current === "up") {
+                        isFirstScroll.current = false;
+                    }
+                },
+                onStopDelay: 0, // allow the user to continue as soon as possible after momentum ends
+            })
+
             return () => {
+                tlRef.current?.kill();
+                tlRef.current = null;
                 gsap.killTweensOf(cards);
                 gsap.set(cards, { clearProps: "opacity,transform" });
+                clearDownAction();
+                unlockScroll();
+                preventScrollRef.current?.kill();
+                preventScrollRef.current = null;
             };
         },
         { scope: scopeRef, dependencies: [activeFilters, activeSort] }
     )
 
     return (
-        <div ref={scopeRef} id={id} className="w-full min-h-screen flex flex-col gap-15 border-debug-p pt-20 px-5 sm:px-10 lg:px-20">
+        <div ref={scopeRef} id={thisSectionId} className="w-full min-h-screen flex flex-col gap-15 border-debug-l pt-20 px-5 sm:px-10 lg:px-20">
             <StoriesHeader />
-            <Stories visibleStories={visibleStories} />
+            <Stories visibleStories={visibleStories} shouldPlayThumbnails={shouldPlayThumbnails} />
         </div>
     )
 }
@@ -80,7 +238,7 @@ const StoriesHeader = () => {
     )
 }
 
-const Stories = ({ visibleStories }: { visibleStories: storyCard[] }) => {
+const Stories = ({ visibleStories, shouldPlayThumbnails }: { visibleStories: storyCard[], shouldPlayThumbnails: boolean }) => {
     return (
         <div className="stories-container w-full min-h-svh">
             <div className="masonic-wrapper w-full">
@@ -90,7 +248,7 @@ const Stories = ({ visibleStories }: { visibleStories: storyCard[] }) => {
                 >
                     <Masonry>
                         {visibleStories.map((story) => (
-                            <StoryCard key={story.id} storyData={story} />
+                            <StoryCard key={story.id} storyData={story} shouldPlayThumbnail={shouldPlayThumbnails} />
                         ))}
                     </Masonry>
                 </ResponsiveMasonry>
@@ -99,7 +257,7 @@ const Stories = ({ visibleStories }: { visibleStories: storyCard[] }) => {
     )
 }
 
-const StoryCard = ({ storyData }: { storyData: storyCard }) => {
+const StoryCard = ({ storyData, shouldPlayThumbnail }: { storyData: storyCard, shouldPlayThumbnail: boolean }) => {
     const scopeRef = useRef<HTMLDivElement>(null);
     const expandDescriptionTl = useRef<gsap.core.Timeline | null>(null);
     const notAllowedTl = useRef<gsap.core.Timeline | null>(null);
@@ -283,7 +441,7 @@ const StoryCard = ({ storyData }: { storyData: storyCard }) => {
                 )}
             >
                 <div className="thumbnail-wrapper flex-center min-h-0 flex-1">
-                    <Thumbnail isHovered={isHovered} />
+                    <Thumbnail isHovered={isHovered} shouldPlayThumbnail={shouldPlayThumbnail} />
                 </div>
                 {notAllowed && (
                     <div className="not-allowed-wrapper absolute -left-20 top-10 flex h-7 w-60 items-center overflow-hidden -rotate-45 border border-red-500">

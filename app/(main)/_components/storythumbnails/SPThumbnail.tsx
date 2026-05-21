@@ -6,8 +6,9 @@ import { useGSAP } from "@gsap/react";
 import { DrawSVGPlugin } from 'gsap/all';
 import gsap from "gsap";
 import { StoryThumbnailProps } from "@/types/types";
+import { useStoriesOptions } from "@/hooks/useStoriesOptions";
 
-const SPThumbnail = ({ isHovered }: StoryThumbnailProps) => {
+const SPThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProps) => {
     const scopeRef = useRef<HTMLDivElement>(null);
     const gradientId = useId();
     const maskId = useId();
@@ -29,6 +30,8 @@ const SPThumbnail = ({ isHovered }: StoryThumbnailProps) => {
     const lockupWidth = spsX + spsWidth - lockupX;
     const lockupHeight = Math.max(logoY + logoHeight, dividerY + dividerHeight, spsY + spsHeight) - lockupY;
     const expandedThumbnailTl = useRef<gsap.core.Timeline | null>(null);
+    const masterTl = useRef<gsap.core.Timeline | null>(null);
+    const { activeFilters, activeSort } = useStoriesOptions();
 
     gsap.registerPlugin(useGSAP, DrawSVGPlugin);
 
@@ -39,6 +42,7 @@ const SPThumbnail = ({ isHovered }: StoryThumbnailProps) => {
             expandedThumbnailTl.current?.reverse();
         }
     }, [isHovered]);
+
 
     useGSAP(
         () => {
@@ -73,7 +77,7 @@ const SPThumbnail = ({ isHovered }: StoryThumbnailProps) => {
                 opacity: 1,
             });
 
-            const masterTl = gsap.timeline();
+            masterTl.current = gsap.timeline({ paused: true });
             const drawInLogoTl = gsap.timeline();
             const gradientWashTl = gsap.timeline();
             const gradientRotateTl = gsap.timeline({ repeat: -1, defaults: { ease: "none", duration: 6 } });
@@ -108,7 +112,7 @@ const SPThumbnail = ({ isHovered }: StoryThumbnailProps) => {
                 }
             });
 
-            masterTl.add(drawInLogoTl)
+            masterTl.current.add(drawInLogoTl)
             .add(gradientWashTl, "-=2")
             .add(gradientRotateTl, ">");
 
@@ -131,15 +135,25 @@ const SPThumbnail = ({ isHovered }: StoryThumbnailProps) => {
             }, "<=0.2");
 
 
+            if (shouldPlayThumbnail) {
+                masterTl.current?.play();
+            } else {
+                masterTl.current?.pause();
+                gsap.delayedCall(0.5, () => { // dont leak reset state until mask hides content
+                    masterTl.current?.pause(0);
+                })
+            }
+
+
             return () => {
-                masterTl.kill();
+                masterTl.current?.kill();
                 drawInLogoTl.kill();
                 gradientWashTl.kill();
                 gsap.set(basePaths, { clearProps: "all" });
                 gsap.set(washLayer, { clearProps: "all" });
             };
         },
-        { scope: scopeRef, dependencies: [] }
+        { scope: scopeRef, dependencies: [shouldPlayThumbnail] }
     )
 
     return (

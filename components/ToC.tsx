@@ -99,7 +99,9 @@ const ToC = ({ sections }: ToCInterface) => {
                                 ? "" 
                                 : "text-neutral-500 hover:text-neutral-600"
                             )}
-                            onClick={() => scrollTo(s.id)}
+                            onClick={() => {
+                                scrollTo(s.id)
+                            }}
                             data-cursor='pointer'
                         >
                             {s.label}

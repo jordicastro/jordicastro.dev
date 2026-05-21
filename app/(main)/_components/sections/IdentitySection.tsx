@@ -26,7 +26,6 @@ const IdentitySection = ({ id }: { id?: string }) => {
 
     useEffect(() => { // handle play/pause of the masterTl based on scrollMask and activeSectionId
         if (activeSectionId !== id && prevSectionId === id) { // pause/seek after exiting the section
-            console.log('exiting section')
             isFirstIteration.current ? 
                 masterTlRef.current?.pause('start') :
                 masterTlRef.current?.pause('afterIAm');
@@ -35,13 +34,11 @@ const IdentitySection = ({ id }: { id?: string }) => {
             return;
         }
         if (isAnimating && activeSectionId === id) { // pause when exiting the section through scroll Mask
-            console.log('pause')
             masterTlRef.current?.pause();
             return;
         }
         if (isAnimating || activeSectionId !== id) return; // wait for the scrollMask to finish updating
 
-        console.log('play')
         masterTlRef.current?.play();
         isFirstIteration.current = false;
 

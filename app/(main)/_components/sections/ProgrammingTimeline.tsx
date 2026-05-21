@@ -16,27 +16,38 @@ import ThreeDGridBackground from "../ThreeDGridBackground";
 const ProgrammingTimeline = ({ id }: { id?: string }) => {
     return (
         <div className="w-full px-4 md:px-6 lg:px-8 mt-50" id={id}>
-            <MotionPathTimeline />
+            <MotionPathTimeline sectionId={id} />
         </div>
     )
 }
 
-const MotionPathTimeline = () => {
+const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const scopeRef = useRef<HTMLDivElement>(null);
     const titleRef = useRef<HTMLHeadingElement>(null);
     const [width, setWidth] = useState<number>(0);
     const [handedOff, setHandedOff] = useState<boolean>(false);
-    const { isAnimating, setIsAnimating } = useScrollMask();
+    const { isAnimating, setIsAnimating, activeSectionId } = useScrollMask();
     const downScrollCounter = useRef<number>(0);
     const { isCollapsedSettled, isCollapsed } = useResolvedSidebar();
     const handedOffRef = useRef<boolean>(false);
     const isAnimatingRef = useRef<boolean>(isAnimating);
     const isFirstScroll = useRef<boolean>(true);
     const scrollDirection = useRef<"up" | "down" | null>("down");
+    const downDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const preventScrollRef = useRef<Observer | null>(null);
+    const previousBodyOverflowRef = useRef("");
+    const isScrollLockedRef = useRef(false);
 
 
     gsap.registerPlugin(useGSAP, ScrollTrigger, MotionPathPlugin, Observer);
+
+    const clearDownAction = () => {
+        if (downDebounceTimerRef.current !== null) {
+            clearTimeout(downDebounceTimerRef.current);
+            downDebounceTimerRef.current = null;
+        }
+    };
     
     useEffect(() => {
         const onResize = () => setWidth(window.innerWidth);
@@ -52,6 +63,39 @@ const MotionPathTimeline = () => {
     useEffect(() => {
         isAnimatingRef.current = isAnimating;
     }, [isAnimating]);
+
+    const { contextSafe } = useGSAP(
+        () => {},
+        { scope: scopeRef }
+    );
+
+    const lockScroll = contextSafe(() => {
+        if (isScrollLockedRef.current) return;
+
+        clearDownAction();
+        previousBodyOverflowRef.current = document.body.style.overflow;
+        preventScrollRef.current?.enable();
+        document.body.style.overflow = "hidden";
+        isScrollLockedRef.current = true;
+    });
+
+    const unlockScroll = contextSafe(() => {
+        if (!isScrollLockedRef.current) return;
+
+        clearDownAction();
+        preventScrollRef.current?.disable();
+        document.body.style.overflow = previousBodyOverflowRef.current;
+        isScrollLockedRef.current = false;
+    });
+
+    useEffect(() => {
+        if (!sectionId || activeSectionId === sectionId) return;
+
+        unlockScroll();
+        handedOffRef.current = false;
+        setHandedOff(false);
+        isFirstScroll.current = true;
+    }, [activeSectionId, sectionId, unlockScroll]);
 
     // title fade in
     useGSAP(
@@ -78,7 +122,7 @@ const MotionPathTimeline = () => {
     )
 
     // main timeline animation
-    const { contextSafe } = useGSAP(
+    useGSAP(
         () => {
             if (!width || isCollapsedSettled === false) return;
 
@@ -113,46 +157,14 @@ const MotionPathTimeline = () => {
                 };
             });
 
-            let downDebounceTimer: ReturnType<typeof setTimeout> | null = null;
             let timelineST: ScrollTrigger | undefined;
-            let preventScroll: Observer | undefined;
-            let previousBodyOverflow = "";
-            let isScrollLocked = false;
-
-            const clearDownAction = () => {
-                if (downDebounceTimer !== null) {
-                    clearTimeout(downDebounceTimer);
-                    downDebounceTimer = null;
-                }
-            };
 
             const updateHandedOff = (value: boolean) => {
                 handedOffRef.current = value;
                 setHandedOff(value);
             };
 
-            const lockScroll = () => {
-                if (isScrollLocked) return;
-
-                clearDownAction();
-                previousBodyOverflow = document.body.style.overflow;
-                preventScroll?.enable();
-                // nuke wheel scroll, touch, and momentum
-                document.body.style.overflow = "hidden";
-                isScrollLocked = true;
-            };
-
-            const unlockScroll = () => {
-                if (!isScrollLocked) return;
-
-                clearDownAction();
-                preventScroll?.disable();
-                // undo nuke
-                document.body.style.overflow = previousBodyOverflow;
-                isScrollLocked = false;
-            };
-
-            preventScroll = ScrollTrigger.observe({
+            preventScrollRef.current = ScrollTrigger.observe({
                 target: root,
                 type: "wheel, touch",
                 preventDefault: true,
@@ -184,7 +196,9 @@ const MotionPathTimeline = () => {
 
             });
 
-            downScrollCounter.current === 0 && preventScroll.disable();
+            if (downScrollCounter.current === 0) {
+                preventScrollRef.current.disable();
+            }
 
             const tl = gsap.timeline({
                 scrollTrigger: {
@@ -256,7 +270,8 @@ const MotionPathTimeline = () => {
             return () => {
                 clearDownAction();
                 unlockScroll();
-                preventScroll?.kill();
+                preventScrollRef.current?.kill();
+                preventScrollRef.current = null;
                 tl.kill();
                 timelineST?.kill();
             };

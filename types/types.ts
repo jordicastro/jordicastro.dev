@@ -72,4 +72,5 @@ export type storyCard = {
 
 export type StoryThumbnailProps = {
     isHovered?: boolean;
+    shouldPlayThumbnail?: boolean;
 }
