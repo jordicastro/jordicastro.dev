@@ -16,6 +16,7 @@ import SPThumbnail from '../storythumbnails/SPThumbnail'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/navigation'
 import { useScrollMask } from '@/hooks/useScrollMask'
+import ShakespeareThumbnail from '../storythumbnails/ShakespeareThumbnail'
 
 gsap.registerPlugin(useGSAP, Observer, ScrollTrigger);
 
@@ -444,7 +445,7 @@ const StoryCard = ({ storyData, shouldPlayThumbnail }: { storyData: storyCard, s
                     <Thumbnail isHovered={isHovered} shouldPlayThumbnail={shouldPlayThumbnail} />
                 </div>
                 {notAllowed && (
-                    <div className="not-allowed-wrapper absolute -left-20 top-10 flex h-7 w-60 items-center overflow-hidden -rotate-45 border border-red-500">
+                    <div className="not-allowed-wrapper absolute -left-20 top-10 flex h-7 w-60 items-center overflow-hidden -rotate-45 border border-red-500 z-10 backdrop-blur-[2px]">
                         <div className="not-allowed-track flex h-full w-max items-center whitespace-nowrap">
                             {[...notAllowedWords, ...notAllowedWords].map((word, index) => (
                                 <span key={index} className="not-word shrink-0 px-1.5 text-[10px] font-bold tracking-[0.15rem] text-text-primary">
@@ -539,8 +540,8 @@ export const storyCards:storyCard[] = [
         icon: <img src="/images/shakey.png" alt="Shakey Icon" className="h-6 w-6" />,
         subtitle: "Shakespearean Text Inference",
         year: "2025",
-        description: "Natural language processing research to create a predictive model.",
-        thumbnail: TempThumbnail,
+        description: "Using N-grams to predict and generate Shakespearean text.",
+        thumbnail: ShakespeareThumbnail,
         type: "research",
         shape: "landscape",
         notAllowed: true,
@@ -586,7 +587,7 @@ export const storyCards:storyCard[] = [
         title: "University of Arkansas",
         subtitle: "Post-Quantum Cryptography App",
         year: "2024",
-        description: "A POC app that allows users to utilize the university's cryptography equipment remotely",
+        description: "A web-app that allows researchers to utilize the university's cryptography equipment remotely.",
         thumbnail: TempThumbnail,
         type: "research",
         shape: "landscape",
@@ -597,7 +598,7 @@ export const storyCards:storyCard[] = [
         title: "Spotify App",
         subtitle: "Redesigning the Spotify UI",
         year: "2023",
-        description: "Learning Figma and React with Tailwind by redesigning the Spotify interface",
+        description: "Building a polished music experience while exploring modern frontend development tools.",
         thumbnail: TempThumbnail,
         type: "projects",
         shape: "landscape",
@@ -608,7 +609,7 @@ export const storyCards:storyCard[] = [
         title: "Portfolio Website v1",
         subtitle: "My first portfolio website",
         year: "2023",
-        description: "Built with Vite and vanilla css, this was my first personal website.",
+        description: "Built with Vite + React and vanilla CSS, this was my first personal website.",
         thumbnail: TempThumbnail,
         type: "projects",
         shape: "landscape",

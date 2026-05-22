@@ -1,5 +1,6 @@
 import { ToggleTheme } from '@/components/ToggleTheme'
 import React from 'react'
+import ShakespeareThumbnail from './storythumbnails/ShakespeareThumbnail'
 
 const TagStyles = () => {
     return (
@@ -24,6 +25,7 @@ const TagStyles = () => {
             voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo
             </p>
             <ToggleTheme className=""/>
+            <ShakespeareThumbnail shouldPlayThumbnail={true} />
         </div>
     )
 }

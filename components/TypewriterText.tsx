@@ -84,6 +84,7 @@ const TypewriterText = ({ text, parentWidth=440, fontSize=30, speed=0.15, lineDe
                 resetTypewriterVisualState();
             }, 0);
             const textLines = lines.length ? lines : [text];
+            let lineStartTime = 0;
 
             textLines.forEach((line, index) => {
                 const lineEl = el.querySelector(`.line-${index + 1}`) as HTMLElement | null;
@@ -92,6 +93,10 @@ const TypewriterText = ({ text, parentWidth=440, fontSize=30, speed=0.15, lineDe
 
                 const steps = line.length;
                 const duration = steps * speed;
+                // explicit blink duration so the timeline doesnt have to wait to kill the cursor before the next line starts
+                const blinkCycles = Math.max(Math.floor(duration / 0.5), 1);
+                const cursorBlinkDuration = duration / blinkCycles;
+                const lineEndTime = lineStartTime + duration;
 
 
                 // initial state: width 0 (left edge) and blinking cursor hidden
@@ -100,51 +105,40 @@ const TypewriterText = ({ text, parentWidth=440, fontSize=30, speed=0.15, lineDe
                     gsap.set(rowEl, { padding: 0, autoAlpha: 0, borderRadius: "10 0 0 10" });
                 }
 
-                const tl = gsap.timeline();
-
                 // show cursor
-                tl.to(lineEl, { "--whiteBar": barColor, duration: 0.01 });
+                masterTl.call(() => gsap.set(lineEl, { "--whiteBar": barColor }), undefined, lineStartTime);
 
-                const typeTween = tl.fromTo(
+                masterTl.fromTo(
                     lineEl,
                     { width: 0 },
                     {
-                    width: "auto",
-                    ease: `steps(${steps})`,
-                    duration: duration,
-                    immediateRender: false,
-                    }
+                        width: "auto",
+                        ease: `steps(${steps})`,
+                        duration: duration,
+                        immediateRender: false,
+                    },
+                    lineStartTime,
                 );
                 if (codeText && rowEl) {
                     // let CSS own the theme background; GSAP only reveals the row.
-                    tl.set(rowEl, { padding: 8, autoAlpha: 1 }, 0);
+                    masterTl.set(rowEl, { padding: 8, autoAlpha: 1 }, lineStartTime);
                 }
-                let blinkTween: gsap.core.Tween | null = null;
-                tl.add(() => {
-                    blinkTween?.kill(); // kill any existing blink tween before starting a new one
-                    blinkTween = gsap.to(lineEl, {
+                masterTl.to(lineEl, {
                     "--whiteBar": barColorSecondary,
-                    duration: 0.5,
+                    duration: cursorBlinkDuration,
                     ease: `steps(${steps})`,
-                    repeat: -1,
+                    repeat: blinkCycles - 1,
                     yoyo: true,
-                    });
-                }, typeTween.startTime()); // same time as typing starts
-
-                tl.add(() => {
-                    // immediately kill ongoing blink tween
-                    gsap.killTweensOf(lineEl, "--whiteBar" );
-                    blinkTween?.kill();
-                    gsap.set(lineEl, { "--whiteBar": "transparent" }); // final state: hide cursor
-
-                }, typeTween.endTime());
+                    onComplete: () => {
+                        gsap.set(lineEl, { "--whiteBar": "transparent" });
+                    },
+                }, lineStartTime); // same time as typing starts
 
                 if (codeText && rowEl) { // round the right corner at the end of the animation
-                    tl.to(rowEl, { borderRadius: "10px 10px 10px 10px", duration: 0.3, ease: "power1.out" }, typeTween.endTime() - 0.3);
+                    masterTl.to(rowEl, { borderRadius: "10px 10px 10px 10px", duration: 0.3, ease: "power1.out" }, lineEndTime - 0.3);
                 }
 
-                // add to the masterTl with gap gap
-                masterTl.add(tl, index === 0 ? 0 : `>+=${lineDelay}`); // add lineDelay between lines
+                lineStartTime = lineEndTime + lineDelay;
             });
 
             return masterTl;

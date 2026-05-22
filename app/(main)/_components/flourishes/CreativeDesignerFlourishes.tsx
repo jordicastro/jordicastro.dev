@@ -125,9 +125,8 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
                 const cursorObj: cursorObjType
                  = { cursorWrapper, cursorRect, cursorOriginX, cursorOriginY };
 
-                // setup)
+                // setup
                 setupEditTextFlourish();
-                // setupMatchMedia(mm);
 
                 // createTextArea follows the cursorWrapper to create an editText rectangle
                 const textAreaTl = buildTextAreaTl(cursorObj);

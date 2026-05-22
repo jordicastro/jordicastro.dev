@@ -202,7 +202,7 @@ body,
     @apply w-full overflow-x-hidden;
   }
   #typewriter-container {
-    --whiteBar: #FFFFFF;
+    --whiteBar: transparent;
     @apply w-auto h-auto flex flex-col items-center;
     
     [class*="line-"], [class^="line-"] {
