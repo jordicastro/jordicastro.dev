@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import Image from 'next/image'
 
 interface LogoProps {
@@ -8,11 +9,14 @@ interface LogoProps {
 const Logo = ({ width, height, className}: LogoProps) => {
   return (
     <Image
-        src="/images/JordPle.png"
+        src="/images/logos/JordPle.png"
         alt="logo"
         width={width ?? 64}
         height={height ?? 64}
-        className={`pointer-events-auto select-none` + ` ${className ?? ""}`}
+        className={cn(
+            "pointer-events-auto select-none",
+            className
+        )}
         draggable={false}
     />
   )

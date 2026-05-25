@@ -26,9 +26,9 @@ const LogoBounce = ({ onComplete }: LogoBounceProps) => {
     const y = useRef(0);
     const angle = useRef(0);
     const logoVariants = [
-        "/images/JordPle.png", // default
-        "/images/JordPle-old.png", 
-        "/images/JordPle-oldest.png",
+        "/images/logos/JordPle.png", // default
+        "/images/logos/JordPle-old.png", 
+        "/images/logos/JordPle-oldest.png",
 
     ] 
 

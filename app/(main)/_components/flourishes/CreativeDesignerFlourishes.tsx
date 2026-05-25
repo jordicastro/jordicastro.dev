@@ -1101,7 +1101,7 @@ const GridFlourish = ({ flourishKey, register, iteration }: FlourishRegisterProp
                     {Array.from({ length: 8}).map((_, i) => (
                         <Image
                             key={i}
-                            src="/images/JordPle.png"
+                            src="/images/logos/JordPle.png"
                             alt="logo"
                             width={48}
                             height={48}

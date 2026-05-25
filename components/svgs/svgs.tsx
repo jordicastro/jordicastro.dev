@@ -201,4 +201,32 @@ const SPSLogo = ({ fill, className, pathOnly }: CustomSVGProps) => {
     )
 }
 
-export { LinkedInIcon, GitHubIcon, DragIcon, BoldIcon, ItalicIcon, UnderlineIcon, TextSizeIcon, UpIcon, DownIcon, FontIcon, BlueSquiggle, CustomMouse, CustomPointer, CustomHand, CustomGrab, CustomNotAllowed, SPLogo, SPSLogo }
+const RunningLogo = ({className}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="73" height="73" viewBox="0 0 73 73" fill="none" className={cn("running-logo", className)}>
+            <path d="M48.5657 33.7471C51.1656 37.0898 58.5938 43.7752 59.7081 43.7752C60.8223 43.7752 68.2506 37.0898 70.8505 33.7471" stroke="#BBF451" strokeWidth="5"/>
+            <path d="M24.6098 47.6748L1.76782 70.5168" stroke="#BBF451" strokeWidth="5"/>
+            <path d="M47.5967 5.01562C51.6189 1.39566 57.8145 1.72111 61.4346 5.74316L61.9619 6.3291C65.4406 10.1944 65.2845 16.1061 61.6074 19.7832C57.7891 23.6015 51.5986 23.6015 47.7803 19.7832L47.2236 19.2266C43.2543 15.2572 43.4245 8.77105 47.5967 5.01562Z" stroke="#BBF451" strokeWidth="5"/>
+            <path d="M12.9102 35.9755L20.7098 28.1758H38.5377C39.8377 28.7329 41.4347 30.85 37.4235 34.8612C33.4122 38.8725 32.038 40.2467 31.8523 40.4324C31.0997 41.1753 30.3745 43.4409 33.4943 46.5608C36.6142 49.6806 44.842 57.9084 48.5659 61.6323C49.482 62.9225 49.4239 65.5029 41.8619 65.5029C34.2999 65.5029 27.2096 65.5029 24.6097 65.5029" stroke="#BBF451" strokeWidth="5"/>
+        </svg>
+    )
+}
+const HogSpotLogo = ({className}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="126" height="126" viewBox="0 0 126 126" fill="none" className={cn("hogspot-logo", className)}>
+            <path d="M102.731 44.9808C102.731 71.6346 62.7501 102.731 62.7501 102.731C62.7501 102.731 22.7693 71.6346 22.7693 44.9808C22.7693 23.2046 40.9739 5 62.7501 5C84.5263 5 102.731 23.2046 102.731 44.9808Z" stroke="#F43F5E" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M62.75 58.3077C70.1103 58.3077 76.0769 52.341 76.0769 44.9808C76.0769 37.6205 70.1103 31.6538 62.75 31.6538C55.3897 31.6538 49.4231 37.6205 49.4231 44.9808C49.4231 52.341 55.3897 58.3077 62.75 58.3077Z" stroke="#F43F5E" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M98.9753 89.4038H107.173L120.5 120.5H5.00003L18.327 89.4038H26.5248" stroke="#F43F5E" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    )
+}
+const Compass = ({className}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={cn("compass ", className)}>
+            <path d="M19.6845 1.08442C21.3122 0.627321 22.8127 2.12784 22.3556 3.75546L18.606 17.1064C18.4018 17.8335 17.8335 18.4019 17.1064 18.6061L3.75549 22.3557C2.12787 22.8126 0.627351 21.3123 1.08445 19.6846L4.83396 6.33364C5.03818 5.60645 5.60648 5.03815 6.33367 4.83393L19.6845 1.08442Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M9.13604 14.3043C10.5633 15.7316 12.8774 15.7316 14.3046 14.3043C15.7319 12.877 15.7319 10.563 14.3046 9.13572C12.8774 7.70845 10.5633 7.70845 9.13604 9.13572C7.70877 10.563 7.70877 12.877 9.13604 14.3043Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    )
+}
+
+export { LinkedInIcon, GitHubIcon, DragIcon, BoldIcon, ItalicIcon, UnderlineIcon, TextSizeIcon, UpIcon, DownIcon, FontIcon, BlueSquiggle, CustomMouse, CustomPointer, CustomHand, CustomGrab, CustomNotAllowed, SPLogo, SPSLogo, RunningLogo, HogSpotLogo, Compass }

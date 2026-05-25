@@ -6,7 +6,6 @@ import { useGSAP } from "@gsap/react";
 import { DrawSVGPlugin } from 'gsap/all';
 import gsap from "gsap";
 import { StoryThumbnailProps } from "@/types/types";
-import { useStoriesOptions } from "@/hooks/useStoriesOptions";
 
 const SPThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProps) => {
     const scopeRef = useRef<HTMLDivElement>(null);
@@ -31,7 +30,7 @@ const SPThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProps) =>
     const lockupHeight = Math.max(logoY + logoHeight, dividerY + dividerHeight, spsY + spsHeight) - lockupY;
     const expandedThumbnailTl = useRef<gsap.core.Timeline | null>(null);
     const masterTl = useRef<gsap.core.Timeline | null>(null);
-    const { activeFilters, activeSort } = useStoriesOptions();
+    const resetToStartDelayRef = useRef<gsap.core.Tween | null>(null);
 
     gsap.registerPlugin(useGSAP, DrawSVGPlugin);
 
@@ -134,27 +133,44 @@ const SPThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProps) =>
                 }
             }, "<=0.2");
 
-
-            if (shouldPlayThumbnail) {
-                masterTl.current?.play();
-            } else {
-                masterTl.current?.pause();
-                gsap.delayedCall(0.5, () => { // dont leak reset state until mask hides content
-                    masterTl.current?.pause(0);
-                })
-            }
+            masterTl.current.pause(0);
 
 
             return () => {
+                resetToStartDelayRef.current?.kill();
+                resetToStartDelayRef.current = null;
                 masterTl.current?.kill();
+                expandedThumbnailTl.current?.kill();
+                expandedThumbnailTl.current = null;
+                masterTl.current = null;
                 drawInLogoTl.kill();
                 gradientWashTl.kill();
+                gradientRotateTl.kill();
                 gsap.set(basePaths, { clearProps: "all" });
                 gsap.set(washLayer, { clearProps: "all" });
             };
         },
-        { scope: scopeRef, dependencies: [shouldPlayThumbnail] }
+        { scope: scopeRef, dependencies: [] }
     )
+
+    useEffect(() => {
+        const timeline = masterTl.current;
+        if (!timeline) return;
+
+        resetToStartDelayRef.current?.kill();
+        resetToStartDelayRef.current = null;
+
+        if (shouldPlayThumbnail) {
+            timeline.play();
+            return;
+        }
+
+        timeline.pause();
+        resetToStartDelayRef.current = gsap.delayedCall(0.5, () => {
+            timeline.pause(0);
+            resetToStartDelayRef.current = null;
+        });
+    }, [shouldPlayThumbnail]);
 
     return (
         <div ref={scopeRef} className="relative w-full h-full flex-center pb-5">

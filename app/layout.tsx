@@ -22,13 +22,13 @@ export const metadata: Metadata = {
   icons: [
     {
       media: "(prefers-color-scheme: light)",
-      url: "/images/JordPle.png",
-      href: "/images/JordPle.png",
+      url: "/images/logos/JordPle.png",
+      href: "/images/logos/JordPle.png",
     },
     {
       media: "(prefers-color-scheme: dark)",
-      url: "/images/JordPle.png",
-      href: "/images/JordPle.png",
+      url: "/images/logos/JordPle.png",
+      href: "/images/logos/JordPle.png",
     }
   ],
 };

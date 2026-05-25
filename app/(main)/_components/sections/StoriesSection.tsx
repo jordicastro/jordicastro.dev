@@ -17,6 +17,10 @@ import { useTheme } from 'next-themes'
 import { useRouter } from 'next/navigation'
 import { useScrollMask } from '@/hooks/useScrollMask'
 import ShakespeareThumbnail from '../storythumbnails/ShakespeareThumbnail'
+import PortfolioV1Thumbnail from '../storythumbnails/PortfolioV1Thumbnail'
+import VeggieVisionThumbnail from '../storythumbnails/VeggieVisionThumbnail'
+import RunningThumbnail from '../storythumbnails/RunningThumbnail'
+import HogSpotThumbnail from '../storythumbnails/HogSpotThumbnail'
 
 gsap.registerPlugin(useGSAP, Observer, ScrollTrigger);
 
@@ -528,7 +532,7 @@ export const storyCards:storyCard[] = [
         subtitle: "Veggie Vision",
         year: "2025",
         description: "A computer vision model that classifies bagged produce.",
-        thumbnail: TempThumbnail,
+        thumbnail: VeggieVisionThumbnail,
         type: "projects",
         shape: "portrait",
         notAllowed: true,
@@ -537,7 +541,7 @@ export const storyCards:storyCard[] = [
         id: "shakespeare",
         slug: "shakespearean-text-inference",
         title: "",
-        icon: <img src="/images/shakey.png" alt="Shakey Icon" className="h-6 w-6" />,
+        icon: <img src="/images/logos/shakey.png" alt="Shakey Icon" className="h-6 w-6" />,
         subtitle: "Shakespearean Text Inference",
         year: "2025",
         description: "Using N-grams to predict and generate Shakespearean text.",
@@ -553,7 +557,7 @@ export const storyCards:storyCard[] = [
         subtitle: "Training for the Little Rock Marathon",
         year: "2025",
         description: "Dedicating a year to training to see how fast I can run 26.2 miles.",
-        thumbnail: TempThumbnail,
+        thumbnail: RunningThumbnail,
         type: "projects",
         shape: "landscape",
         notAllowed: true,
@@ -565,7 +569,7 @@ export const storyCards:storyCard[] = [
         subtitle: "HogSpot Mobile",
         year: "2024",
         description: "An Android app for students to find landmarks at the University of Arkansas.",
-        thumbnail: TempThumbnail,
+        thumbnail: HogSpotThumbnail,
         type: "projects",
         shape: "portrait",
         notAllowed: true,
@@ -584,6 +588,7 @@ export const storyCards:storyCard[] = [
     },
     {
         id: "pqc",
+        slug: "pqc-app",
         title: "University of Arkansas",
         subtitle: "Post-Quantum Cryptography App",
         year: "2024",
@@ -595,6 +600,7 @@ export const storyCards:storyCard[] = [
     },
     {
         id: "spotify",
+        slug: "spotify-redesign",
         title: "Spotify App",
         subtitle: "Redesigning the Spotify UI",
         year: "2023",
@@ -606,11 +612,12 @@ export const storyCards:storyCard[] = [
     },
     {
         id: "portfoliov1",
+        slug: "portfolio-website-v1",
         title: "Portfolio Website v1",
         subtitle: "My first portfolio website",
         year: "2023",
         description: "Built with Vite + React and vanilla CSS, this was my first personal website.",
-        thumbnail: TempThumbnail,
+        thumbnail: PortfolioV1Thumbnail,
         type: "projects",
         shape: "landscape",
         notAllowed: true,
