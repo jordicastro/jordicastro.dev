@@ -21,6 +21,7 @@ import PortfolioV1Thumbnail from '../storythumbnails/PortfolioV1Thumbnail'
 import VeggieVisionThumbnail from '../storythumbnails/VeggieVisionThumbnail'
 import RunningThumbnail from '../storythumbnails/RunningThumbnail'
 import HogSpotThumbnail from '../storythumbnails/HogSpotThumbnail'
+import SpotifyThumbnail from '../storythumbnails/SpotifyThumbnail'
 
 gsap.registerPlugin(useGSAP, Observer, ScrollTrigger);
 
@@ -152,19 +153,15 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
                         const v = Math.abs(self.getVelocity());
                         
                         if (v > 3000) {
-                            console.log('very fast scroll, skipping mask: ', v)
                             tlRef.current?.pause(0);
                         } else if (v > 2000) {
-                            console.log('fast scroll, animating mask in: ', v)
                             handedOffRef.current = false;
                             !isAnimatingRef.current && setIsAnimating(true, "up", 0.75);
                         } else {
-                            console.log('entering back, locking scroll')
                             lockScroll();
                         }
                     },
                     onLeaveBack: () => {
-                        console.log('unlockScroll')
                         unlockScroll();
                     },
                 }
@@ -303,7 +300,7 @@ const StoryCard = ({ storyData, shouldPlayThumbnail }: { storyData: storyCard, s
                     ease: "power1.out",
                 })
                 .to(descriptionBg, {
-                    opacity: 0.5,
+                    opacity: 0.7,
                     duration: 0.3,
                     ease: "power1.out",
                 }, "<");
@@ -605,7 +602,7 @@ export const storyCards:storyCard[] = [
         subtitle: "Redesigning the Spotify UI",
         year: "2023",
         description: "Building a polished music experience while exploring modern frontend development tools.",
-        thumbnail: TempThumbnail,
+        thumbnail: SpotifyThumbnail,
         type: "projects",
         shape: "landscape",
         notAllowed: true,
