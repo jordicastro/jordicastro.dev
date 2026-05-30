@@ -22,6 +22,8 @@ import VeggieVisionThumbnail from '../storythumbnails/VeggieVisionThumbnail'
 import RunningThumbnail from '../storythumbnails/RunningThumbnail'
 import HogSpotThumbnail from '../storythumbnails/HogSpotThumbnail'
 import SpotifyThumbnail from '../storythumbnails/SpotifyThumbnail'
+import PQCThumbnail from '../storythumbnails/PQCThumbnail'
+import LicensePlateThumbnail from '../storythumbnails/LicensePlateThumbnail'
 
 gsap.registerPlugin(useGSAP, Observer, ScrollTrigger);
 
@@ -264,6 +266,7 @@ const StoryCard = ({ storyData, shouldPlayThumbnail }: { storyData: storyCard, s
     const expandDescriptionTl = useRef<gsap.core.Timeline | null>(null);
     const notAllowedTl = useRef<gsap.core.Timeline | null>(null);
     const hoverCardTl = useRef<gsap.core.Timeline | null>(null);
+    const wordHighlightTl = useRef<gsap.core.Timeline | null>(null);
     const { slug, title, icon, subtitle, year, description, thumbnail: Thumbnail, shape, className, onHover, onHoverEnd, notAllowed } = storyData;
     const [isHovered, setIsHovered] = useState(false);
     const notAllowedWords = ["SOON", "COMING", "SOON", "COMING"];
@@ -351,13 +354,50 @@ const StoryCard = ({ storyData, shouldPlayThumbnail }: { storyData: storyCard, s
 
             }
 
+            if (slug === "license-plate-detection") {
+                const detectionWord = scopeRef.current?.querySelector(".detection-word");
+                if (detectionWord) {
+                    gsap.set(detectionWord, {
+                        color: "#737373",
+                        backgroundColor: "transparent",
+                    });
+
+                    wordHighlightTl.current?.kill();
+                    wordHighlightTl.current = gsap.timeline({ paused: true })
+                        .to(detectionWord, {
+                            color: "#fb2c36",
+                            duration: 0.4,
+                            ease: "power2.inOut",
+                        });
+                }
+            }
+
             return () => {
                 expandDescriptionTl.current?.kill();
                 notAllowedTl.current?.kill();
+                wordHighlightTl.current?.kill();
+                wordHighlightTl.current = null;
             }
         },
         { scope: scopeRef, dependencies: [resolvedTheme] }
     );
+
+    const renderSubtitle = () => {
+        if (!subtitle) return null;
+        if (slug !== "license-plate-detection") return subtitle;
+
+        const highlightWord = "Detection";
+        const wordIndex = subtitle.indexOf(highlightWord);
+        if (wordIndex === -1) return subtitle;
+
+        return (
+            <>
+                {subtitle.slice(0, wordIndex)}
+                <span className="detection-word">{highlightWord}</span>
+                {subtitle.slice(wordIndex + highlightWord.length)}
+            </>
+        );
+    };
 
     const onHoverDesc = contextSafe(() => {
         expandDescriptionTl.current?.play();
@@ -373,6 +413,10 @@ const StoryCard = ({ storyData, shouldPlayThumbnail }: { storyData: storyCard, s
 
         // play the hover animation
         hoverCardTl.current?.play();
+
+        if (slug === "license-plate-detection") {
+            wordHighlightTl.current?.play();
+        }
 
         if (notAllowed) { // animate the coming soon carousel in
             const notAllowedWrapper = scopeRef.current?.querySelector(".not-allowed-wrapper");
@@ -396,6 +440,10 @@ const StoryCard = ({ storyData, shouldPlayThumbnail }: { storyData: storyCard, s
 
         // reverse the hover animation
         hoverCardTl.current?.reverse();
+
+        if (slug === "license-plate-detection") {
+            wordHighlightTl.current?.reverse();
+        }
 
         if (notAllowed) { // fade out coming soon carousel
             const notAllowedWrapper = scopeRef.current?.querySelector(".not-allowed-wrapper");
@@ -458,7 +506,7 @@ const StoryCard = ({ storyData, shouldPlayThumbnail }: { storyData: storyCard, s
                 )}
                 <div
                     className={cn(
-                        "description-wrapper abs-x-center w-full text-text-secondary flex flex-col items-start justify-start gap-4 px-4 py-4",
+                        "description-wrapper abs-x-center w-full text-text-secondary flex flex-col items-start justify-start gap-4 px-4 py-4 z-25",
                         shape === "landscape" ? "h-30.5 -bottom-11.5" : shape === "portrait" ? "h-30.5 -bottom-11.5" : "h-30.5 -bottom-11.5",
                     )}
                     onPointerEnter={onHoverDesc}
@@ -471,7 +519,7 @@ const StoryCard = ({ storyData, shouldPlayThumbnail }: { storyData: storyCard, s
                             {title}
                         </span>
                         <div className="flex items-center justify-between text-text-tertiary">
-                            <p className="text-inherit text-xs line-clamp-1">{subtitle}</p>
+                            <p className="text-inherit text-xs line-clamp-1">{renderSubtitle()}</p>
                             <p className="text-inherit text-xs">{year}</p>
                         </div>
                     </div>
@@ -519,8 +567,6 @@ export const storyCards:storyCard[] = [
         thumbnail: SPThumbnail,
         type: "industry",
         shape: "landscape",
-        onHover: () => { },
-        onHoverEnd: () => { },
     },
     {
         id: "veggievision",
@@ -578,7 +624,7 @@ export const storyCards:storyCard[] = [
         subtitle: "License Plate Detection",
         year: "2025",
         description: "Training a robust computer vision model to detect license plates in various conditions.",
-        thumbnail: TempThumbnail,
+        thumbnail: LicensePlateThumbnail,
         type: "research",
         shape: "landscape",
         notAllowed: true,
@@ -590,7 +636,7 @@ export const storyCards:storyCard[] = [
         subtitle: "Post-Quantum Cryptography App",
         year: "2024",
         description: "A web-app that allows researchers to utilize the university's cryptography equipment remotely.",
-        thumbnail: TempThumbnail,
+        thumbnail: PQCThumbnail,
         type: "research",
         shape: "landscape",
         notAllowed: true,

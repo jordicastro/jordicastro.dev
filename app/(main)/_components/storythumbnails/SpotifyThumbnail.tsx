@@ -102,7 +102,7 @@ const SpotifyThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProp
 
     
     return (
-        <div ref={scope} className="relative w-full h-full flex-center pb-0 gap-4">
+        <div ref={scope} className="relative w-full h-full flex-center pb-0 gap-4 select-none">
             <SpotifyMobile hidden={!shouldShowMobile} shouldPlayThumbnail={!!shouldPlayThumbnail}/>
             <SpotifyDesktop shouldPlayThumbnail={!!shouldPlayThumbnail} />
         </div>
@@ -542,6 +542,7 @@ const SpotifyDesktop = ({ shouldPlayThumbnail }: { shouldPlayThumbnail: boolean 
                             width={50}
                             height={50}
                             className="album-cover rounded-md"
+                            draggable={false}
                         />
                         <div className="h-full w-auto flex flex-col items-start justify-start gap-1 mt-4">
                             <div className="subtitle-wrapper w-auto h-auto overflow-hidden">
@@ -562,6 +563,7 @@ const SpotifyDesktop = ({ shouldPlayThumbnail }: { shouldPlayThumbnail: boolean 
                                         width={10}
                                         height={10}
                                         className="artist-pfp rounded-full"
+                                        draggable={false}
                                     />
                                     <p className="artist-name text-[5px] text-text-primary">
                                         Bad Bunny
@@ -594,10 +596,11 @@ const SpotifyDesktop = ({ shouldPlayThumbnail }: { shouldPlayThumbnail: boolean 
                 <div className="artist-view-wrapper absolute inset-0 w-full h-full bg-neutral-100 dark:bg-neutral-900 rounded-tr-md rounded-br-md">
                     <div className="scrollable-v2 relative w-full h-18 banner-wrapper">
                             <Image
-                                src={srcPath + "badbunny-banner-v4.png"}
+                                src={srcPath + "badbunny-banner.png"}
                                 alt="bad bunny banner"
                                 fill
                                 className="object-cover rounded-tl-md rounded-tr-md"
+                                draggable={false}
                             />
                             <div className="absolute inset-0 bg-bg-secondary/50 rounded-tl-md rounded-tr-md pointer-events-none" />
                             <div className="absolute inset-0 z-10 flex flex-col items-start justify-start px-2 py-1 pointer-events-none pt-6 gap-1">
@@ -607,6 +610,7 @@ const SpotifyDesktop = ({ shouldPlayThumbnail }: { shouldPlayThumbnail: boolean 
                                     width={25}
                                     height={25}
                                     className="artist-pfp rounded-sm"
+                                    draggable={false}
                                 />
                                 <div className="w-auto h-auto flex items-center justify-start gap-1">
                                     <p className="artist-name text-[7px] text-text-primary font-bold">
@@ -691,6 +695,7 @@ const TrackItem = ({
                     width={15}
                     height={15}
                     className="rounded-xs"
+                    draggable={false}
                 />
                 <div className="flex flex-col items-start justify-start gap-0.5">
                     <p className={cn("text-[6px] text-text-primary", titleClassName)}>
@@ -727,6 +732,7 @@ const AlbumItem = ({
                 width={30}
                 height={30}
                 className="rounded-sm shrink-0 max-w-none"
+                draggable={false}
             />
             <div className="w-full min-w-0 h-auto flex flex-col items-start justify-start gap-0 shrink-0">
                 <p className="w-full min-w-0 text-[5px] text-text-primary line-clamp-1">

@@ -186,7 +186,7 @@ const HogSpotThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProp
     return (
         <AndroidWrapper ref={scopeRef}>
             {/* loginContent */}
-            <div className="login-content absolute inset-0">
+            <div className="login-content absolute inset-0 select-none">
                 {/* logo */}
                 <HogSpotLogo className="abs-x-center top-15 w-20 h-auto" />
                 {/* title */}
@@ -221,7 +221,7 @@ const HogSpotThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProp
                 </div>
             </div>
             {/* exploreContent */}
-            <div className="explore-content absolute inset-0">
+            <div className="explore-content absolute inset-0 select-none">
                 {/* header */}
                 <div className="header w-24.75 absolute top-px right-0 h-5 flex items-center justify-between">
                     <h5 className={cn(
@@ -302,7 +302,7 @@ const FakeSpotCard = ({ title, difficulty, stars, src }: { title: string; diffic
     return (
         <div
             className={cn(
-                "fake-spot-card h-full w-20 bg-neutral-200 dark:bg-[#131b1f] rounded-md px-2 py-1 flex flex-col items-start gap-1",
+                "fake-spot-card h-full w-20 bg-neutral-200 dark:bg-[#131b1f] rounded-md px-2 py-1 flex flex-col items-start gap-1 select-none",
             )}
         >
             <Image
@@ -310,7 +310,8 @@ const FakeSpotCard = ({ title, difficulty, stars, src }: { title: string; diffic
                 alt={`${name} thumbnail`}
                 width={60}
                 height={50}
-                className="object-cover rounded-sm"
+                className="object-cover rounded-sm select-none"
+                draggable={false}
             />
             <h3 className={cn(
                 "hogspot-title text-[10px] text-neutral-800 dark:text-neutral-200 line-clamp-1 text-start",

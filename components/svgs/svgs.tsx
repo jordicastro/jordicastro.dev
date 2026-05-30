@@ -228,5 +228,22 @@ const Compass = ({className}: CustomSVGProps) => {
         </svg>
     )
 }
+const Car = ({className}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="107" height="95" viewBox="0 0 107 95" fill="none" className={cn("car", className)}>
+        <path d="M101.939 21.9328L91.168 33.2193L83.0897 12.3392C82.3279 10.2023 80.966 8.35747 79.1836 7.04784C77.4012 5.7382 75.2819 5.02526 73.105 5.00298H34.0817C31.8871 4.95016 29.7295 5.60123 27.8979 6.86901C26.0663 8.13678 24.648 9.96071 23.8331 12.0966L15.771 33.2193L5 21.9328" stroke="#5F5F5F" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M15.7712 78.3652V89.6518" stroke="#5F5F5F" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M91.1675 78.3652V89.6518" stroke="#5F5F5F" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M91.168 33.2192H15.771C9.82234 33.2192 5 38.2724 5 44.5058V67.0788C5 73.3122 9.82234 78.3653 15.771 78.3653H91.168C97.1167 78.3653 101.939 73.3122 101.939 67.0788V44.5058C101.939 38.2724 97.1167 33.2192 91.168 33.2192Z" stroke="#5F5F5F" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    )
+}
+const LicensePlate = ({className}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="47" height="19" viewBox="0 0 47 19" fill="none" className={cn("license-plate", className)}>
+        <path d="M40.7695 2.5C42.7025 2.5 44.2695 4.06702 44.2695 6V12.9141C44.2695 14.847 42.7025 16.4141 40.7695 16.4141H6C4.06704 16.4141 2.50007 14.847 2.5 12.9141V6C2.5 4.067 4.06701 2.5 6 2.5H40.7695Z" stroke="var(--lp-red)" strokeWidth="5"/>
+        </svg>
+    )
+}
 
-export { LinkedInIcon, GitHubIcon, DragIcon, BoldIcon, ItalicIcon, UnderlineIcon, TextSizeIcon, UpIcon, DownIcon, FontIcon, BlueSquiggle, CustomMouse, CustomPointer, CustomHand, CustomGrab, CustomNotAllowed, SPLogo, SPSLogo, RunningLogo, HogSpotLogo, Compass }
+export { LinkedInIcon, GitHubIcon, DragIcon, BoldIcon, ItalicIcon, UnderlineIcon, TextSizeIcon, UpIcon, DownIcon, FontIcon, BlueSquiggle, CustomMouse, CustomPointer, CustomHand, CustomGrab, CustomNotAllowed, SPLogo, SPSLogo, RunningLogo, HogSpotLogo, Compass, Car, LicensePlate }

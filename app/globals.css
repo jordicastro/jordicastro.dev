@@ -62,6 +62,7 @@ body,
     --gradient-p: linear-gradient(150deg, #c084fc, #fb7185);
     /* cyan -> blue */
     --gradient-b: linear-gradient(150deg, #3b82f6, #22d3ee);
+    --lp-red: color-mix(in oklch, var(--color-red-600) 80%, transparent);
     
   }
   /* dark mode styles */
@@ -80,6 +81,7 @@ body,
     --gradient-p: linear-gradient(150deg, #c084fc, #fb7185);
     /* cyan -> blue */
     --gradient-b: linear-gradient(150deg, #3b82f6, #22d3ee);
+    --lp-red: color-mix(in oklch, var(--color-red-600) 70%, transparent);
   }
 }
 

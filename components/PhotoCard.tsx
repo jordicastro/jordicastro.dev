@@ -71,6 +71,7 @@ const PhotoCard = ({ src, liveSrc, alt, width, height, className }: PhotoCardPro
                 width={width}
                 height={height}
                 className='static-photo block h-auto w-full object-cover rounded-lg select-none'
+                draggable={false}
             />
             {liveSrc && (
                 <video

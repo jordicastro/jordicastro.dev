@@ -95,6 +95,7 @@ const VeggieVisionThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnai
                     width={125}
                     height={125}
                     className="veggievision-logo abs-x-center top-20 object-contain pointer-events-none select-none"
+                    draggable={false}
                 />
                 <Image
                     src="/images/stories/veggievision-title.png"
@@ -102,6 +103,7 @@ const VeggieVisionThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnai
                     width={120}
                     height={100}
                     className="veggievision-title abs-x-center top-48 object-contain pointer-events-none select-none"
+                    draggable={false}
                 />
                 <Image
                     src="/images/stories/veggievision-start-btn.png"
@@ -109,6 +111,7 @@ const VeggieVisionThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnai
                     width={100}
                     height={50}
                     className="veggievision-start-btn abs-x-center bottom-4 object-contain pointer-events-none select-none"
+                    draggable={false}
                 />
 
         </IPhoneWrapper>
