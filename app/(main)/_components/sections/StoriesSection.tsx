@@ -4,7 +4,7 @@ import DropdownButton from '@/components/DropdownButton'
 import { shapeClasses } from '@/constants/constants'
 import { useStoriesDropdownOptions } from '@/hooks/useStoriesDropdownOptions'
 import { cn } from '@/lib/utils'
-import { FilterOption, storyCard, StoryThumbnailProps } from '@/types/types'
+import { FilterOption, storyCard } from '@/types/types'
 import { ArrowDownUp, ListFilter } from 'lucide-react'
 import { useGSAP } from "@gsap/react";
 import { Observer, ScrollTrigger } from "gsap/all";
@@ -221,7 +221,7 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
     )
 
     return (
-        <div ref={scopeRef} id={thisSectionId} className="w-full min-h-screen flex flex-col gap-15 border-debug-l pt-20 px-5 sm:px-10 lg:px-20">
+        <div ref={scopeRef} id={thisSectionId} className="w-full min-h-screen flex flex-col gap-15 pt-20 px-5 sm:px-10 lg:px-20">
             <StoriesHeader />
             <Stories visibleStories={visibleStories} shouldPlayThumbnails={shouldPlayThumbnails} />
         </div>
@@ -531,13 +531,6 @@ const StoryCard = ({ storyData, shouldPlayThumbnail }: { storyData: storyCard, s
         </div>
     )
 }
-
-const TempThumbnail = ({}: StoryThumbnailProps) => (
-    <div className="">
-        temp ReactNode
-    </div>
-)
-const TempIcon = TempThumbnail;
 
 const getVisibleStories = (activeFilters: FilterOption[], activeSort: string): storyCard[] => {
     const visibleStories = (activeFilters.length > 0

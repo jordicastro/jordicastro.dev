@@ -15,13 +15,14 @@ export type NavSectionData = {
 export type FlourishBuilder = () => gsap.core.Tween | gsap.core.Timeline | null;
 
 export type FlourishKey = SEFlourishKey | CDFlourishKey;
-export type SEFlourishKey = "git" | "sql" | "reactBtn" | "tag";
+export type SEFlourishKey = "git" | "sql" | "reactBtn" | "logos";
 export type CDFlourishKey = "bounce" | "grid" | "penSquiggle" | "editText";
 
 export interface FlourishRegisterProps {
     flourishKey: FlourishKey;
     register: (key: FlourishKey, build: FlourishBuilder) => void;
     iteration?: number;
+    className?: string;
 }
 
 export type Section = {

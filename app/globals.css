@@ -35,6 +35,7 @@
   /* wide: used to break the grid flourish in the CD Identity Section */
   --breakpoint-md2: 850px; 
   --breakpoint-wide: 1350px;
+  --breakpoint-lg2: 1152px;
 
 }
 

@@ -3,7 +3,7 @@
 import { StoryThumbnailProps } from "@/types/types"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +13,16 @@ const PortfolioV1Thumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnail
     const scopeRef = useRef<HTMLDivElement>(null);
     const width = 120;
     const height = 120;
+    const tlRef = useRef<gsap.core.Timeline | null>(null);
+
+    useEffect(() => {
+        if (shouldPlayThumbnail) {
+            tlRef.current?.play();
+        } else {
+            tlRef.current?.pause();
+            tlRef.current?.seek(0);
+        }
+    }, [shouldPlayThumbnail])
 
     useGSAP(
         () => {
@@ -21,7 +31,17 @@ const PortfolioV1Thumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnail
 
             const wrappers = gsap.utils.toArray<HTMLElement>(".eye-wrapper", root);
             const pupils = wrappers.map((wrapper) => gsap.utils.toArray<HTMLElement>(".eye", wrapper)[0]);
-            if (!wrappers.length || pupils.some((pupil) => !pupil)) return;
+            const v1Logo = gsap.utils.toArray<HTMLElement>(".v1-logo", root)[0];
+            if (!wrappers.length || pupils.some((pupil) => !pupil) || !v1Logo) return;
+
+            tlRef.current = gsap.timeline({ paused: true, defaults: { duration: 0.8, ease: "back.out(1.7)" }})
+            .fromTo([wrappers, v1Logo], {
+                autoAlpha: 0,
+                scale: 0.8,
+            }, {
+                autoAlpha: 1,
+                scale: 1,
+            }, 0.2)
 
             const xSetters = pupils.map((pupil) => gsap.quickTo(pupil, "x", { duration: 0.15, ease: "power2.out" }));
             const ySetters = pupils.map((pupil) => gsap.quickTo(pupil, "y", { duration: 0.15, ease: "power2.out" }));
@@ -75,6 +95,7 @@ const PortfolioV1Thumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnail
                     width={width}
                     height={height}
                     draggable={false}
+                    className="v1-logo"
                 />
                 <Eye className="left-eye left-7" />
                 <Eye className="right-eye right-7" />

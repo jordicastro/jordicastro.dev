@@ -189,7 +189,7 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
         if (!staticTextEl || !textEl || !staticTextWrapper) {
             return;
         }
-        textSizeRef.current = 36;
+        textSizeRef.current = isMobile ? 30 : 36;
         gsap.set(textEl, { autoAlpha: 0 });
         gsap.set(staticTextWrapper, { autoAlpha: 0 });
         gsap.set(staticTextEl, { color: staticTextColor, fontSize: `${textSizeRef.current}px`, fontWeight: 400, clearProps: "fontFamily" });
@@ -584,7 +584,7 @@ const EditTextFlourish = ({ flourishKey, register, iteration }: FlourishRegister
     const staticTextLineHeight = isMobile ? "58px" : "70px";
 
     return isReady && (
-        <div ref={scopeRef} className="flourish CD-flourish edit-text-flourish abs-x-center top-32 lg:left-auto lg:translate-x-0 lg:right-64 lg:w-100 sm:w-100 w-75 h-45">
+        <div ref={scopeRef} className="flourish CD-flourish edit-text-flourish abs-x-center top-24 lg:left-auto lg:translate-x-0 lg:right-64 lg:w-100 sm:w-100 w-75 h-45">
             <div className="w-full h-full relative">
                 {/* text */}
                 <div className="absolute inset-0 overflow-hidden p-5">
@@ -1029,16 +1029,16 @@ const PathNode = ({ className, i }: PathProps) => {
     )
 }
 
-const GridFlourish = ({ flourishKey, register, iteration }: FlourishRegisterProps) => { // TODO: replace with version of logo bounce
+const GridFlourish = ({ flourishKey, register, iteration }: FlourishRegisterProps) => { 
     const scopeRef = useRef<HTMLDivElement>(null);
+    const bounceDuration = 14;
+    const baseSpeedPxPerSecond = 100;
+    const minAxisGap = 15;
     const gridHeadPos = [
-        "top-5 left-8",
-        "top-2 right-10",
-        "top-18 left-26",
-        "top-26 right-6",
-        "bottom-24 left-1",
-        "bottom-14 left-20",
-        "bottom-1 left-6",
+        "top-8 left-12",
+        "top-10 right-10",
+        "top-26 right-24",
+        "bottom-10 left-4",
         "bottom-6 right-10",
     ]
 
@@ -1067,15 +1067,18 @@ const GridFlourish = ({ flourishKey, register, iteration }: FlourishRegisterProp
             register(flourishKey, () => {
                 const gridContainer = gsap.utils.toArray<HTMLElement>(".grid-container", scopeRef.current)[0];
                 const gridHeads = gsap.utils.toArray<HTMLElement>(".grid-head", scopeRef.current);
-                if (!gridContainer || !gridHeads) {
+                if (!gridContainer || !gridHeads.length) {
                     return null;
                 }
 
+                setupGridFlourish();
+
                 const tl = gsap.timeline();
                 tl.add(gsap.effects.popIn(gridContainer, { scaleFrom: 1.2 }), 0)
-                .add(gsap.effects.popIn(gridHeads, { scaleFrom: 0.8, stagger: 0.1 }), "-=0.25")
+                .add(gsap.effects.popIn(gridHeads, { scaleFrom: 0.8, stagger: { each: 0.1, from: "random" } }), "-=0.25")
 
-                
+                const headBounceTl = buildGridBounceTl(gridContainer, gridHeads);
+                tl.add(headBounceTl, ">")
 
                 return tl;
             });
@@ -1083,13 +1086,282 @@ const GridFlourish = ({ flourishKey, register, iteration }: FlourishRegisterProp
         {scope: scopeRef, dependencies: []}
     );
 
+    const getRandomBounceAngle = () => {
+        const ranges = [
+            [15, 75],
+            [105, 165],
+            [195, 255],
+            [285, 345],
+        ] as const;
+        const selectedRange = ranges[gsap.utils.random(0, ranges.length - 1, 1)];
+        return gsap.utils.random(selectedRange[0], selectedRange[1], 1);
+    };
+
+    const getCircularDiff = (a: number, b: number) => {
+        const diff = Math.abs(a - b) % 360;
+        return diff > 180 ? 360 - diff : diff;
+    };
+
+    const isBoringAngle = (value: number) => {
+        const angle = normalizeAngle(value);
+        return [0, 90, 180, 270].some((axis) => getCircularDiff(angle, axis) < minAxisGap);
+    };
+
+    const getSafeAngleForDirection = (direction: "xr" | "xl" | "yt" | "yb") => {
+        // mirror LogoBounce 
+        if (direction === "xr") {
+            const selected = gsap.utils.random(0, 1, 1) === 0 ? [15, 75] : [285, 345];
+            return gsap.utils.random(selected[0], selected[1], 1);
+        }
+
+        if (direction === "xl") {
+            const selected = gsap.utils.random(0, 1, 1) === 0 ? [105, 165] : [195, 255];
+            return gsap.utils.random(selected[0], selected[1], 1);
+        }
+
+        if (direction === "yb") {
+            const selected = gsap.utils.random(0, 1, 1) === 0 ? [15, 75] : [105, 165];
+            return gsap.utils.random(selected[0], selected[1], 1);
+        }
+
+        const selected = gsap.utils.random(0, 1, 1) === 0 ? [195, 255] : [285, 345];
+        return gsap.utils.random(selected[0], selected[1], 1);
+    };
+
+    const getDirectionFromAngle = (value: number): "xr" | "xl" | "yt" | "yb" => {
+        const angle = normalizeAngle(value);
+        const rad = (angle * Math.PI) / 180;
+        const dx = Math.cos(rad);
+        const dy = Math.sin(rad);
+
+        if (Math.abs(dx) >= Math.abs(dy)) {
+            return dx >= 0 ? "xr" : "xl";
+        }
+
+        return dy >= 0 ? "yb" : "yt";
+    };
+
+    const enforceInterestingAngle = (value: number, preferredDirection?: "xr" | "xl" | "yt" | "yb") => {
+        const angle = normalizeAngle(value);
+        if (!isBoringAngle(angle)) return angle;
+        const direction = preferredDirection ?? getDirectionFromAngle(angle);
+        return getSafeAngleForDirection(direction);
+    };
+
+    const normalizeAngle = (value: number) => {
+        let angle = value % 360;
+        if (angle < 0) angle += 360;
+        return angle;
+    };
+
+    const getClosestWallTarget = (
+        x: number,
+        y: number,
+        minX: number,
+        maxX: number,
+        minY: number,
+        maxY: number,
+    ) => {
+        const wallTargets = [
+            { wall: "xl", targetX: minX, targetY: gsap.utils.clamp(minY, maxY, y) },
+            { wall: "xr", targetX: maxX, targetY: gsap.utils.clamp(minY, maxY, y) },
+            { wall: "yt", targetX: gsap.utils.clamp(minX, maxX, x), targetY: minY },
+            { wall: "yb", targetX: gsap.utils.clamp(minX, maxX, x), targetY: maxY },
+        ] as const;
+
+        return wallTargets.reduce((closest, candidate) => {
+            const closestDistance = Math.hypot(closest.targetX - x, closest.targetY - y);
+            const candidateDistance = Math.hypot(candidate.targetX - x, candidate.targetY - y);
+            return candidateDistance < closestDistance ? candidate : closest;
+        }, wallTargets[0]);
+    };
+
+    const getNextWallHit = (
+        x: number,
+        y: number,
+        angle: number,
+        minX: number,
+        maxX: number,
+        minY: number,
+        maxY: number,
+    ) => {
+        const angleRad = (angle * Math.PI) / 180;
+        const dx = Math.cos(angleRad);
+        const dy = Math.sin(angleRad);
+
+        let tX = Infinity;
+        let wallX: "xl" | "xr" | null = null;
+        if (dx > 0) {
+            tX = (maxX - x) / dx;
+            wallX = "xr";
+        } else if (dx < 0) {
+            tX = (minX - x) / dx;
+            wallX = "xl";
+        }
+
+        let tY = Infinity;
+        let wallY: "yt" | "yb" | null = null;
+        if (dy > 0) {
+            tY = (maxY - y) / dy;
+            wallY = "yb";
+        } else if (dy < 0) {
+            tY = (minY - y) / dy;
+            wallY = "yt";
+        }
+
+        tX = tX > 0 ? tX : Infinity;
+        tY = tY > 0 ? tY : Infinity;
+
+        if (!Number.isFinite(tX) && !Number.isFinite(tY)) return null;
+
+        let t: number;
+        let wall: "xl" | "xr" | "yt" | "yb" | null;
+        if (tX < tY) {
+            t = tX;
+            wall = wallX;
+        } else {
+            t = tY;
+            wall = wallY;
+        }
+        if (!wall) return null;
+
+        return {
+            targetX: gsap.utils.clamp(minX, maxX, x + dx * t),
+            targetY: gsap.utils.clamp(minY, maxY, y + dy * t),
+            wall,
+        };
+    };
+
+    const buildSingleHeadBounceTl = (gridContainer: HTMLElement, head: HTMLElement, index: number) => {
+        const tl = gsap.timeline();
+        const originX = head.offsetLeft;
+        const originY = head.offsetTop;
+        const movementBoundsEl = (head.offsetParent as HTMLElement | null) ?? gridContainer;
+        let flipX = 1;
+        let flipY = 1;
+
+        gsap.set(head, {
+            x: 0,
+            y: 0,
+            scaleX: flipX,
+            scaleY: flipY,
+        });
+
+        const minX = -originX;
+        const maxX = movementBoundsEl.clientWidth - head.offsetWidth - originX;
+        const minY = -originY;
+        const maxY = movementBoundsEl.clientHeight - head.offsetHeight - originY;
+        const speed = baseSpeedPxPerSecond;
+        let x = 0;
+        let y = 0;
+        const firstWallTarget = getClosestWallTarget(x, y, minX, maxX, minY, maxY);
+        let angle = normalizeAngle((Math.atan2(firstWallTarget.targetY - y, firstWallTarget.targetX - x) * 180) / Math.PI);
+        if (!Number.isFinite(angle)) {
+            angle = getRandomBounceAngle();
+        }
+        angle = enforceInterestingAngle(angle, firstWallTarget.wall);
+        gsap.set(head, { rotation: angle, scaleX: flipX, scaleY: flipY });
+        let elapsed = 0;
+        let safety = 0;
+
+        while (elapsed < bounceDuration && safety < 200) {
+            safety += 1;
+            const nextHit = getNextWallHit(x, y, angle, minX, maxX, minY, maxY);
+            if (!nextHit) break;
+
+            const distance = Math.hypot(nextHit.targetX - x, nextHit.targetY - y);
+            if (distance < 0.01) {
+                angle = normalizeAngle(angle + 37);
+                continue;
+            }
+
+            const segmentDuration = distance / speed;
+            const remaining = bounceDuration - elapsed;
+
+            if (segmentDuration > remaining) {
+                const travelRatio = remaining / segmentDuration;
+                const partialX = x + (nextHit.targetX - x) * travelRatio;
+                const partialY = y + (nextHit.targetY - y) * travelRatio;
+
+                tl.to(head, {
+                    x: partialX,
+                    y: partialY,
+                    duration: remaining,
+                    ease: "none",
+                });
+                elapsed = bounceDuration;
+                break;
+            }
+
+            tl.to(head, {
+                x: nextHit.targetX,
+                y: nextHit.targetY,
+                duration: segmentDuration,
+                ease: "none",
+            });
+
+            elapsed += segmentDuration;
+            x = nextHit.targetX;
+            y = nextHit.targetY;
+
+            if (nextHit.wall === "xr" || nextHit.wall === "xl") {
+                angle = 180 - angle;
+                tl.set(head, { rotation: angle }, ">")
+                if (nextHit.wall === "xr") { // flip vertically on right wall
+                    flipY = -1;
+                    tl.set(head, { scaleX: flipX, scaleY: flipY }, ">")
+                } else { // reset vertical flip on left wall
+                    flipY = 1;
+                    tl.set(head, { scaleX: flipX, scaleY: flipY }, ">")
+                }
+            } else if (nextHit.wall === "yt" || nextHit.wall === "yb") {
+                angle = 360 - angle;
+                tl.set(head, { rotation: angle }, ">")
+            }
+            angle = enforceInterestingAngle(angle);
+        }
+
+        return tl;
+    };
+
+    const buildGridBounceTl = contextSafe((gridContainer: HTMLElement, gridHeads: HTMLElement[]) => {
+        const tl = gsap.timeline();
+
+        gridHeads.forEach((head, index) => {
+            tl.add(buildSingleHeadBounceTl(gridContainer, head, index), 0);
+        });
+
+        tl.to(gridHeads, {
+            autoAlpha: 0,
+            duration: 0.6,
+            ease: "power2.inOut",
+            stagger: {
+                each: 0.06,
+                from: "random",
+            },
+        }, ">=1");
+
+        return tl;
+    });
+
     const setupGridFlourish = contextSafe(() => {
         const gridHeads = gsap.utils.toArray<HTMLElement>(".grid-head", scopeRef.current);
         const gridContainer = gsap.utils.toArray<HTMLElement>(".grid-container", scopeRef.current)[0];
-        var randomRotation = gsap.utils.random(-360, 360, 10, true);
+        const rotations = [-120, 160, 45, 60, -45]
 
-        gridHeads.forEach((head) => {
-            gsap.set(head, { rotation: randomRotation(), transformOrigin: "center" });
+        if (!gridContainer || !gridHeads.length) return;
+
+        gsap.set(gridContainer, { clearProps: "x,y,scale,rotation" });
+        gsap.set(gridContainer, { autoAlpha: 0, scale: 1.2 });
+
+        gsap.set(gridHeads, { clearProps: "x,y,top,left,right,bottom,scaleX,scaleY" });
+        gsap.set(gridHeads, {
+            autoAlpha: 0,
+            scale: 0.8,
+        });
+
+        gridHeads.forEach((head, i) => {
+            gsap.set(head, { rotation: rotations[i], transformOrigin: "center" });
         });
     });
 
@@ -1098,14 +1370,18 @@ const GridFlourish = ({ flourishKey, register, iteration }: FlourishRegisterProp
         <div className="relative abs-center w-1/2 h-0 hidden wide:block" ref={scopeRef}>
             <div className="flourish CD-flourish grid-flourish abs-y-center -left-84 w-64 h-64">
                 <Grid className="p-1">
-                    {Array.from({ length: 8}).map((_, i) => (
+                    {Array.from({ length: 5}).map((_, i) => (
                         <Image
                             key={i}
                             src="/images/logos/JordPle.png"
                             alt="logo"
                             width={48}
                             height={48}
-                            className={`grid-head absolute pointer-events-auto select-none ${gridHeadPos[i]}`} 
+                            className={cn(
+                                "grid-head absolute pointer-events-auto select-none",
+                                gridHeadPos[i],
+                                "grid-head" + i
+                            )} 
                             draggable={false}
                         />
                     ))}
@@ -1178,9 +1454,10 @@ const BounceTimelineFlourish = ({ flourishKey, register, iteration }: FlourishRe
                 if (!box || !floor || !playhead || !timelineEl || !bounceTweens || !handCursorWrapper || !handCursor || !handGrabbing) {
                     return null;
                 }
+
                 const animDuration = 4;
                 const maxPlayheadX = 245;
-                const boxDropY = window.matchMedia("(max-width: 639px)").matches ? 99 : 131;
+                const boxDropY = window.matchMedia("(max-width: 767px)").matches ? 146: 105;
                 // setup:
                 setupBounceTimelineFlourish();
                 
@@ -1461,10 +1738,10 @@ const BounceTimelineFlourish = ({ flourishKey, register, iteration }: FlourishRe
     });
 
     return (
-        <div className="flourish CD-flourish bounce-timeline-flourish absolute abs-x-center md2:left-auto md2:translate-x-0 md2:right-36 bottom-12 w-67.5 h-95  flex flex-col items-center justify-center gap-4" ref={scopeRef} id="bounce-timeline-flourish">
-            <div className="bounce-scene w-25 h-50 flex flex-col items-center justify-between">
+        <div className="flourish CD-flourish bounce-timeline-flourish w-auto h-auto  absolute abs-x-center md2:left-auto md2:translate-x-0 md2:right-32 bottom-12 sm:bottom-4 2xl:bottom-10 flex sm:flex-col flex-row-reverse items-center justify-center gap-0 sm:gap-4 gap-x-10" ref={scopeRef} id="bounce-timeline-flourish">
+            <div className="bounce-scene w-25 h-50 sm:h-40 flex flex-col items-center justify-between">
                 {/* box */}
-                <div className="bounce-box w-12.25 h-12.25 rounded-[10px] sm:mt-4 mt-12" style={{ background: "linear-gradient(to bottom, var(--primary), var(--secondary))" }} />
+                <div className="bounce-box w-12.25 h-12.25 rounded-[10px] mt-0" style={{ background: "linear-gradient(to bottom, var(--primary), var(--secondary))" }} />
                 {/* floor */}
                 <div className="bounce-floor w-full h-1 bg-neutral-400 dark:bg-neutral-500 rounded-full" />
             </div>
@@ -1472,6 +1749,7 @@ const BounceTimelineFlourish = ({ flourishKey, register, iteration }: FlourishRe
                 <Playhead color="#5A95E0" id="bounce-playhead" className="absolute left-0 top-0 z-10" dataCursor='hand'/>
                 <Timeline id="bounce-timeline"/>
                 <HandCursor className="absolute bottom-12 -left-24"/>
+                
             </div>
         </div>
     )

@@ -102,6 +102,7 @@ interface CustomSVGProps {
     className?: string;
     fill?: string | undefined;
     pathOnly?: boolean;
+    pathId?: string;
 }
 
 const CustomMouse = ({ fill, className }: CustomSVGProps) => {
@@ -246,4 +247,58 @@ const LicensePlate = ({className}: CustomSVGProps) => {
     )
 }
 
-export { LinkedInIcon, GitHubIcon, DragIcon, BoldIcon, ItalicIcon, UnderlineIcon, TextSizeIcon, UpIcon, DownIcon, FontIcon, BlueSquiggle, CustomMouse, CustomPointer, CustomHand, CustomGrab, CustomNotAllowed, SPLogo, SPSLogo, RunningLogo, HogSpotLogo, Compass, Car, LicensePlate }
+const ProgressBar = ({className, color, showProgressBackground}: {className?: string, color: string, showProgressBackground?: boolean}) => {
+    const progressStrokeByColor: Record<string, string> = {
+        orange: "#FF8904",
+        blue: "#155dfc",
+        green: "#65C466",
+        red: "#FF637E",
+        purple: "#C27AFF",
+        sky: "#51A2FF",
+        yellow: "#E6BE82",
+    };
+    const strokeColor = progressStrokeByColor[color] ?? color ?? "#FF8904";
+
+    return (
+        <svg
+            className={cn("progress-bar w-20 h-2", className)}
+            width="80"
+            height="8"
+            viewBox="0 0 80 8"
+            fill="none"
+            aria-hidden="true"
+        >
+            {showProgressBackground && (
+                <path
+                    d="M4 4 H76"
+                    className="git-progress-background"
+                    stroke="var(--color-neutral-300)"
+                    strokeOpacity="0.28"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                />
+            )}
+            <path
+                className="git-progress-path"
+                d="M4 4 H76"
+                stroke={strokeColor}
+                strokeWidth="8"
+                strokeLinecap="round"
+            />
+        </svg>
+    )
+}
+
+const CarouselCorner = ({ className, pathId }: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="194" height="190" viewBox="0 0 194 190" fill="none"
+            className={cn("carousel-corner", className)}
+        >
+        <path d="M10 189.5V130C10 51 50.5001 9.99991 133.5 10L193.5 10" stroke="#2B7FFF" strokeWidth="20"
+            id={pathId ?? "carousel-corner-path"}
+        />
+        </svg>
+    )
+}
+
+export { LinkedInIcon, GitHubIcon, DragIcon, BoldIcon, ItalicIcon, UnderlineIcon, TextSizeIcon, UpIcon, DownIcon, FontIcon, BlueSquiggle, CustomMouse, CustomPointer, CustomHand, CustomGrab, CustomNotAllowed, SPLogo, SPSLogo, RunningLogo, HogSpotLogo, Compass, Car, LicensePlate, ProgressBar, CarouselCorner }

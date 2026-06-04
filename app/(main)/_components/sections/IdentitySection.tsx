@@ -5,17 +5,21 @@ import gsap from "gsap";
 import { Observer, SplitText, ScrollTrigger, CustomEase } from "gsap/all";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useScrollMask } from "@/hooks/useScrollMask";
-import { RefreshCcw } from "lucide-react";
-import { GitFlourish, ReactButtonFlourish, SQLFlourish, TagFlourish } from "../flourishes/SoftwareEngineerFlourishes";
+import { Pause, RefreshCcw } from "lucide-react";
+import { GitFlourish, LogosFlourish, ReactButtonFlourish, SQLFlourish } from "../flourishes/SoftwareEngineerFlourishes";
 import { FlourishBuilder, FlourishKey } from "@/types/types";
 import { BounceTimelineFlourish, EditTextFlourish, GridFlourish, PenSquiggleFlourish } from "../flourishes/CreativeDesignerFlourishes";
 import { useTheme } from "next-themes";
+import { useMediaQuery } from 'usehooks-ts';
+
+const SE_LOGOS_LOOP_TL_ID = "se-logos-carousel-loop";
 
 
 const IdentitySection = ({ id }: { id?: string }) => {
     const scopeRef = useRef<HTMLDivElement>(null);
     const { isAnimating, setIsAnimating } = useScrollMask();
     const masterTlRef = useRef<gsap.core.Timeline | null>(null);
+    const cycleIdentitiesTl = useRef<gsap.core.Timeline | null >(null);
     const flourishBuildersRef = useRef<Partial<Record<FlourishKey, FlourishBuilder>>>({});
     const [flourishRegistryVersion, setFlourishRegistryVersion] = useState(0);
     const [iteration, setIteration] = useState(0);
@@ -23,9 +27,11 @@ const IdentitySection = ({ id }: { id?: string }) => {
     const { activeSectionId, prevSectionId } = useScrollMask();
     const cycleDelay = 0.5; // delay between identity sections
     const isFirstIteration = useRef(true);
+    const sm = useMediaQuery('(max-width: 640px)');
 
     useEffect(() => { // handle play/pause of the masterTl based on scrollMask and activeSectionId
         if (activeSectionId !== id && prevSectionId === id) { // pause/seek after exiting the section
+            gsap.getById(SE_LOGOS_LOOP_TL_ID)?.pause(0);
             isFirstIteration.current ? 
                 masterTlRef.current?.pause('start') :
                 masterTlRef.current?.pause('afterIAm');
@@ -43,6 +49,24 @@ const IdentitySection = ({ id }: { id?: string }) => {
         isFirstIteration.current = false;
 
     }, [isAnimating, activeSectionId]);
+
+    // use effect to reset flourish and restart timeline when switching between sm and lg screens (fix: title spanning 1 vs 2 lines)
+    useEffect(() => {
+        if (!masterTlRef.current || !cycleIdentitiesTl.current) return;
+
+        const between = cycleIdentitiesTl.current.labels['between'] || 0;
+        const totalProgress = cycleIdentitiesTl.current.totalProgress(); // 0 to 1 normal progress
+        const totalDuration = cycleIdentitiesTl.current.totalDuration(); // actual duration
+        const actualProgress = totalProgress * totalDuration; // actual progress
+        if (activeSectionId === id) {
+            setIteration((iter) => iter + 1); // trigger flourish reset
+            if (actualProgress  < between) {
+                masterTlRef.current?.restart();
+            } else {
+                masterTlRef.current?.seek(between);
+            }
+        }
+    }, [sm])
 
 
     const registerFlourish = useCallback((key: FlourishKey, build: FlourishBuilder) => {
@@ -95,7 +119,7 @@ const IdentitySection = ({ id }: { id?: string }) => {
                 mask: "lines",
             }) : null;
 
-            const cycleIdentitiesTl = gsap.timeline();
+            cycleIdentitiesTl.current = gsap.timeline();
 
             const masterTL = gsap.timeline({
                 defaults: { overwrite: "auto"},
@@ -139,6 +163,10 @@ const IdentitySection = ({ id }: { id?: string }) => {
                 .to(headings[0], { autoAlpha: 1, duration: 0.25 }, "<=0.25")
 
             // add the child SE flourish tweens to the timeline
+            const logosFlourishTween = flourishBuildersRef.current.logos?.();
+            if (logosFlourishTween) {
+                seTimeline.add(logosFlourishTween, "-=0.5");
+            }
             const gitFlourishTween = flourishBuildersRef.current.git?.();
             if (gitFlourishTween) {
                 seTimeline.add(gitFlourishTween, "<=0.25");
@@ -151,12 +179,11 @@ const IdentitySection = ({ id }: { id?: string }) => {
             if (sqlFlourishTween) {
                 seTimeline.add(sqlFlourishTween, "<=0.5");
             }
-            const tagFlourishTween = flourishBuildersRef.current.tag?.();
-            if (tagFlourishTween) {
-                seTimeline.add(tagFlourishTween, "<=0.5");
-            }
 
             // se transition to cd
+            seTimeline.call(() => {
+                gsap.getById(SE_LOGOS_LOOP_TL_ID)?.pause(0);
+            }, [], "14");
             seTimeline.add(
                 gsap.effects.idTransitionOut(".SE-flourish"),
                 "14"
@@ -218,10 +245,11 @@ const IdentitySection = ({ id }: { id?: string }) => {
                 "<=0.4"
             )
 
-            cycleIdentitiesTl.add(seTimeline, ">");
-            cycleIdentitiesTl.add(cdTimeline, `>=${cycleDelay}`);
+            cycleIdentitiesTl.current.add(seTimeline, ">");
+            cycleIdentitiesTl.current.addLabel('between', `>+=${cycleDelay+0.9}`);
+            cycleIdentitiesTl.current.add(cdTimeline, `>+=${cycleDelay}`);
 
-            masterTL.add(cycleIdentitiesTl);
+            masterTL.add(cycleIdentitiesTl.current);
 
             masterTlRef.current = masterTL;
             
@@ -247,7 +275,7 @@ const IdentitySection = ({ id }: { id?: string }) => {
                 observer.kill();
                 seTimeline.kill();
                 cdTimeline.kill();
-                cycleIdentitiesTl.kill();
+                cycleIdentitiesTl.current?.kill();
                 masterTlRef.current?.kill();
                 masterTlRef.current = null;
             };
@@ -261,6 +289,11 @@ const IdentitySection = ({ id }: { id?: string }) => {
             <p className="absolute top-12 left-12 lg:top-20 lg:left-40 text-2xl/normal md:text-3xl/normal lg:text-3xl/normal i-am-text font-medium z-10">I am a ...</p>
             <SESection registerFlourish={registerFlourish}/>
             <CDSection registerFlourish={registerFlourish} iteration={iteration}/>
+            <div className="absolute top-12 right-12 z-20 bg-bg-secondary w-10 h-10 flex-center rounded-full" role="button" onClick={() => {
+                masterTlRef.current?.pause()
+                }}>
+                <Pause size={24} color="#fff" className="z-10" />
+            </div>
         </div>
     );
 };
@@ -272,9 +305,12 @@ interface IDSectionProps {
 const SESection = ({registerFlourish}: IDSectionProps) => (
     <section className="id-section" id="SE-section">
             <div className="absolute inset-0 font-medium">
-                <TagFlourish flourishKey="tag" register={registerFlourish}/>
                 <GitFlourish flourishKey="git" register={registerFlourish}/>
-                <h2 className="SE-heading section-heading abs-center w-7/8 text-6xl/normal md:text-7xl/normal lg:text-8xl/normal will-change-transform font-bold">Software Engineer</h2>
+                <div className="relative abs-center w-[calc(100vw-2rem)] sm:w-max sm:max-w-none whitespace-normal sm:whitespace-nowrap">
+                    <h2 className="SE-heading section-heading text-6xl/normal md:text-7xl/normal lg:text-8xl/normal will-change-transform font-bold">Software Engineer</h2>
+
+                    <LogosFlourish flourishKey="logos" register={registerFlourish} className="absolute inset-0 w-full h-full"/>
+                </div>
                 <SQLFlourish flourishKey="sql" register={registerFlourish}/>
                 <ReactButtonFlourish flourishKey="reactBtn" register={registerFlourish} />
             </div>
@@ -284,7 +320,7 @@ const SESection = ({registerFlourish}: IDSectionProps) => (
 const CDSection = ({ registerFlourish, iteration }: IDSectionProps) => (
     <section className="id-section" id="CD-section">
         <div className="absolute inset-0">
-            <h2 className="CD-heading section-heading abs-center w-7/8 text-6xl/normal md:text-7xl/normal lg:text-8xl/normal will-change-transform font-bold ">Creative Designer</h2>
+            <h2 className="CD-heading section-heading abs-center w-[calc(100vw-2rem)] sm:w-max sm:max-w-none whitespace-normal sm:whitespace-nowrap text-6xl/normal md:text-7xl/normal lg:text-8xl/normal will-change-transform font-bold ">Creative Designer</h2>
             <BounceTimelineFlourish flourishKey="bounce" register={registerFlourish} iteration={iteration}/>
             <GridFlourish flourishKey="grid" register={registerFlourish} iteration={iteration} />
             <PenSquiggleFlourish flourishKey="penSquiggle" register={registerFlourish} iteration={iteration} />
