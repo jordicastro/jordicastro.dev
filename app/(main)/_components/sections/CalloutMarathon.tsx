@@ -16,9 +16,9 @@ const CalloutMarathon = ({ id }: { id?:string }) => {
     const rollingTimeAnimRef = useRef<Record<string, FlourishBuilder>>({});
     const { theme } = useTheme();
 
-    const sm = useMediaQuery("(max-width: 640px)");
-    const md = useMediaQuery("(max-width: 768px) and (min-width: 641px)");
-    const mdBreakpoint = useMediaQuery("(max-width: 910px) and (min-width: 769px)");
+    const sm = useMediaQuery("(max-width: 640px)", { initializeWithValue: false });
+    const md = useMediaQuery("(max-width: 768px) and (min-width: 641px)", { initializeWithValue: false });
+    const mdBreakpoint = useMediaQuery("(max-width: 910px) and (min-width: 769px)", { initializeWithValue: false });
     const rollingTimeCN = mdBreakpoint ? 
         "absolute left-0 top-40" : md ? // wrap to next line (underneath h2)
         "absolute left-0 top-35" : sm ?// medium text

@@ -12,16 +12,22 @@ gsap.registerPlugin(useGSAP);
 
 const RunningThumbnail = ({ shouldPlayThumbnail, isHovered }: StoryThumbnailProps) => {
   const { resolvedTheme } = useTheme();
+  const [hasMounted, setHasMounted] = useState(false);
   const [preferTransparentWebm, setPreferTransparentWebm] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const shouldPlayThumbnailRef = useRef(shouldPlayThumbnail);
   const isHoveredRef = useRef(isHovered);
   const scopeRef = useRef<HTMLDivElement>(null);
   const shouldShowAnimation = Boolean(shouldPlayThumbnail && isHovered);
-  const videoSrc = resolvedTheme === "dark"
+  const effectiveTheme = hasMounted ? resolvedTheme : "light";
+  const videoSrc = effectiveTheme === "dark"
     ? "/videos/stories/running-animation-dark.mp4"
     : "/videos/stories/running-animation-light.mp4";
   const transitionTlRef = useRef<gsap.core.Timeline | null>(null);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     const userAgent = navigator.userAgent;
@@ -120,7 +126,7 @@ const RunningThumbnail = ({ shouldPlayThumbnail, isHovered }: StoryThumbnailProp
         playsInline
         preload="auto"
         loop
-        key={`${resolvedTheme}-${preferTransparentWebm ? "webm" : "mp4"}`}
+        key={`${effectiveTheme}-${preferTransparentWebm ? "webm" : "mp4"}`}
         className={cn("absolute running-animation invisible opacity-0 w-20 h-20")}
       >
         {preferTransparentWebm && (

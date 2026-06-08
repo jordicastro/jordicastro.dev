@@ -1,31 +1,26 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
 import { useCursor } from "@/hooks/useCursor";
-import { redirect } from "next/navigation";
 import Navigation from "./_components/Navigation";
 import CustomCursor from "./_components/CustomCursor";
-import ScrollMask from "@/components/ScrollMask";
+import { useEffect } from "react";
+import { useAnonUser } from "@/hooks/useAnonUser";
 
 const MainLayout = ({
     children
 }: {
     children: React.ReactNode;
 }) => {
-    const { isAuthenticated, isLoading } = useAuth(); // replace this with the server Auth when db is set up
     const { cursor } = useCursor();
+    const { isLoading, getAnonId } = useAnonUser();
 
-    // if (isLoading) { // show spinning logo or something
-    //     return (
-    //         <div className="h-svh w-full flex-center">
-    //             Loading...
-    //         </div>
-    //     )
-    // }
-
-    // if (!isAuthenticated) {
-    //     return redirect("/maintenance");
-    // }
+    useEffect(
+        () => {
+            // get anonId from http only cookie, setting local storage just for client visibility
+            getAnonId();
+        },
+        []
+    )
 
     return (
         <div

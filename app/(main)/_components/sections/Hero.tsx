@@ -9,8 +9,11 @@ const Hero = ({ id }: { id?: string }) => {
     const scopeRef = useRef<HTMLDivElement>(null);
     const gridItemIds = ["title", "cards-right", "cards-left", "about"]
     const [hasCompletedIntro, setHasCompletedIntro] = useState(false);
-    const isMobile = useMediaQuery("(max-width: 992px)"); // usually 768, but need to start mobile breakpoint earlier
-    const sm = useMediaQuery("(max-width: 640px)");
+    const [isReady, setIsReady] = useState(false);
+
+    // Keep SSR and hydration markup in sync, then update after mount.
+    const isMobile = useMediaQuery("(max-width: 992px)", { initializeWithValue: false }); // usually 768, but need to start mobile breakpoint earlier
+    const sm = useMediaQuery("(max-width: 640px)", { initializeWithValue: false });
 
     gsap.registerEffect({
         name: "backOutStagger",
@@ -42,6 +45,7 @@ const Hero = ({ id }: { id?: string }) => {
     const { contextSafe } = useGSAP(
         () => {
             setup();
+            setIsReady(true);
 
             const titleEl = gsap.utils.selector(scopeRef.current)('.title-el');
             const subtitleEl = gsap.utils.selector(scopeRef.current)('.subtitle-el');
@@ -410,7 +414,7 @@ const Hero = ({ id }: { id?: string }) => {
     });
 
     return (
-        <div ref={scopeRef} id={id}>
+        <div ref={scopeRef} id={id} className={isReady ? "" : "invisible"}>
             {/* Desktop layout */}
             { !isMobile ? (
                 <div className="desktop-wrapper h-[calc(100svh-16px)] w-full flex flex-col gap-card overflow-y-hidden">

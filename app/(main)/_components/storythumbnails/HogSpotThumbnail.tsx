@@ -307,7 +307,7 @@ const FakeSpotCard = ({ title, difficulty, stars, src }: { title: string; diffic
         >
             <Image
                 src={src}
-                alt={`${name} thumbnail`}
+                alt={`${title} thumbnail`}
                 width={60}
                 height={50}
                 className="object-cover rounded-sm select-none"

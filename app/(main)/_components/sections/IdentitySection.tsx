@@ -27,7 +27,7 @@ const IdentitySection = ({ id }: { id?: string }) => {
     const { activeSectionId, prevSectionId } = useScrollMask();
     const cycleDelay = 0.5; // delay between identity sections
     const isFirstIteration = useRef(true);
-    const sm = useMediaQuery('(max-width: 640px)');
+    const sm = useMediaQuery('(max-width: 640px)', { initializeWithValue: false });
 
     useEffect(() => { // handle play/pause of the masterTl based on scrollMask and activeSectionId
         if (activeSectionId !== id && prevSectionId === id) { // pause/seek after exiting the section
@@ -289,11 +289,7 @@ const IdentitySection = ({ id }: { id?: string }) => {
             <p className="absolute top-12 left-12 lg:top-20 lg:left-40 text-2xl/normal md:text-3xl/normal lg:text-3xl/normal i-am-text font-medium z-10">I am a ...</p>
             <SESection registerFlourish={registerFlourish}/>
             <CDSection registerFlourish={registerFlourish} iteration={iteration}/>
-            <div className="absolute top-12 right-12 z-20 bg-bg-secondary w-10 h-10 flex-center rounded-full" role="button" onClick={() => {
-                masterTlRef.current?.pause()
-                }}>
-                <Pause size={24} color="#fff" className="z-10" />
-            </div>
+
         </div>
     );
 };

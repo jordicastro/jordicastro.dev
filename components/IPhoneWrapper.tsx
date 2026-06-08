@@ -1,8 +1,7 @@
 "use client"
 
-import { ReactNode, Ref } from "react";
+import { ReactNode, Ref, useEffect, useState } from "react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 
 interface IPhoneWrapperProps {
@@ -12,9 +11,16 @@ interface IPhoneWrapperProps {
 
 const IPhoneWrapper = ({ children, ref }: IPhoneWrapperProps) => {
     const { resolvedTheme } = useTheme();
+    const [hasMounted, setHasMounted] = useState(false);
 
-    const iphoneSkeletonSrc = resolvedTheme === "dark" ? "/images/stories/iphone-dark-skeleton.png" : "/images/stories/iphone-light-skeleton.png";
-    const iphoneScreenSrc = resolvedTheme === "dark" ? "/images/stories/iphone-dark-background.png" : "/images/stories/iphone-light-background.png";
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
+
+    const effectiveTheme = hasMounted ? resolvedTheme : "light";
+
+    const iphoneSkeletonSrc = effectiveTheme === "dark" ? "/images/stories/iphone-dark-skeleton.png" : "/images/stories/iphone-light-skeleton.png";
+    const iphoneScreenSrc = effectiveTheme === "dark" ? "/images/stories/iphone-dark-background.png" : "/images/stories/iphone-light-background.png";
 
     return (
             <div ref={ref} className="iphone-wrapper relative w-full h-full flex-center pb-5 overflow-hidden">

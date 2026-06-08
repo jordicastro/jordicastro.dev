@@ -15,15 +15,15 @@ interface AccessCardProps {
     title: string;
     onAccessGranted?: () => void; // callback for onCorrectPassword starts, to fade the LogoBounce instances
     onComplete?: () => void; // callback for when onCorrectPassword finishes, to navigate using the parent MaintenancePage
+    isCorrectPassword: (password: string) => Promise<boolean>; // callback to check password in parent maintenance page
+
 }
 
-const AccessCard = ({ title, onAccessGranted, onComplete }: AccessCardProps) => {
+const AccessCard = ({ title, onAccessGranted, onComplete, isCorrectPassword }: AccessCardProps) => {
     const scopeRef = useRef<HTMLDivElement>(null);
     const [password, setPassword] = useState(""); // the actual password
     const inputRef = useRef<HTMLInputElement>(null); // the dot representation of the password
     const displayRef = useRef<HTMLDivElement>(null); // the static el that is used to replace the input for the stagger animation
-    // .env test password
-    const TEST_PASSWORD = process.env.NEXT_PUBLIC_TEST_PASSWORD ?? null;
 
     const displayValue = password.length ? "• ".repeat(password.length) : "Enter password...";
 
@@ -75,11 +75,12 @@ const AccessCard = ({ title, onAccessGranted, onComplete }: AccessCardProps) => 
         { scope: scopeRef, dependencies: [] }
     );
 
-    const handleEnter = contextSafe(() => {
+    const handleEnter = contextSafe(async () => {
         if (password.length < 5) return;
 
-        gsap.delayedCall(0.5, toggleEnterButton, [false]);
-        if (password === TEST_PASSWORD) {
+        gsap.delayedCall(0, toggleEnterButton, [false]);
+        const isValidPassword = await isCorrectPassword(password);
+        if (isValidPassword) {
             handleCorrectPassword();
         } else {
             handleIncorrectPassword();
@@ -357,7 +358,7 @@ const AccessCard = ({ title, onAccessGranted, onComplete }: AccessCardProps) => 
 
         if (e.key === "Enter") {
             e.preventDefault();
-            handleEnter();
+            void handleEnter();
             return;
         }
 
@@ -417,7 +418,7 @@ const AccessCard = ({ title, onAccessGranted, onComplete }: AccessCardProps) => 
                     )}
                         data-cursor="pointer-2"
                         role="button"
-                        onClick={() => handleEnter()}
+                        onClick={() => void handleEnter()}
                     >
                         <CornerDownLeft  className="text-neutral-200 w-5 h-5 "/>
                     </div>

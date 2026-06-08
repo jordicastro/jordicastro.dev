@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode, Ref } from "react";
+import { ReactNode, Ref, useEffect, useState } from "react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 
@@ -11,8 +11,15 @@ interface AndroidWrapperProps {
 
 const AndroidWrapper = ({ children, ref }: AndroidWrapperProps) => {
     const { resolvedTheme } = useTheme();
+    const [hasMounted, setHasMounted] = useState(false);
 
-    const androidScreenFrameSrc = resolvedTheme === "dark" ? "/images/stories/android-dark-background.png" : "/images/stories/android-light-background.png";
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
+
+    const effectiveTheme = hasMounted ? resolvedTheme : "light";
+
+    const androidScreenFrameSrc = effectiveTheme === "dark" ? "/images/stories/android-dark-background.png" : "/images/stories/android-light-background.png";
 
     return (
             <div ref={ref} className="android-wrapper relative w-full h-full flex-center pb-5 overflow-hidden">

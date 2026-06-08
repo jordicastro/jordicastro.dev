@@ -243,6 +243,26 @@ const StoriesHeader = () => {
 }
 
 const Stories = ({ visibleStories, shouldPlayThumbnails }: { visibleStories: storyCard[], shouldPlayThumbnails: boolean }) => {
+    const [hasMounted, setHasMounted] = useState(false);
+
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
+
+    if (!hasMounted) {
+        return (
+            <div className="stories-container w-full min-h-svh">
+                <div className="masonic-wrapper w-full">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                        {visibleStories.map((story) => (
+                            <StoryCard key={story.id} storyData={story} shouldPlayThumbnail={false} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="stories-container w-full min-h-svh">
             <div className="masonic-wrapper w-full">

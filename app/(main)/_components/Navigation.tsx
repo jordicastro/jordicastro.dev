@@ -23,7 +23,7 @@ gsap.registerPlugin(useGSAP);
 
 const Navigation = () => {
     const pathname = usePathname();
-    const isMobile = useMediaQuery("(max-width: 768px)");
+    const isMobile = useMediaQuery("(max-width: 768px)", { initializeWithValue: false });
     const [hasMounted, setHasMounted] = useState(false);
     const isResizingRef = useRef(false);
     const sidebarSpacerRef = useRef<HTMLDivElement>(null);

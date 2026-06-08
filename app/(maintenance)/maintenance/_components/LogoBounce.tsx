@@ -12,9 +12,10 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 interface LogoBounceProps {
     onComplete: () => void;
+    isCorrectPassword: (password: string) => Promise<boolean>;
 }
 
-const LogoBounce = ({ onComplete }: LogoBounceProps) => {
+const LogoBounce = ({ onComplete, isCorrectPassword }: LogoBounceProps) => {
     const speed = 0.5;
     const tolerance = 5; // how close to the wall to consider it a corner for proper bouncing
     const scopeRef = useRef<HTMLDivElement>(null);
@@ -316,6 +317,7 @@ const LogoBounce = ({ onComplete }: LogoBounceProps) => {
                     clearScheduledBounces();
                 }}
                 onComplete={onComplete}
+                isCorrectPassword={isCorrectPassword}
             />
         </div>
     )

@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils';
 
 const ShakespeareThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProps) => {
     const scopeRef = useRef<HTMLDivElement>(null);
-    const isMobile = useMediaQuery('(max-width: 640px)');
-    const twoXl = useMediaQuery('(min-width: 1536px)');
+    const isMobile = useMediaQuery('(max-width: 640px)', { initializeWithValue: false });
+    const twoXl = useMediaQuery('(min-width: 1536px)', { initializeWithValue: false });
     const fontSize = twoXl ? 30 : isMobile ? 24 : 28;
     const parentWidth = twoXl ? 390: 360;
     const quoteBuildersRef = useRef<Record<string, FlourishBuilder>>({});
