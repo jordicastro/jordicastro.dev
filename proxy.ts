@@ -54,7 +54,6 @@ export async function proxy(req: NextRequest) {
     
     // maintenance is NOT enabled and user is not trying to access the maintenance page: allow the request without checking for a valid cookie
     if(!isMaintenanceEnabled && !pathname.startsWith('/maintenance')) {
-        console.log('maintenance is disabled. proceding with request.');
         return NextResponse.next();
     }
 
@@ -62,7 +61,7 @@ export async function proxy(req: NextRequest) {
     // if the cookie 'maintenance_access' exists, rebuild the token using the env secret and compare it to the existing cookie. if they match and the cookie has not expired, the user can access the (main) routes
     const hasValidCookie = cookieToken ? await verifyMaintenanceAccessToken(cookieToken) : false;
 
-    console.log('isMaintenanceEnabled:', isMaintenanceEnabled, 'hasValidCookie:', hasValidCookie);
+    // console.log('isMaintenanceEnabled:', isMaintenanceEnabled, 'hasValidCookie:', hasValidCookie);
 
     // if maintenance is enabled and user doesnt have a valid cookie, redirect to maintenance page
     if (isMaintenanceEnabled && !hasValidCookie && !pathname.startsWith('/maintenance')) {

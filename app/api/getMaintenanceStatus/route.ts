@@ -23,8 +23,6 @@ export async function GET() {
             return NextResponse.json({ maintenanceEnabled: false });
         }
 
-        console.log('Fetched maintenance status from Supabase:', data);
-
         return NextResponse.json({
             maintenanceEnabled: data?.maintenance_enabled || false
         })

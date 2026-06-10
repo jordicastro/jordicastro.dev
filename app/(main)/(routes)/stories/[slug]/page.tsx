@@ -5,7 +5,6 @@ interface StoryPageProps {
 }
 const StoryPage = async ({ params }: StoryPageProps) => {
     const { slug } = await params;
-    console.log('slug:', slug);
 
     if ( slug === "supplypike-internship" ) {
         return <SupplyPikeStory />

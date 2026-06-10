@@ -10,7 +10,7 @@ import StoriesSection from "./_components/sections/StoriesSection";
 
 export default function Home() {
 
-  return ( // subtract the p-4 (16px) from the main layout on the hero section
+  return (
     <>
       <ScrollMask />
       <ToC sections={homeSections} />

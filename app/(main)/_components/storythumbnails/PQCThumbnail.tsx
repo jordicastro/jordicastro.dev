@@ -123,11 +123,9 @@ const PQCThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProps) =
                 element.offsetWidth > ID_THRESHOLD ?
                     setShouldShowId(true) :
                     setShouldShowId(false);
-                // console.log('updating container width: ',element.offsetWidth);
             }
 
             const resizeObserver = new ResizeObserver(() => {
-                // console.log('restarting with new size: ', element.offsetWidth);
                 debounce.restart(true);
             });
 

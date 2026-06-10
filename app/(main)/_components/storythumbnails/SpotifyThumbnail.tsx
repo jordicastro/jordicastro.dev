@@ -51,11 +51,9 @@ const SpotifyThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProp
                 element.offsetWidth > THRESHOLD ?
                     setShouldShowMobile(true) :
                     setShouldShowMobile(false);
-                // console.log('updating container width: ',element.offsetWidth);
             }
 
             const resizeObserver = new ResizeObserver(() => {
-                // console.log('restarting with new size: ', element.offsetWidth);
                 debounce.restart(true);
             });
 

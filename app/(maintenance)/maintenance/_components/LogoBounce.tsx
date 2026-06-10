@@ -207,7 +207,7 @@ const LogoBounce = ({ onComplete, isCorrectPassword }: LogoBounceProps) => {
                 const nearBottom = Math.abs(targetY - scopeHeight) < tolerance;
                 const isCorner = (nearLeft || nearRight) && (nearTop || nearBottom);
                 if (isCorner) {
-                    console.log('isCorner!', wall);
+                    // console.log('isCorner!', wall);
                 }
 
                 return { targetX, targetY, wall, isCorner };

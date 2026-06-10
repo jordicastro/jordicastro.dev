@@ -75,3 +75,16 @@ export type StoryThumbnailProps = {
     isHovered?: boolean;
     shouldPlayThumbnail?: boolean;
 }
+
+export type ReactionData = {
+    emoji: ReactionEmoji;
+    count: number;
+}[];
+
+export type ReactionEmoji = "❤️" | "👍" | "🔥";
+
+export type GetReactionsResponse = {
+    reactions: ReactionData;
+    totalReactions: number;
+    userReaction: ReactionEmoji | null;
+}

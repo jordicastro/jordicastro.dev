@@ -90,6 +90,7 @@ export async function GET(request: NextRequest) {
 	}
 }
 
+// GET handles both fetching and creating anon users, but PUT also available if needed
 export async function PUT() {
 	try {
 		return await buildNewAnonUserResponse();

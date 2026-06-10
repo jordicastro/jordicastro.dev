@@ -54,6 +54,33 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
     }, [handedOff]);
 
 
+    const clearDownAction = () => {
+        if (downDebounceTimerRef.current !== null) {
+            clearTimeout(downDebounceTimerRef.current);
+            downDebounceTimerRef.current = null;
+        }
+    };
+
+    const lockScroll = () => {
+        if (isScrollLockedRef.current) return;
+
+        clearDownAction();
+        previousBodyOverflowRef.current = document.body.style.overflow;
+        preventScrollRef.current?.enable();
+        document.body.style.overflow = "hidden";
+        isScrollLockedRef.current = true;
+    };
+
+    const unlockScroll = () => {
+        clearDownAction();
+        preventScrollRef.current?.disable();
+
+        if (!isScrollLockedRef.current) return;
+
+        document.body.style.overflow = previousBodyOverflowRef.current;
+        isScrollLockedRef.current = false;
+    };
+
     useGSAP(() => {
         if (!tlRef.current) return;
 
@@ -74,37 +101,6 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
         tlRef.current.pause(0);
         unlockScroll();
     }, [activeSectionId, isAnimating])
-
-
-    const { contextSafe } = useGSAP(
-        () => {},
-        { scope: scopeRef, dependencies: []}
-    );
-
-    const clearDownAction = () => {
-        if (downDebounceTimerRef.current !== null) {
-            clearTimeout(downDebounceTimerRef.current);
-            downDebounceTimerRef.current = null;
-        }
-    };
-
-    const lockScroll = contextSafe(() => {
-        if (isScrollLockedRef.current) return;
-
-        clearDownAction();
-        previousBodyOverflowRef.current = document.body.style.overflow;
-        preventScrollRef.current?.enable();
-        document.body.style.overflow = "hidden";
-        isScrollLockedRef.current = true;
-    });
-    const unlockScroll = contextSafe(() => {
-        if (!isScrollLockedRef.current) return;
-
-        clearDownAction();
-        preventScrollRef.current?.disable();
-        document.body.style.overflow = previousBodyOverflowRef.current;
-        isScrollLockedRef.current = false;
-    });
 
     useGSAP(
         () => {
@@ -136,7 +132,7 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
                 }
             );
 
-            const thresholdTl = gsap.timeline({
+            gsap.timeline({
                 scrollTrigger: {
                     trigger: scopeRef.current,
                     start: "top-=1 top",
@@ -206,6 +202,9 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
                 onStopDelay: 0, // allow the user to continue as soon as possible after momentum ends
             })
 
+            // disabled by default, until lockScroll enables it
+            preventScrollRef.current.disable();
+
             return () => {
                 tlRef.current?.kill();
                 tlRef.current = null;
@@ -248,6 +247,11 @@ const Stories = ({ visibleStories, shouldPlayThumbnails }: { visibleStories: sto
     useEffect(() => {
         setHasMounted(true);
     }, []);
+
+    useEffect(() => {
+        // refresh ScrollTrigger after mount
+        ScrollTrigger.refresh();
+    }, [hasMounted, visibleStories.length]);
 
     if (!hasMounted) {
         return (
