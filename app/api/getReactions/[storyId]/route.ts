@@ -6,7 +6,7 @@ import { ANON_USER_COOKIE_NAME, verifyAnonUserToken } from '@/lib/cookies';
 import type { NextRequest } from 'next/server';
 import { getAnonId } from "../../updateReaction/route";
 
-export async function GET(req: NextRequest, { params }: { params: { storyId: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ storyId: string }> }) {
     const { storyId } = await params;
 
     try {
