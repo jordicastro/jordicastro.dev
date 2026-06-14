@@ -36,6 +36,7 @@
   --breakpoint-md2: 850px; 
   --breakpoint-wide: 1350px;
   --breakpoint-lg2: 1152px;
+  --breakpoint-xs: 463px;
 
 }
 
@@ -230,7 +231,7 @@ body,
 
   #motion-path-tl {
         .keyframe-container {
-            @apply absolute w-35 h-35 border-2 border-dashed border-neutral-300 flex-center rounded-lg;
+            @apply absolute w-25 h-25 sm:w-35 sm:h-35 border-2 border-dashed border-neutral-300 flex-center rounded-lg;
         }
         .initial {
             @apply sm:left-[60%] right-[2%] top-[5%];

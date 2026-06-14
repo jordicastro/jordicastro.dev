@@ -27,7 +27,7 @@ import LicensePlateThumbnail from '../storythumbnails/LicensePlateThumbnail'
 
 gsap.registerPlugin(useGSAP, Observer, ScrollTrigger);
 
-const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
+const StoriesSection = ({ id: thisSectionId, shouldScrollMask = true }: { id?: string, shouldScrollMask?: boolean }) => {
     const scopeRef = useRef<HTMLDivElement>(null);
     const { activeFilters, activeSort } = useStoriesOptions();
     const visibleStories = getVisibleStories(activeFilters, activeSort);
@@ -62,6 +62,7 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
     };
 
     const lockScroll = () => {
+        if (!shouldScrollMask) return;
         if (isScrollLockedRef.current) return;
 
         clearDownAction();
@@ -72,6 +73,11 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
     };
 
     const unlockScroll = () => {
+        if (!shouldScrollMask) {
+            clearDownAction();
+            preventScrollRef.current?.disable();
+            return;
+        }
         clearDownAction();
         preventScrollRef.current?.disable();
 
@@ -82,6 +88,7 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
     };
 
     useGSAP(() => {
+        if (!shouldScrollMask) return;
         if (!tlRef.current) return;
 
         if (activeSectionId === thisSectionId && isAnimating) {
@@ -100,7 +107,7 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
 
         tlRef.current.pause(0);
         unlockScroll();
-    }, [activeSectionId, isAnimating])
+    }, [activeSectionId, isAnimating, shouldScrollMask])
 
     useGSAP(
         () => {
@@ -139,15 +146,21 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
                     end: "top+=10 top",
                     // markers: true,
                     onEnter: (self) => {
+                        if (!shouldScrollMask) {
+                            tlRef.current?.play(0);
+                            return;
+                        }
                         lockScroll();
                         if (self.getVelocity() > 0) {
                             isFirstScroll.current = false;
                         }
                     },
                     onLeave: () => {
+                        if (!shouldScrollMask) return;
                         unlockScroll();
                     },
                     onEnterBack: (self) => {
+                        if (!shouldScrollMask) return;
                         const v = Math.abs(self.getVelocity());
                         
                         if (v > 3000) {
@@ -160,6 +173,7 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
                         }
                     },
                     onLeaveBack: () => {
+                        if (!shouldScrollMask) return;
                         unlockScroll();
                     },
                 }
@@ -173,37 +187,39 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
                 setHandedOff(value);
             };
 
-            preventScrollRef.current = ScrollTrigger.observe({
-                target: scopeRef.current,
-                type: "wheel,touch",
-                preventDefault: true,
-                allowClicks: true,
-                onToggleY: (self) => { // determine the scroll direction for onStop
-                    if (self.deltaY > 0) scrollDirection.current = "down";
-                    else if (self.deltaY < 0) scrollDirection.current = "up";
-                },
-                onUp: () => { // continue to the prev section after the "first" scroll lock
-                    if (isFirstScroll.current) return; 
-                    !isAnimatingRef.current && setIsAnimating(true, "up");
-                    isFirstScroll.current = true;
-                    updateHandedOff(true);
-                },
-                onDown: () => { // break free from the scroll lock to view more stories
-                    clearDownAction();
-                    isFirstScroll.current = true;
-                    unlockScroll();
-                },
-                onStop: () => { // wait for momentum from first scroll to end before allowing the next scroll in onDown
+            if (shouldScrollMask) {
+                preventScrollRef.current = ScrollTrigger.observe({
+                    target: scopeRef.current,
+                    type: "wheel,touch",
+                    preventDefault: true,
+                    allowClicks: true,
+                    onToggleY: (self) => { // determine the scroll direction for onStop
+                        if (self.deltaY > 0) scrollDirection.current = "down";
+                        else if (self.deltaY < 0) scrollDirection.current = "up";
+                    },
+                    onUp: () => { // continue to the prev section after the "first" scroll lock
+                        if (isFirstScroll.current) return;
+                        !isAnimatingRef.current && setIsAnimating(true, "up");
+                        isFirstScroll.current = true;
+                        updateHandedOff(true);
+                    },
+                    onDown: () => { // break free from the scroll lock to view more stories
+                        clearDownAction();
+                        isFirstScroll.current = true;
+                        unlockScroll();
+                    },
+                    onStop: () => { // wait for momentum from first scroll to end before allowing the next scroll in onDown
 
-                    if (scrollDirection.current === "up") {
-                        isFirstScroll.current = false;
-                    }
-                },
-                onStopDelay: 0, // allow the user to continue as soon as possible after momentum ends
-            })
+                        if (scrollDirection.current === "up") {
+                            isFirstScroll.current = false;
+                        }
+                    },
+                    onStopDelay: 0, // allow the user to continue as soon as possible after momentum ends
+                })
 
-            // disabled by default, until lockScroll enables it
-            preventScrollRef.current.disable();
+                // disabled by default, until lockScroll enables it
+                preventScrollRef.current.disable();
+            }
 
             return () => {
                 tlRef.current?.kill();
@@ -216,7 +232,7 @@ const StoriesSection = ({ id: thisSectionId }: { id?: string }) => {
                 preventScrollRef.current = null;
             };
         },
-        { scope: scopeRef, dependencies: [activeFilters, activeSort] }
+        { scope: scopeRef, dependencies: [activeFilters, activeSort, shouldScrollMask] }
     )
 
     return (

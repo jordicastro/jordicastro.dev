@@ -12,16 +12,17 @@ import Logo from "@/components/Logo";
 import { useResolvedSidebar } from "@/hooks/useSidebar";
 import { useTheme } from "next-themes";
 import ThreeDGridBackground from "../ThreeDGridBackground";
+import { useMediaQuery } from "usehooks-ts";
 
-const ProgrammingTimeline = ({ id }: { id?: string }) => {
+const ProgrammingTimeline = ({ id, shouldScrollMask }: { id?: string, shouldScrollMask?: boolean }) => {
     return (
-        <div className="w-full px-4 md:px-6 lg:px-8 mt-50" id={id}>
-            <MotionPathTimeline sectionId={id} />
+        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 mt-50" id={id}>
+            <MotionPathTimeline sectionId={id} shouldScrollMask={shouldScrollMask} />
         </div>
     )
 }
 
-const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
+const MotionPathTimeline = ({ sectionId, shouldScrollMask = true }: { sectionId?: string, shouldScrollMask?: boolean }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const scopeRef = useRef<HTMLDivElement>(null);
     const titleRef = useRef<HTMLHeadingElement>(null);
@@ -38,6 +39,8 @@ const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
     const preventScrollRef = useRef<Observer | null>(null);
     const previousBodyOverflowRef = useRef("");
     const isScrollLockedRef = useRef(false);
+    const sm = useMediaQuery("(max-width: 640px)");
+    const logoSize = sm ? 50 : 75;
 
 
     gsap.registerPlugin(useGSAP, ScrollTrigger, MotionPathPlugin, Observer);
@@ -70,6 +73,7 @@ const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
     );
 
     const lockScroll = contextSafe(() => {
+        if (!shouldScrollMask) return;
         if (isScrollLockedRef.current) return;
 
         clearDownAction();
@@ -80,6 +84,11 @@ const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
     });
 
     const unlockScroll = contextSafe(() => {
+        if (!shouldScrollMask) {
+            clearDownAction();
+            preventScrollRef.current?.disable();
+            return;
+        }
         if (!isScrollLockedRef.current) return;
 
         clearDownAction();
@@ -89,13 +98,14 @@ const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
     });
 
     useEffect(() => {
+        if (!shouldScrollMask) return;
         if (!sectionId || activeSectionId === sectionId) return;
 
         unlockScroll();
         handedOffRef.current = false;
         setHandedOff(false);
         isFirstScroll.current = true;
-    }, [activeSectionId, sectionId, unlockScroll]);
+    }, [activeSectionId, sectionId, unlockScroll, shouldScrollMask]);
 
     // title fade in
     useGSAP(
@@ -164,42 +174,6 @@ const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
                 setHandedOff(value);
             };
 
-            preventScrollRef.current = ScrollTrigger.observe({
-                target: root,
-                type: "wheel, touch",
-                preventDefault: true,
-                allowClicks: true,
-                onToggleY: (self) => { // determine the scroll direction for onStop
-                    if (self.deltaY > 0) scrollDirection.current = "down";
-                    else if (self.deltaY < 0) scrollDirection.current = "up";
-                },
-                onUp: () => { // break free from the scroll lock
-                    clearDownAction();
-                    isFirstScroll.current = true;
-                    if (!handedOffRef.current) {
-                        unlockScroll();
-                    }
-                },
-                onDown: () => { // continue to the next section after the "first" scroll lock
-                    if (isFirstScroll.current) return; 
-                    !isAnimatingRef.current && setIsAnimating(true, "down");
-                    isFirstScroll.current = true;
-                    updateHandedOff(true);
-                },
-                onStop: () => { // wait for momentum from first scroll to end before allowing the next scroll in onDown
-
-                    if (tl.progress() > 0.9 && scrollDirection.current === "down") {
-                        isFirstScroll.current = false;
-                    }
-                },
-                onStopDelay: 0, // allow the user to continue as soon as possible after momentum ends
-
-            });
-
-            if (downScrollCounter.current === 0) {
-                preventScrollRef.current.disable();
-            }
-
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: root,
@@ -210,6 +184,8 @@ const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
                     invalidateOnRefresh: true,
                     fastScrollEnd: true,
                     onUpdate: (self) => {
+                        if (!shouldScrollMask) return;
+
                         const v = self.getVelocity();
                         if (!handedOffRef.current && self.progress > 0.88) {
                             // fastest scroll velocity skips the scroll mask animation completely
@@ -234,6 +210,43 @@ const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
             });
             timelineST = tl.scrollTrigger;
             if (!timelineST) return;
+
+            if (shouldScrollMask) {
+                preventScrollRef.current = ScrollTrigger.observe({
+                    target: root,
+                    type: "wheel, touch",
+                    preventDefault: true,
+                    allowClicks: true,
+                    onToggleY: (self) => { // determine the scroll direction for onStop
+                        if (self.deltaY > 0) scrollDirection.current = "down";
+                        else if (self.deltaY < 0) scrollDirection.current = "up";
+                    },
+                    onUp: () => { // break free from the scroll lock
+                        clearDownAction();
+                        isFirstScroll.current = true;
+                        if (!handedOffRef.current) {
+                            unlockScroll();
+                        }
+                    },
+                    onDown: () => { // continue to the next section after the "first" scroll lock
+                        if (isFirstScroll.current) return;
+                        !isAnimatingRef.current && setIsAnimating(true, "down");
+                        isFirstScroll.current = true;
+                        updateHandedOff(true);
+                    },
+                    onStop: () => { // wait for momentum from first scroll to end before allowing the next scroll in onDown
+                        if (tl.progress() > 0.9 && scrollDirection.current === "down") {
+                            isFirstScroll.current = false;
+                        }
+                    },
+                    onStopDelay: 0, // allow the user to continue as soon as possible after momentum ends
+
+                });
+
+                if (downScrollCounter.current === 0) {
+                    preventScrollRef.current.disable();
+                }
+            }
 
 
             const nodeTween = tl.to(timelineNode, {
@@ -276,7 +289,7 @@ const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
                 timelineST?.kill();
             };
         },
-        { scope: scopeRef, dependencies: [width, isCollapsedSettled], revertOnUpdate: true }
+        { scope: scopeRef, dependencies: [width, isCollapsedSettled, shouldScrollMask], revertOnUpdate: true }
     );
 
     const getTweenVars = contextSafe( (card: HTMLElement): gsap.TweenVars => {
@@ -296,7 +309,7 @@ const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
 
     return (
         <div>
-            <div className="max-w-500 mx-auto" ref={containerRef}>
+            <div className="max-w-500 mx-auto px-auto" ref={containerRef}>
             <h2 ref={titleRef} className="text-text-secondary programming-timeline-title opacity-0 translate-y-5">Programming Timeline</h2>
             <div
                 className="w-auto h-[300vh] relative overflow-x-clip"
@@ -305,8 +318,7 @@ const MotionPathTimeline = ({ sectionId }: { sectionId?: string }) => {
             >
                 <ThreeDGridBackground className="abs-x-center top-0 h-full w-auto max-w-none pointer-events-none z-0"/>
                 <div className="keyframe-container initial">
-                    <Logo width={75} height={75} className="timeline-node z-40" />
-                    {/* <div className="timeline-node w-18.75 h-18.75 z-10 rounded-lg bg-linear-to-tr from-[#F96C7F] from-25% to-[#FDC204] -skew-0" /> */}
+                    <Logo width={logoSize} height={logoSize} className="timeline-node z-40" />
                     <TimelineCard
                         position={width < 700 ? "left" : "bottom"}
                         data={timelineCardsData[0]}
@@ -366,11 +378,11 @@ const TimelineCard = ({ position, data, index }: TimelineCardProps) => {
     return (
         <div
             className={twMerge(
-                `absolute w-62.5 h-41.25 rounded-3xl p-6 flex flex-col justify-between items-center timeline-card timeline-card-${index} bg-bg-secondary`,
+                `absolute w-57 h-37 sm:w-62.5 sm:h-41.25 rounded-3xl p-6 flex flex-col justify-between items-center timeline-card timeline-card-${index} bg-bg-secondary`,
                 position === "top" && "-top-46",
                 position === "bottom" && "-bottom-46",
-                position === "left" && "-left-67",
-                position === "right" && "-right-67",
+                position === "left" && "-left-64 sm:-left-67",
+                position === "right" && "-right-64 sm:-right-67",
             )}
             style={{ visibility: "hidden" }}
         >

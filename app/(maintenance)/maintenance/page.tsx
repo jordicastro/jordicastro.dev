@@ -1,4 +1,5 @@
 "use client";
+
 import { useRouter } from 'next/navigation';
 import React from 'react'
 import LogoBounce from './_components/LogoBounce';

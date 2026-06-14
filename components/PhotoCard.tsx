@@ -70,7 +70,7 @@ const PhotoCard = ({ src, liveSrc, alt, width, height, className }: PhotoCardPro
                 alt={alt}
                 width={width}
                 height={height}
-                className='static-photo block h-auto w-full object-cover rounded-lg select-none'
+                className='static-photo block h-auto w-full object-cover rounded-lg pointer-events-none select-none'
                 draggable={false}
             />
             {liveSrc && (
@@ -79,7 +79,7 @@ const PhotoCard = ({ src, liveSrc, alt, width, height, className }: PhotoCardPro
                     loop
                     muted
                     playsInline
-                    className='live-photo absolute top-0 left-0 h-full w-full object-cover rounded-lg select-none'
+                    className='live-photo absolute top-0 left-0 h-full w-full object-cover rounded-lg pointer-events-none select-none'
                 />
             )}
         </div>

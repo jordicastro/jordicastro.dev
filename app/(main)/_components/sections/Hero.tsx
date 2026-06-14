@@ -1,6 +1,5 @@
 import PhotoCard from '@/components/PhotoCard'
-import { useRef, useState } from 'react';
-import { useMediaQuery } from 'usehooks-ts';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react';
 import { SplitText, CustomEase, ScrollTrigger } from "gsap/all";
@@ -10,10 +9,32 @@ const Hero = ({ id }: { id?: string }) => {
     const gridItemIds = ["title", "cards-right", "cards-left", "about"]
     const [hasCompletedIntro, setHasCompletedIntro] = useState(false);
     const [isReady, setIsReady] = useState(false);
+    const [viewport, setViewport] = useState<{ isMobile: boolean; sm: boolean } | null>(null);
 
-    // Keep SSR and hydration markup in sync, then update after mount.
-    const isMobile = useMediaQuery("(max-width: 992px)", { initializeWithValue: false }); // usually 768, but need to start mobile breakpoint earlier
-    const sm = useMediaQuery("(max-width: 640px)", { initializeWithValue: false });
+    // Resolve viewport breakpoints on client before initializing GSAP timelines.
+    const isMobile = viewport?.isMobile ?? false; // usually 768, but need to start mobile breakpoint earlier
+    const sm = viewport?.sm ?? false;
+
+    useEffect(() => {
+        const mobileQuery = window.matchMedia("(max-width: 992px)");
+        const smQuery = window.matchMedia("(max-width: 640px)");
+
+        const syncViewport = () => {
+            setViewport({
+                isMobile: mobileQuery.matches,
+                sm: smQuery.matches,
+            });
+        };
+
+        syncViewport();
+        mobileQuery.addEventListener("change", syncViewport);
+        smQuery.addEventListener("change", syncViewport);
+
+        return () => {
+            mobileQuery.removeEventListener("change", syncViewport);
+            smQuery.removeEventListener("change", syncViewport);
+        };
+    }, []);
 
     gsap.registerEffect({
         name: "backOutStagger",
@@ -44,6 +65,8 @@ const Hero = ({ id }: { id?: string }) => {
 
     const { contextSafe } = useGSAP(
         () => {
+            if (!viewport) return;
+
             setup();
             setIsReady(true);
 
@@ -295,12 +318,12 @@ const Hero = ({ id }: { id?: string }) => {
                 // titleSplits.forEach((split) => split.revert());
             };
         },
-        { scope: scopeRef, dependencies: [] }
+        { scope: scopeRef, dependencies: [viewport?.isMobile, viewport?.sm], revertOnUpdate: true }
     )
 
     useGSAP( // hook called when the intro animation is complete to start the paralax scroll trigger animation
         () => {
-            if (!hasCompletedIntro) return;
+            if (!viewport || !hasCompletedIntro) return;
 
             const photoCards = gsap.utils.selector(scopeRef.current)('.photo-card-wrapper');
             if (!photoCards.length) return;
@@ -377,7 +400,7 @@ const Hero = ({ id }: { id?: string }) => {
                 gsap.set(photoCards, { clearProps: "transform" });
             };
         },
-        { scope: scopeRef, dependencies: [hasCompletedIntro, isMobile, sm, ], revertOnUpdate: true }
+        { scope: scopeRef, dependencies: [hasCompletedIntro, isMobile, sm, viewport?.isMobile, viewport?.sm], revertOnUpdate: true }
     )
 
     const setup = contextSafe(() => {
@@ -414,7 +437,7 @@ const Hero = ({ id }: { id?: string }) => {
     });
 
     return (
-        <div ref={scopeRef} id={id} className={isReady ? "" : "invisible"}>
+        <div ref={scopeRef} id={id} className={isReady && viewport ? "" : "invisible"}>
             {/* Desktop layout */}
             { !isMobile ? (
                 <div className="desktop-wrapper h-[calc(100svh-16px)] w-full flex flex-col gap-card overflow-y-hidden">

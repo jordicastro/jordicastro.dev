@@ -19,7 +19,7 @@ interface DropdownButtonProps {
 }
 
 const DropdownButton = ({ label, icon: Icon, options, checkBoxes=false, className }: DropdownButtonProps) => {
-    const dropdownPositionCn = "abs-x-center -bottom-52"
+    const dropdownPositionCn = "abs-x-center -bottom-42 sm:-bottom-52"
     const scopeRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [isPinnedOpen, setIsPinnedOpen] = useState(false);
@@ -117,7 +117,7 @@ const DropdownMenu = ({ options, checkBoxes, dropdownRef, label, className }: Dr
 
     return (
         <div ref={dropdownRef} className={cn(
-            "w-[150px] h-[200px] dropdownMenu-wrapper rounded-lg bg-bg-secondary flex flex-col items-start justify-start gap-0 px-2 py-3 backdrop-blur shadow-lg z-80",
+            "w-[150px] h-[133px] sm:w-[150px] sm:h-[200px] dropdownMenu-wrapper rounded-lg bg-bg-secondary flex flex-col items-start justify-start gap-0 px-2 py-3 backdrop-blur shadow-lg z-80",
             "border border-neutral-300 bg-white/85 dark:border-neutral-800 dark:bg-neutral-900/85",
             className
         )}>

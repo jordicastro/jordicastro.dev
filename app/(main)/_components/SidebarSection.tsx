@@ -37,6 +37,7 @@ const SidebarSection = ({ title, items }: SidebarSectionProps) => {
                             "group/navItem relative flex w-full h-9 items-center gap-x-7 select-none",
                             `hoverable`,
                             adjustedActiveSectionId === item.id ? "" :  "hoverable-sidebar-items",
+                            item.label === "Cursor" && "hidden md:block"
                         )}
                         onClick={item.onClick}
                         data-cursor='pointer'

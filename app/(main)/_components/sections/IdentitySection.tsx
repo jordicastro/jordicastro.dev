@@ -258,14 +258,15 @@ const IdentitySection = ({ id }: { id?: string }) => {
                 target: scopeRef.current,
                 type: "wheel,touch",
                 preventDefault: true,
-                tolerance: 10,
+                tolerance: 20, // prevent accidental triggers by reducing touch drag sensitivity 
+                wheelSpeed: -1, // invert wheel direction to correct natural touch onUp and onDown direction
                 onUp: (self) => {
-                    !isAnimating && setIsAnimating(true, "up")
-                    // isFirstIteration.current = false;
-                },
-                onDown: () => {
                     !isAnimating && setIsAnimating(true, "down")
-                    // isFirstIteration.current = false;
+                    console.log('isDragging works only for touch events?', self.isDragging)
+                },
+                onDown: (self) => {
+                    !isAnimating && setIsAnimating(true, "up")
+                    console.log('isDragging works only for touch events?', self.isDragging)
                 },
             })
 

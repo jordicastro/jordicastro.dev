@@ -28,17 +28,15 @@ const IconButton = ({ text, icon:Icon, activeColor="#2b7fff", drawBorder=false, 
         "rgb(112, 112, 112)" :
         "rgb(212, 212, 212)";
 
-    const sm = useMediaQuery("(max-width: 640px)");
-    const canHover = useMediaQuery("(hover: hover) and (pointer: fine)");
-    const md = useMediaQuery("(max-width: 768px) and (min-width: 641px)");
+    const canHover = useMediaQuery("(hover: hover) and (pointer: fine)", { initializeWithValue: false });
     const  textSize = autoResize ? 
-        sm ? "text-sm" : md ? "text-base" : "text-lg" :
+        "text-sm sm:text-base md:text-lg" :
         'text-lg';
     const iconSize = autoResize ?
-        sm ? "w-5 h-5" : md ? "w-5 h-5" : "w-6 h-6" :
+        "w-5 h-5 md:w-6 md:h-6" :
         "w-6 h-6";
     const widthHeight = autoResize ?
-        sm ? "w-60 h-15" : md ? "w-65 h-16.25" : "w-75 h-18.75" :
+        "w-60 h-15 sm:w-65 sm:h-16.25 md:w-75 md:h-18.75" :
         "w-75 h-18.75";
 
     gsap.registerPlugin(useGSAP, DrawSVGPlugin);

@@ -10,7 +10,7 @@ type CursorStore = {
 export const useCursor = create<CursorStore>()(
     persist(
         (set) => ({
-            cursor: false,
+            cursor: true, // custom cursor is true by default
             setCursor: (value) => {
                 set({ cursor: value });
             },

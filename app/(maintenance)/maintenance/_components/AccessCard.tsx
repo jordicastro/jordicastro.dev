@@ -6,8 +6,8 @@ import gsap from "gsap";
 import { CornerDownLeft } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { twMerge } from "tailwind-merge";
 import Logo from "@/components/Logo";
+import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(useGSAP, CustomEase, CustomWiggle, SplitText, MotionPathPlugin);
 
@@ -32,7 +32,7 @@ const AccessCard = ({ title, onAccessGranted, onComplete, isCorrectPassword }: A
             resetInput();
         }
 
-        if (password.length > 5) { // display enter button on minimum 5 chars
+        if (password.length >= 5) { // display enter button on minimum 5 chars
             toggleEnterButton(true);
         } else toggleEnterButton(false);
     }, [password]);
@@ -76,13 +76,15 @@ const AccessCard = ({ title, onAccessGranted, onComplete, isCorrectPassword }: A
     );
 
     const handleEnter = contextSafe(async () => {
-        if (password.length < 5) return;
+        const submittedPassword = inputRef.current?.value ?? password;
+        if (submittedPassword.length < 5) return;
 
         gsap.delayedCall(0, toggleEnterButton, [false]);
-        const isValidPassword = await isCorrectPassword(password);
+        const isValidPassword = await isCorrectPassword(submittedPassword);
         if (isValidPassword) {
             handleCorrectPassword();
         } else {
+            setPassword(submittedPassword);
             handleIncorrectPassword();
         }
         
@@ -146,8 +148,6 @@ const AccessCard = ({ title, onAccessGranted, onComplete, isCorrectPassword }: A
         // fade out anim 1: simple back.out on logo and chars
 
         const fadeOutTl = getFadeOutAnim(welcomeLogo, welcomeText);
-        // fade out anim 2: contract & shrink chars towards logo, shrink logo, then physics 2d explode chars while fading out logo
-        // const fadeOutTl = getAltFadeOutAnim();
 
         tl.add(fadeOutTl, ">=2");
 
@@ -306,115 +306,51 @@ const AccessCard = ({ title, onAccessGranted, onComplete, isCorrectPassword }: A
         gsap.to(enterButton, { autoAlpha: show ? 1 : 0, duration: 0.2, ease: "power1.out", overwrite: true });
     }
 
-    const isAllSelected = () => {
-        const input = inputRef.current;
-        if (!input) return false;
-
-        const selectionStart = input.selectionStart ?? 0;
-        const selectionEnd = input.selectionEnd ?? 0;
-
-        return selectionStart === 0 && selectionEnd === input.value.length;
-    };
-
-    const moveCaretToEnd = () => {
-        requestAnimationFrame(() => {
-            const input = inputRef.current;
-            if (!input) return;
-            const end = input.value.length;
-            input.setSelectionRange(end, end);
-        });
-    };
-
-    const handleFocus = () => {
-        requestAnimationFrame(() => inputRef.current?.select());
-    };
-
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Tab") return;
-
-        const fullSelection = isAllSelected();
-        const isModifierClear = e.key === "Backspace" && (e.ctrlKey || e.metaKey || e.altKey);
-
-        if (isModifierClear) {
-            e.preventDefault();
-            setPassword("");
-            moveCaretToEnd();
-            return;
-        }
-
-        if (e.key === "Backspace") {
-            e.preventDefault();
-            setPassword((prev) => (fullSelection ? "" : prev.slice(0, -1)));
-            moveCaretToEnd();
-            return;
-        }
-
-        if (e.key === "Delete") {
-            e.preventDefault();
-            setPassword("");
-            moveCaretToEnd();
-            return;
-        }
-
         if (e.key === "Enter") {
             e.preventDefault();
             void handleEnter();
-            return;
         }
-
-        if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
-            e.preventDefault();
-            setPassword((prev) => (fullSelection ? e.key : prev + e.key));
-            moveCaretToEnd();
-        }
-    };
-
-    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        const pastedText = e.clipboardData.getData("text");
-        if (!pastedText) return;
-
-        setPassword((prev) => (isAllSelected() ? pastedText : prev + pastedText));
-        moveCaretToEnd();
     };
 
     return (
         <div ref={scopeRef}>
             {/* access-card */}
-            <div className="access-card abs-center z-50 h-50 w-125 rounded-xl bg-bg-secondary flex-center-col gap-11">
+            <div className="access-card abs-center z-50 h-50 w-11/12 max-w-125 rounded-xl bg-bg-secondary flex-center-col gap-11">
                 {/* title */}
-                <h2 className="access-title text-2xl text-text-primary tracking-wide font-medium">{title}</h2>
+                <h2 className="access-title text-xl w-3/4 sm:text-2xl sm:w-auto text-text-primary text-center tracking-wide font-medium">{title}</h2>
 
                 {/* input password */}
                 <div className="password-input-container relative flex h-11 w-1/2 items-center justify-start rounded-full border-2 border-text-secondary px-4 transition-colors focus-within:border-sky-400 overflow-hidden">
                     <input
                         ref={inputRef}
-                        type="text"
-                        value={displayValue}
-                        readOnly
-                        onFocus={handleFocus}
-                        onClick={handleFocus}
+                        type="password"
+                        value={password}
+                        placeholder="Enter password..."
+                        onChange={(e) => setPassword(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        onPaste={handlePaste}
                         aria-label="Password"
-                        autoComplete="off"
+                        autoComplete="current-password"
+                        enterKeyHint="go"
+                        autoCapitalize="none"
+                        autoCorrect="off"
                         spellCheck={false}
-                        className={twMerge(
-                            "password-input w-full bg-transparent text-md outline-none tracking-wide",
+                        className={cn(
+                            "password-input w-full bg-transparent text-sm sm:text-[16px] outline-none tracking-wide",
                             password.length ? "text-text-primary" : "text-text-secondary"
                         )}
                     />
                     <div
                         ref={displayRef}
                         aria-hidden="true"
-                        className={twMerge(
-                            "pointer-events-none abs-y-center left-4 right-4 overflow-hidden whitespace-nowrap bg-transparent text-md tracking-wide",
-                            password.length ? "text-text-primary" : "text-text-secondary"
+                        className={cn(
+                            "pointer-events-none abs-y-center left-4 right-4 overflow-hidden whitespace-nowrap bg-transparent text-sm sm:text-[16px] tracking-wide",
+                            password.length ? "text-text-primary" : "text-text-secondary",
                         )}
                     />
                     {/* enter button */}
-                    <div className={twMerge(
-                        "input-enter-button abs-y-center right-0 h-full w-10 rounded-r-full bg-bg-tertiary flex-center cursor-pointer",
+                    <div className={cn(
+                        "input-enter-button abs-y-center right-0 h-full w-10 rounded-r-full bg-bg-tertiary flex-center cursor-pointer opacity-0 invisible",
                     )}
                         data-cursor="pointer-2"
                         role="button"

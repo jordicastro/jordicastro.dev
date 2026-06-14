@@ -7,6 +7,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import AccessCard from "./AccessCard";
 import Logo from "@/components/Logo";
+import { useMediaQuery } from "usehooks-ts";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -28,10 +29,13 @@ const LogoBounce = ({ onComplete, isCorrectPassword }: LogoBounceProps) => {
     const angle = useRef(0);
     const logoVariants = [
         "/images/logos/JordPle.png", // default
-        "/images/logos/JordPle-old.png", 
-        "/images/logos/JordPle-oldest.png",
+        "/images/logos/jordple-old.png", 
+        "/images/logos/jordple-oldest.png",
 
-    ] 
+    ]
+    const sm = useMediaQuery("(max-width: 640px)"); // adjust number of logos and speed on smaller screens
+    const logoWH = sm ? "48px" : "64px";
+    const numLogos = sm ? 10 : 20;
 
     // clear any future schedule bounces
     const clearScheduledBounces = () => {
@@ -67,7 +71,7 @@ const LogoBounce = ({ onComplete, isCorrectPassword }: LogoBounceProps) => {
 
                 // entire main animation loop
                 let totalDelay = 0;
-                for (let i = 0; i < 20; i++) { 
+                for (let i = 0; i < numLogos; i++) { 
                     if (killRef.current) break;
                     const randTimeout = i === 0 ? 0 : gsap.utils.random(10000, 20000); // 10-20s delay
                     totalDelay += randTimeout;
@@ -235,8 +239,8 @@ const LogoBounce = ({ onComplete, isCorrectPassword }: LogoBounceProps) => {
                     el.src = this.logo;
                     el.style.position = 'absolute';
                     el.style.pointerEvents = 'none';
-                    el.style.width = '64px';
-                    el.style.height = '64px';
+                    el.style.width = logoWH;
+                    el.style.height = logoWH;
                     el.className = 'bounce-logo';
                     this.container.appendChild(el);
                     return el;

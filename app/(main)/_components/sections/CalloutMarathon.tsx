@@ -16,14 +16,20 @@ const CalloutMarathon = ({ id }: { id?:string }) => {
     const rollingTimeAnimRef = useRef<Record<string, FlourishBuilder>>({});
     const { theme } = useTheme();
 
+    const mobile = useMediaQuery("(max-width: 463px)", { initializeWithValue: false });
     const sm = useMediaQuery("(max-width: 640px)", { initializeWithValue: false });
     const md = useMediaQuery("(max-width: 768px) and (min-width: 641px)", { initializeWithValue: false });
     const mdBreakpoint = useMediaQuery("(max-width: 910px) and (min-width: 769px)", { initializeWithValue: false });
-    const rollingTimeCN = mdBreakpoint ? 
-        "absolute left-0 top-40" : md ? // wrap to next line (underneath h2)
-        "absolute left-0 top-35" : sm ?// medium text
-        "absolute left-0 top-25 text-lg" : // small text
-        "absolute -right-35 top-20 text-9xl"; // default: to the right of the h2
+    const rollingTimeCN = mobile ?
+        "absolute left-55 top-24 text-lg" : sm ? // actual mobile
+        "absolute left-0 top-24 text-lg" : md ? // sm screens 
+        "absolute left-0 top-35" : mdBreakpoint ? // md screens
+        "absolute left-0 top-40" : "absolute left-0 top-40" // md breakpoint and up
+    const calloutGapCN = mobile ?
+        "gap-12" : sm ?
+        "gap-20" : md ?
+        "gap-30" : mdBreakpoint ?
+        "gap-30" : "gap-30";
     
     const textSize = md ? "text-6xl" : sm ? "text-5xl" : "text-7xl";
     const widthHeight = md ? "w-27 h-12" : sm ? "w-22 h-10" : "w-35 h-15";
@@ -238,11 +244,11 @@ const CalloutMarathon = ({ id }: { id?:string }) => {
     };
 
     return (
-        <div ref={scopeRef} id={id} className="mt-section callout-marathon-section w-full h-[50svh] flex-center relative"> 
+        <div ref={scopeRef} id={id} className="mt-section callout-marathon-section w-full h-[50svh] flex-center relative mx-4"> 
             <div className="w-280 h-88 mt-section">
                 <div className={cn(
                     'relative h-full max-w-185 flex flex-col items-start',
-                    mdBreakpoint ? "gap-30" : md ? "gap-30" : sm ? "gap-24" : "gap-16"
+                    calloutGapCN
                 )}>
                     <h2 className="callout-text text-text-secondary transition-colors ease-in-out duration-1500">
                         In December 2025, Jordi completed a marathon in

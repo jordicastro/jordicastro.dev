@@ -244,6 +244,7 @@ const ReactionPill = ({ className, storyId }: { className?: string, storyId: str
             });
     });
 
+    // TODO: add isLoading fetching state
     // if (isLoading) {
     //     return (
     //         <div>
@@ -264,7 +265,7 @@ const ReactionPill = ({ className, storyId }: { className?: string, storyId: str
                         `w-30 h-9 border-2 border-neutral-300 rounded-full flex items-center justify-between px-3 text-sm font-bold hover:cursor-pointer select-none transition-colors duration-200 ease-out`,
                         hasReacted ? 'border-sky-500' : 'border-neutral-300',
                     )}
-                    data-cursor="pointer-2"
+                    data-cursor='pointer'
                     role="button"
                     onClick={togglePopoverLock} // lock popOver onClick
                 >
@@ -303,10 +304,10 @@ const ReactionPill = ({ className, storyId }: { className?: string, storyId: str
                         <div
                             key={i}
                             className={twMerge(
-                                `flex-center gap-1 h-full w-full rounded-lg hover:cursor-pointer select-none`,
+                                `flex-center gap-1 h-full w-full rounded-lg hover:cursor-pointer group/reactionItem select-none`,
                                 // r.emoji === activeEmoji ? 'bg--500/80 backdrop-blur-lg' : ''
                             )}
-                            data-cursor="pointer-2"
+                            data-cursor='pointer'
                             role="button"
                             onClick={() => handleReaction(r.emoji)}
                             onContextMenu={(e) => { e.preventDefault(); handleReaction(r.emoji, true)}}

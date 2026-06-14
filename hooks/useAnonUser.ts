@@ -2,6 +2,8 @@ import { create } from "zustand";
 
 interface AnonUserStore {
     isLoading: boolean;
+    isResolved: boolean;
+    setIsResolved: (resolved: boolean) => void;
     anonId: string | null;
     getAnonId: () => Promise<void>;
 }
@@ -12,6 +14,9 @@ let resolveAnonUserInFlight: Promise<void> | null = null;
 export const useAnonUser = create<AnonUserStore>((set, get) => ({
     anonId: null,
     isLoading: true,
+    isResolved: false,
+
+    setIsResolved: (resolved: boolean) => set({ isResolved: resolved }),
 
     getAnonId: async () => {
         if (get().anonId) return;

@@ -245,8 +245,8 @@ const HogSpotThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProp
                         Trending Spots
                     </h3>
                     <div className="trending-spots-bg w-full h-25 rounded-2xl bg-neutral-100 dark:bg-[#1D292F] flex items-center justify-start gap-1">
-                        <FakeSpotCard title="Old Main" difficulty="Hard" stars={3} src="/images/stories/hogspot-oldmain.png"/>
-                        <FakeSpotCard title="Greek Theatre" difficulty="Easy" stars={3} src="/images/stories/hogspot-greektheatre.png" />
+                        <FakeSpotCard title="Old Main" difficulty="Hard" src="/images/stories/hogspot-oldmain.png"/>
+                        <FakeSpotCard title="Greek Theatre" difficulty="Easy" src="/images/stories/hogspot-greektheatre.png" />
                     </div>
                 </div>
                 {/* Leaderboard */}
@@ -297,7 +297,7 @@ const HogSpotThumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnailProp
     )
 }
 
-const FakeSpotCard = ({ title, difficulty, stars, src }: { title: string; difficulty: string; stars: number; src: string }) => {
+const FakeSpotCard = ({ title, difficulty, src }: { title: string; difficulty: string; src: string }) => {
 
     return (
         <div
@@ -319,12 +319,12 @@ const FakeSpotCard = ({ title, difficulty, stars, src }: { title: string; diffic
             )}>
                 {title}
             </h3>
-            <div className="w-full h-4 flex gap-1 items-center justify-start">
+            <div className="w-full h-3 sm:h-4 flex gap-1 items-center justify-start">
                 <div className={cn(
                     "w-5 h-full flex-center rounded-sm",
                     difficulty === "Easy" ? "bg-green-500" : "bg-rose-500"
                 )}>
-                    <p className={cn("text-[8px] text-white", monomaniacOne.className)}>
+                    <p className={cn("text-[6px] sm:text-[8px] text-white", monomaniacOne.className)}>
                         {difficulty}
                     </p>
                 </div>

@@ -16,7 +16,7 @@ type SidebarStore = {
 export const useSidebar = create<SidebarStore>()(
     persist(
         (set) => ({
-            isCollapsed: false,
+            isCollapsed: true,
             hasHydrated: false,
             setIsCollapsed: (value) => {
                 set({ isCollapsed: value });
