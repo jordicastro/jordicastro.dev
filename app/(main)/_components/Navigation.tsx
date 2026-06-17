@@ -264,7 +264,13 @@ const Navigation = () => {
                 <div className="h-full overflow-x-hidden overflow-y-auto px-3">
                     {/* sidebar header */}
                     <div className="w-full h-15 flex-between mt-3">
-                        <Logo width={40} height={40}/>
+                        <div
+                            className="w-auto h-auto hover:cursor-pointer"
+                            onClick={() => handleUrlClick("home")}
+                            data-cursor='pointer'
+                        >
+                            <Logo width={40} height={40}/>
+                        </div>
                         <div className={cn(
                                 "flex-center w-8 h-8 rounded-md bg-none hoverable",
                                 isMobileViewport && "opacity-100",

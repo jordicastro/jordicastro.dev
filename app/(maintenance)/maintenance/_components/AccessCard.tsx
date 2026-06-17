@@ -356,7 +356,7 @@ const AccessCard = ({ title, onAccessGranted, onComplete, isCorrectPassword }: A
                         role="button"
                         onClick={() => void handleEnter()}
                     >
-                        <CornerDownLeft  className="text-neutral-200 w-5 h-5 "/>
+                        <CornerDownLeft  className="text-neutral-800 dark:text-neutral-200 w-5 h-5 "/>
                     </div>
                 </div>
             </div>

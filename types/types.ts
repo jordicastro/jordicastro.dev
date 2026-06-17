@@ -88,3 +88,24 @@ export type GetReactionsResponse = {
     totalReactions: number;
     userReaction: ReactionEmoji | null;
 }
+
+export type GlanceItem = {
+    title: string;
+    titleCN?: string;
+    titleIcon?: React.ReactNode;
+    description: string | React.ReactNode;
+    descriptionCN?: string;
+}
+
+export type StoryTheme = {
+    font: string;
+    textPrimary: string;
+    textSecondary?: string;
+    textTertiary?: string;
+    pText?: string;
+}
+export type GlanceData = {
+    theme: StoryTheme;
+    primaryColor?: string;
+    items: GlanceItem[]
+};

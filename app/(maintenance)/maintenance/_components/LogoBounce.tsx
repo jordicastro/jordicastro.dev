@@ -29,8 +29,8 @@ const LogoBounce = ({ onComplete, isCorrectPassword }: LogoBounceProps) => {
     const angle = useRef(0);
     const logoVariants = [
         "/images/logos/JordPle.png", // default
-        "/images/logos/jordple-old.png", 
-        "/images/logos/jordple-oldest.png",
+        "/images/logos/jordple_v1_5.png", 
+        "/images/logos/jordple_v1.png",
 
     ]
     const sm = useMediaQuery("(max-width: 640px)"); // adjust number of logos and speed on smaller screens

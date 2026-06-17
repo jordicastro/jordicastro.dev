@@ -90,7 +90,7 @@ const PortfolioV1Thumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnail
         <div ref={scopeRef} className="relative w-full h-full flex-center pb-5">
             <div className="relative w-auto h-auto">
                 <Image
-                    src="/images/logos/jordple-v1-eyeless.png"
+                    src="/images/logos/jordple_v1_eyeless.png"
                     alt="logo"
                     width={width}
                     height={height}

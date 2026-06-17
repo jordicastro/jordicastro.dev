@@ -6,6 +6,8 @@ import CustomCursor from "./_components/CustomCursor";
 import { useEffect, useRef } from "react";
 import { useAnonUser } from "@/hooks/useAnonUser";
 import LoadingScreen from "@/components/LoadingScreen";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
 const MainLayout = ({
     children
@@ -13,14 +15,32 @@ const MainLayout = ({
     children: React.ReactNode;
 }) => {
     const { cursor } = useCursor();
-    const { isLoading, getAnonId, isResolved } = useAnonUser();
-    const loadingScope = useRef<HTMLDivElement>(null);
+    const { getAnonId, isResolved } = useAnonUser();
+    const mainLayoutScope = useRef<HTMLDivElement>(null);
 
     useEffect(
         () => { // get anonId from http only cookie, setting local storage just for client visibility
             getAnonId();
         },
         []
+    )
+
+    useGSAP( 
+        () => {
+            if (!isResolved) return;
+
+            const mainLayout = mainLayoutScope.current;
+            if (!mainLayout) return;
+
+            gsap.fromTo(mainLayout, {
+                autoAlpha: 0,
+            }, {
+                autoAlpha: 1,
+                duration: 0.8,
+                ease: "power2.inOut"
+            })
+        },
+        { scope: mainLayoutScope, dependencies: [isResolved]}
     )
 
     if (!isResolved) {
@@ -31,7 +51,8 @@ const MainLayout = ({
 
     return (
         <div
-            className="flex min-h-svh w-full"
+            className="flex min-h-svh w-full main-layout"
+            ref={mainLayoutScope}
             data-custom-cursor={cursor ? "true" : "false"}
         >
             <CustomCursor />

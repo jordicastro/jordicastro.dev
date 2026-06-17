@@ -26,7 +26,7 @@ const ReactionPill = ({ className, storyId }: { className?: string, storyId: str
     const isDirtyRef = useRef(false);
     const localSelectedEmojiRef = useRef<ReactionEmoji | null>(null);
     const isMobile = useMediaQuery("(max-width: 768px)", { initializeWithValue: false });
-    const { reactionData, selectedEmoji, totalReactions, fetchReactions, updateUserReaction } = useReactions();
+    const { reactionData, selectedEmoji, totalReactions, fetchReactions, updateUserReaction, isLoading } = useReactions();
 
     // local state to allow debounce calls to update db (as opposed to updating the db every click)
     const [localReactionData, setLocalReactionData] = useState<ReactionData | null>(null);
@@ -244,19 +244,10 @@ const ReactionPill = ({ className, storyId }: { className?: string, storyId: str
             });
     });
 
-    // TODO: add isLoading fetching state
-    // if (isLoading) {
-    //     return (
-    //         <div>
-    //             loading
-    //         </div>
-    //     )
-    // }
-
     return (
-        <div className={cn("", className)} ref={scope}>
+        <div className={cn("reaction-pill", className)} ref={scope}>
             <div
-                className="relative"
+                className="relative w-auto h-auto"
                 onMouseEnter={() => { if (canHoverRef.current) openPopover(); }}
                 onMouseLeave={() => { if (canHoverRef.current) closePopover(); }}
             >
@@ -289,13 +280,13 @@ const ReactionPill = ({ className, storyId }: { className?: string, storyId: str
                 {/* reactionPopover */}
                 <div
                     ref={popoverRef}
-                    className="absolute left-1/2 -translate-x-1/2 bottom-5/6 w-48 h-14 flex justify-between items-center px-2 py-2 text-sm font-medium rounded-xl bg-neutral-700/50 backdrop-blur-lg shadow-lg"
+                    className="absolute left-1/2 -translate-x-1/2 bottom-5/6 w-48 h-14 flex justify-between items-center px-2 py-2 text-sm font-medium rounded-xl bg-neutral-100/50 dark:bg-neutral-700/50 backdrop-blur-lg shadow-lg"
                     style={{ visibility: "hidden"}}
                 >
                     {/* activeHighlight */}
                     <div
                         ref={highlightRef}
-                        className="absolute inset-y-2 w-14.5 rounded-lg bg-[]-500/80 backdrop-blur-lg -z-1"
+                        className="absolute inset-y-2 w-14.5 rounded-lg bg-neutral-200/80 dark:bg-neutral-700/80 backdrop-blur-lg -z-1"
                         style={{ visibility: localSelectedEmoji ? "visible" : "hidden" }}
                     />
 
@@ -305,7 +296,6 @@ const ReactionPill = ({ className, storyId }: { className?: string, storyId: str
                             key={i}
                             className={twMerge(
                                 `flex-center gap-1 h-full w-full rounded-lg hover:cursor-pointer group/reactionItem select-none`,
-                                // r.emoji === activeEmoji ? 'bg--500/80 backdrop-blur-lg' : ''
                             )}
                             data-cursor='pointer'
                             role="button"

@@ -9,6 +9,14 @@ export const homeSections: Section[] = [
     { id: "stories", label: "Stories" },
 ]
 
+export const spSections: Section[] = [
+    { id: "glance", label: "at a glance" },
+    { id: "abstract", label: "abstract" },
+    { id: "features", label: "favorite features" },
+    { id: "growth", label: "growth (what I learned)" },
+    { id: "conclusion", label: "conclusion" },
+]
+
 export const optionHoverCn = "w-full rounded-lg px-2 py-1 text-start text-sm hover:bg-neutral-100/90 dark:hover:bg-neutral-800/90 hover:cursor-pointer transition-all duration-250 ease-out"
 
 export const timelineCardsData: timelineCardDataType[] = [

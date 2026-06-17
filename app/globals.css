@@ -36,7 +36,14 @@
   --breakpoint-md2: 850px; 
   --breakpoint-wide: 1350px;
   --breakpoint-lg2: 1152px;
+  --breakpoint-lg1: 1080px;
   --breakpoint-xs: 463px;
+  --breakpoint-3xl: 2000px;
+  /* stories */
+  --sp-blue: #0066FF;
+  --sp-red: #FE838D;
+  --sp-green: #5DEDC7;
+  --sp-yellow: #F7B76B;
 
 }
 

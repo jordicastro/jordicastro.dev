@@ -103,6 +103,7 @@ interface CustomSVGProps {
     fill?: string | undefined;
     pathOnly?: boolean;
     pathId?: string;
+    stroke?: string | undefined;
 }
 
 const CustomMouse = ({ fill, className }: CustomSVGProps) => {
@@ -176,8 +177,8 @@ const SPLogo = ({ fill, className, pathOnly }: CustomSVGProps) => {
         </g>
     ) : (
         <svg xmlns="http://www.w3.org/2000/svg" width="126" height="92" viewBox="0 0 126 92" fill={fill ?? "none"} className={cn("sp-logo", className)}>
-        <path d="M19.8458 40.4255C3.84645 48.4255 1.74571 67.8255 13.3457 79.4255C24.9457 91.0255 42.8457 84.9255 53.8457 72.4255C53.8457 72.4255 77.8872 47.8245 83.3457 43.9255C88.2457 40.4255 98.8457 36.4256 110.346 45.4256C133.346 69.9256 106.346 85.4255 106.346 85.4255" stroke="#0066FF" strokeWidth="12" strokeLinecap="round"/>
-        <path d="M53.3458 53.4256C37.846 38.9256 34.3459 20.9256 51.3457 9.92558C75.3457 -3.93082 85.8458 22.9256 87.3458 28.4256" stroke="#0066FF" strokeWidth="12"/>
+        <path d="M19.8458 40.4255C3.84645 48.4255 1.74571 67.8255 13.3457 79.4255C24.9457 91.0255 42.8457 84.9255 53.8457 72.4255C53.8457 72.4255 77.8872 47.8245 83.3457 43.9255C88.2457 40.4255 98.8457 36.4256 110.346 45.4256C133.346 69.9256 106.346 85.4255 106.346 85.4255" stroke="var(--sp-blue)" strokeWidth="12" strokeLinecap="round"/>
+        <path d="M53.3458 53.4256C37.846 38.9256 34.3459 20.9256 51.3457 9.92558C75.3457 -3.93082 85.8458 22.9256 87.3458 28.4256" stroke="var(--sp-blue)" strokeWidth="12"/>
         </svg>
     )
 }
@@ -301,4 +302,177 @@ const CarouselCorner = ({ className, pathId }: CustomSVGProps) => {
     )
 }
 
-export { LinkedInIcon, GitHubIcon, DragIcon, BoldIcon, ItalicIcon, UnderlineIcon, TextSizeIcon, UpIcon, DownIcon, FontIcon, BlueSquiggle, CustomMouse, CustomPointer, CustomHand, CustomGrab, CustomNotAllowed, SPLogo, SPSLogo, RunningLogo, HogSpotLogo, Compass, Car, LicensePlate, ProgressBar, CarouselCorner }
+// supplypike shapes
+
+const Squiggle1Blue = ({className, pathId}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="217" height="191" viewBox="0 0 217 191" fill="none"
+            className={cn("squiggle-1-blue", className)}
+        >
+        <path opacity="0.5" d="M1.76074 186.294C48.2607 168.794 45.2607 93.7941 78.7607 62.7941C104.261 39.1971 200.141 42.7941 211.261 1.29409" stroke="#3684EF" strokeWidth="10"
+            id={pathId ?? "sp-shape"}
+        />
+        </svg>
+    )
+}
+
+const Squiggle2Blue = ({className, pathId}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="295" height="224" viewBox="0 0 295 224" fill="none"
+            className={cn("squiggle-2-blue", className)}
+        >
+        <path opacity="0.5" d="M293.965 4.9881C185.465 12.4881 236.266 102.488 192.965 127.488C148.111 153.385 82.465 103.488 36.465 149.488C6.86501 179.088 3.46501 210.488 5.46501 222.488" stroke="#3684EF" strokeWidth="10"
+            id={pathId ?? "sp-shape"}
+        />
+        </svg>
+    )
+}
+
+const TriangleBlue = ({className, pathId, stroke}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="49" height="52" viewBox="0 0 49 52" fill="none"
+            className={cn("triangle-blue", className)}
+        >
+        <path opacity="0.5" d="M45 4.00079C45 4.00079 2.50019 21.5008 2.5 26.0008C2.49981 30.5008 24.4273 47.4095 28.9637 48.625C33.5 49.8405 42.5269 19.951 45 4.00079Z" stroke={stroke ?? "#3684EF"} strokeWidth="5"
+            id={pathId ?? "sp-shape"}
+        />
+        </svg>
+    )
+}
+
+const CircleBlue = ({className, pathId, stroke}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44" fill="none"
+            className={cn("circle-blue", className)}
+        >
+        <rect opacity="0.5" x="3.5" y="3.5" width="37" height="37" rx="18.5" stroke={stroke ?? "#3684EF"} strokeWidth="7"
+            id={pathId ?? "sp-shape"}
+        />
+        </svg>
+    )
+}
+
+const SquiggleYellow = ({className, pathId, stroke}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="143" height="83" viewBox="0 0 143 83" fill="none"
+            className={cn("squiggle-yellow", className)}
+        >
+        <path opacity="0.5" d="M3.72997 3.50046C2.89663 9.27396 3.90798 21.0005 13.908 21.0005C22.2302 21.0005 28.7302 12.0005 37.7302 12.0005C53.7302 12.0005 44.0527 38.0005 61.7305 39.0005C67.2305 39.0005 74.9115 35.7072 80.908 35.5005C97.2305 34.9376 89.908 58.5005 104.908 59.5005C112.391 59.9994 116.23 56.0005 120.73 56.0005C136.23 56.0005 138.908 79.5005 138.908 79.5005" stroke={stroke ?? "#F7B76B"} strokeWidth="7" strokeLinecap="round"
+            id={pathId ?? "sp-shape"}
+        />
+        </svg>
+    )
+}
+
+const TriangleYellow = ({className, pathId}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="151" height="78" viewBox="0 0 151 78" fill="none"
+            className={cn("triangle-yellow", className)}
+        >
+        <path opacity="0.5" d="M127.399 3.16911L145.485 70.6691L1.48535 3.16911" stroke="#F7B76B" strokeWidth="7"
+            id={pathId ?? "sp-shape"}
+        />
+        </svg>
+    )
+}
+
+const SquiggleGreen = ({className, pathId}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="149" height="46" viewBox="0 0 149 46" fill="none"
+            className={cn("squiggle-green", className)}
+        >
+        <path opacity="0.5" d="M145.5 3.50003C143.667 5.50003 138.5 8.50003 130.5 8.50003C120 8.50003 111 3.50003 99.5 3.50003C88.5 3.50003 80.8688 7.00905 74 17C68.5 25 62 27.5 56 27.5C50 27.5 38.6868 19.8705 33.5 19.5C26.5 19 21.5 36.5 13.5 41C10.5 42.5 3.5 41.7 3.5 34.5" stroke="#5DEDC7" strokeWidth="7" strokeLinecap="round"
+            id={pathId ?? "sp-shape"}
+        />
+        </svg>
+    )
+}
+
+const RectangleGreen = ({className, pathId}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="76" height="110" viewBox="0 0 76 110" fill="none"
+            className={cn("rectangle-green", className)}
+        >
+        <path opacity="0.5" d="M72.9687 106.407L4.96582 46.9067L42.4687 4.90669L72.9687 31.4067" stroke="#5DEDC7" strokeWidth="7"
+            id={pathId ?? "sp-shape"}
+        />
+        </svg>
+    )
+}
+
+const TrapezoidRed = ({className, pathId}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="229" height="149" viewBox="0 0 229 149" fill="none"
+            className={cn("trapezoid-red", className)}
+        >
+        <path opacity="0.5" d="M151.758 4.40164C151.758 4.40164 213.758 24.9019 224.758 28.4017C211.758 85.4019 121.458 191.067 4.25781 123.402L23.7578 67.4018C109.258 86.4018 145.258 22.9019 151.758 4.40164Z" stroke="#FE838D" strokeWidth="7"
+            id={pathId ?? "sp-shape"}
+        />
+        </svg>
+    )
+}
+
+const CrossRed = ({className, pathId}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="108" height="50" viewBox="0 0 108 50" fill="none"
+            className={cn("cross-red", className)}
+        >
+        <path opacity="0.5" d="M18.9263 4.78038L4.78125 29.2804L31.2812 44.5802C38.9479 31.3136 54.2812 4.78038 54.2812 4.78038L92.2812 26.7197L104.948 4.78038" stroke="#FE838D" strokeWidth="7"
+            id={pathId ?? "sp-shape"}
+        />
+        </svg>
+    )
+}
+
+const TimelineNodes = ({className}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="none"
+            className={cn("timeline-nodes", className)}
+        >
+        <path d="M13.2607 35.1631C10.8364 32.7134 6.90582 32.7134 4.48153 35.1631C2.05724 37.6127 2.05724 41.5845 4.48153 44.0341C6.90582 46.4838 10.8364 46.4838 13.2607 44.0341C15.685 41.5845 15.685 37.6127 13.2607 35.1631Z" stroke="#5DEDC7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M74.7157 35.1631C72.2914 32.7134 68.3609 32.7134 65.9366 35.1631C63.5123 37.6127 63.5123 41.5845 65.9366 44.0341C68.3609 46.4838 72.2914 46.4838 74.7157 44.0341C77.14 41.5845 77.14 37.6127 74.7157 35.1631Z" stroke="#5DEDC7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M65.936 44.0342C58.9509 51.0925 49.4771 55.0578 39.5986 55.0578C29.7202 55.0578 20.2463 51.0925 13.2612 44.0342" stroke="#5DEDC7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    )
+}
+
+const PowerpointIcon = ({className}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="28" viewBox="0 0 30 28" fill="none"
+            className={cn("powerpoint-icon", className)}
+        >
+        <g clipPath="url(#clip0_272_405)">
+        <path d="M18.1393 15.4L16.0463 0H15.89C8.27922 0.0222934 2.11499 6.20706 2.09277 13.8432V14L18.1393 15.4Z" fill="#ED6C47"/>
+        <path d="M16.2032 0H16.0469V14L23.0236 16.8L30.0004 14V13.8432C29.9781 6.20706 23.8139 0.0222934 16.2032 0Z" fill="#FF8F6B"/>
+        <path d="M29.9998 14V14.154C29.9779 21.7918 23.8122 27.9781 16.1997 28H15.8928C8.28031 27.9781 2.11462 21.7918 2.09277 14.154V14H29.9998Z" fill="#D35230"/>
+        <path opacity="0.1" d="M16.744 6.88098V21.819C16.7405 22.338 16.427 22.8043 15.9486 23.002C15.7963 23.0666 15.6326 23.0999 15.4672 23.1H5.38581C5.19046 22.876 5.0021 22.638 4.82767 22.4C3.05021 20.0209 2.09048 17.1273 2.09279 14.154V13.846C2.08871 11.1642 2.86989 8.54019 4.3393 6.29998C4.49279 6.06198 4.65325 5.82398 4.82767 5.59998H15.4672C16.1701 5.60532 16.7386 6.17573 16.744 6.88098Z" fill="black"/>
+        <path opacity="0.2" d="M16.0463 7.581V22.519C16.0463 22.6849 16.013 22.8492 15.9486 23.002C15.7516 23.482 15.2869 23.7965 14.7695 23.8H6.0207C5.79996 23.5751 5.58816 23.3416 5.38581 23.1C5.19046 22.876 5.0021 22.638 4.82767 22.4C3.0502 20.0209 2.09048 17.1273 2.09279 14.154V13.846C2.08871 11.1642 2.86989 8.54021 4.3393 6.29999H14.7695C15.4725 6.30532 16.041 6.87573 16.0463 7.581Z" fill="black"/>
+        <path opacity="0.2" d="M16.0463 7.58098V21.119C16.041 21.8242 15.4725 22.3946 14.7695 22.4H4.82767C3.0502 20.0209 2.09048 17.1273 2.09279 14.154V13.846C2.08871 11.1642 2.86989 8.54021 4.3393 6.29999H14.7695C15.4724 6.3053 16.041 6.87571 16.0463 7.58098Z" fill="black"/>
+        <path opacity="0.2" d="M15.3486 7.58098V21.119C15.3433 21.8242 14.7748 22.3946 14.0719 22.4H4.82767C3.0502 20.0209 2.09048 17.1273 2.09279 14.154V13.846C2.08871 11.1642 2.86989 8.54021 4.3393 6.29999H14.0719C14.7748 6.3053 15.3433 6.87571 15.3486 7.58098Z" fill="black"/>
+        <path d="M1.27883 6.29999H14.07C14.7763 6.29999 15.3488 6.87446 15.3488 7.58308V20.4169C15.3488 21.1255 14.7763 21.7 14.07 21.7H1.27883C0.572562 21.7 0 21.1255 0 20.4169V7.58308C0 6.87446 0.572562 6.29999 1.27883 6.29999Z" fill="url(#paint0_linear_272_405)"/>
+        <path d="M7.81397 9.7223C8.64663 9.66593 9.47212 9.9086 10.1428 10.4069C10.7022 10.908 11.0011 11.6391 10.9535 12.39C10.9626 12.912 10.824 13.4258 10.5537 13.8719C10.2801 14.3103 9.88589 14.6599 9.41862 14.8785C8.88444 15.1278 8.30041 15.2509 7.71141 15.2383H6.0935V18.2553H4.43652V9.7223H7.81397ZM6.09211 13.9349H7.51817C7.97026 13.9682 8.41883 13.834 8.77887 13.5576C9.07666 13.271 9.23274 12.8668 9.20515 12.4537C9.20515 11.5134 8.66049 11.0432 7.5712 11.0432H6.09213V13.9349H6.09211Z" fill="white"/>
+        </g>
+        <defs>
+        <linearGradient id="paint0_linear_272_405" x1="2.6664" y1="5.2974" x2="12.7325" y2="22.6736" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#CA4C28"/>
+        <stop offset="0.5" stopColor="#C5401E"/>
+        <stop offset="1" stopColor="#B62F14"/>
+        </linearGradient>
+        <clipPath id="clip0_272_405">
+        <rect width="30" height="28" fill="white"/>
+        </clipPath>
+        </defs>
+        </svg>
+    )
+}
+
+export {
+    LinkedInIcon, GitHubIcon, DragIcon, BoldIcon, ItalicIcon, UnderlineIcon, TextSizeIcon, UpIcon, DownIcon, FontIcon, BlueSquiggle,
+    CustomMouse, CustomPointer, CustomHand, CustomGrab, CustomNotAllowed,
+    SPLogo, SPSLogo, RunningLogo, HogSpotLogo, Compass, Car, LicensePlate, ProgressBar, CarouselCorner, 
+    Squiggle1Blue, Squiggle2Blue, TriangleBlue, CircleBlue,
+    SquiggleYellow, TriangleYellow,
+    SquiggleGreen, RectangleGreen,
+    TrapezoidRed, CrossRed,
+    TimelineNodes, PowerpointIcon
+}
