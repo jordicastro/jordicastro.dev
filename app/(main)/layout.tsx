@@ -8,6 +8,7 @@ import { useAnonUser } from "@/hooks/useAnonUser";
 import LoadingScreen from "@/components/LoadingScreen";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import ScreenMask from "@/components/ScreenMask";
 
 const MainLayout = ({
     children
@@ -51,7 +52,7 @@ const MainLayout = ({
 
     return (
         <div
-            className="flex min-h-svh w-full main-layout"
+            className="relative flex min-h-svh w-full main-layout"
             ref={mainLayoutScope}
             data-custom-cursor={cursor ? "true" : "false"}
         >
@@ -60,6 +61,7 @@ const MainLayout = ({
             <main className="w-full min-w-0 overflow-x-clip overflow-y-visible pt-4 px-0 sm:px-4" id="main-content">
                 {children}
             </main>
+            <ScreenMask />
         </div>
     )
 }

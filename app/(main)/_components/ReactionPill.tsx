@@ -280,7 +280,7 @@ const ReactionPill = ({ className, storyId }: { className?: string, storyId: str
                 {/* reactionPopover */}
                 <div
                     ref={popoverRef}
-                    className="absolute left-1/2 -translate-x-1/2 bottom-5/6 w-48 h-14 flex justify-between items-center px-2 py-2 text-sm font-medium rounded-xl bg-neutral-100/50 dark:bg-neutral-700/50 backdrop-blur-lg shadow-lg"
+                    className="absolute -right-18 sm:abs-x-center bottom-5/6 w-48 h-14 flex justify-between items-center px-2 py-2 text-sm font-medium rounded-xl bg-neutral-100/50 dark:bg-neutral-700/50 backdrop-blur-lg shadow-lg"
                     style={{ visibility: "hidden"}}
                 >
                     {/* activeHighlight */}

@@ -1,4 +1,4 @@
-import SupplyPikeStory from "../_components/stories/SupplyPikeStory";
+import SupplyPikeStory from "../_components/stories/supplypike/SupplyPikeStory";
 
 interface StoryPageProps {
     params: Promise<{ slug: string }>;

@@ -14,7 +14,7 @@ const Logo = ({ width, height, className}: LogoProps) => {
         width={width ?? 64}
         height={height ?? 64}
         className={cn(
-            "pointer-events-auto select-none",
+            "pointer-events-none select-none",
             className
         )}
         draggable={false}

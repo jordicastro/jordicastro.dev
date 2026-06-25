@@ -109,3 +109,19 @@ export type GlanceData = {
     primaryColor?: string;
     items: GlanceItem[]
 };
+
+export type TabSection = {
+    title: string;
+    id: string;
+    content?: React.ComponentType;
+}
+
+export type SearchName = {
+    name: string;
+    supplier?: string;
+}
+
+export type SearchItem = {
+    id: string;
+    searchName: SearchName;
+}

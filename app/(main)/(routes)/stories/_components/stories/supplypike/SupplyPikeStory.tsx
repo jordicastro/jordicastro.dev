@@ -16,10 +16,14 @@ import { useMediaQuery } from "usehooks-ts";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { DrawSVGPlugin, Observer } from 'gsap/all';
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import AtAGlance from "@/app/(main)/_components/AtAGlance";
-import { GlanceData, StoryTheme } from "@/types/types";
+import { GlanceData, StoryTheme, TabSection } from "@/types/types";
 import StoryText from "@/app/(main)/_components/StoryText";
+import SectionTabs from "@/app/(main)/_components/SectionTabs";
+import OtpCountdown from "./sections/OtpCountdown";
+import AdminSearch from "./sections/AdminSearch";
+import KeyOrgRolesSection from "./sections/KeyOrgRoles";
 
 const spFont = Nunito({
   subsets: ["latin"],
@@ -28,7 +32,7 @@ const spFont = Nunito({
   display: "swap",
 })
 
-const SPStoryTheme: StoryTheme = {
+export const SPStoryTheme: StoryTheme = {
     font: spFont.style.fontFamily,
     textPrimary: "--sp-blue",
   }
@@ -60,10 +64,6 @@ const SupplyPikeStory = () => {
       const abstractParagraphs = gsap.utils.selector(abstractSection)?.(".paragraph") as unknown as HTMLElement[] | undefined;
 
       if (!shapePaths || !title || !subtitle || !spTitleParent || !reactionPill || !glanceTitle || !glanceItems || !glanceItemDividers || !abstractTitle || !abstractParagraphs) return;
-
-      console.log('abstractSection', abstractSection)
-      console.log('abstractTitle', abstractTitle)
-      console.log('abstractParagraphs', abstractParagraphs)
 
       // title setup
       gsap.set(shapePaths, { drawSVG: "0%" });
@@ -276,10 +276,11 @@ const SupplyPikeStory = () => {
           <SPTitle>
             <SPShapes />
           </SPTitle>
-          <div className="story-main-content w-full px-4 sm:px-10 lg:px-20 flex flex-col items-start gap-10 3xl:gap-20 mt-subsection">
-            <ReactionPill className="w-fit" storyId={'supplypike'} />
+          <div className="story-main-content w-full px-4 sm:px-10 lg:px-20 flex flex-col items-start gap-14 3xl:gap-20 mt-subsection">
+            <ReactionPill className="w-fit ml-0 sm:ml-0" storyId={'supplypike'} />
             <AtAGlance glanceData={glanceData} />
             <AbstractSection />
+            <FavoriteFeaturesSection />
           </div>
         </div>
       </div>
@@ -343,7 +344,6 @@ const SPShapes = () => {
 }
 
 const AbstractSection = () => {
-
   return (
     <div className="abstract-section w-full h-auto">
       <StoryText
@@ -363,10 +363,10 @@ const AbstractSection = () => {
           {" "}
           Software Engineer Internship is a twelve week Summer program. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
         </Paragraph>
-        <Paragraph className="mt-5">
+        <Paragraph className="mt-4">
           Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         </Paragraph>
-        <Paragraph className="mt-5">
+        <Paragraph className="mt-4">
           Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
         </Paragraph>
       </StoryText>
@@ -374,11 +374,82 @@ const AbstractSection = () => {
   )
 }
 
-const Paragraph = ({ className, children }: { className?: string, children: React.ReactNode }) => {
+const FavoriteFeaturesSection = () => {
   return (
-    <p className={cn("paragraph text-inherit text-md font-semibold", "text-(" + SPStoryTheme.pText + ")", className)} style={{ fontFamily: SPStoryTheme.font }}>
-      {children}
-    </p>
+    <div className="favorite-features-section w-full h-full">
+      <StoryText
+        className="h-auto"
+        title="favorite features"
+        cols={2}
+        columnFill="balance"
+        storyTheme={SPStoryTheme}
+      >
+        <div className="w-full min-h-0 flex flex-col items-start gap-4">
+          <TabSections />
+        </div>
+      </StoryText>
+
+    </div>
+  )
+}
+
+const TabSections = () => {
+  const sections: TabSection[] = [
+    { title: "Otp Countdown", id: "otp-countdown", content: OtpCountdown },
+    { title: "Admin Search", id: "admin-search", content: AdminSearch },
+    { title: "Key Org Roles", id: "key-org-roles", content: KeyOrgRolesSection },
+  ]
+  const scope = useRef<HTMLDivElement>(null);
+  const [activeSection, setActiveSection] = useState<string>(sections[0].id);
+  const ActiveSectionContent = sections.find(section => section.id === activeSection)?.content;
+
+  useGSAP(
+    () => {
+      const root = scope.current;
+      if (!root) return;
+
+      const sectionContent = gsap.utils.selector(root)(".section-content") as unknown as HTMLElement;
+      if (!sectionContent) return;
+
+      gsap.fromTo(sectionContent, {
+        autoAlpha: 0,
+      }, {
+        autoAlpha: 1,
+        duration: 0.5,
+        ease: "power2.inOut"
+      })
+    },
+    { scope, dependencies: [activeSection] }
+  )
+
+  const handleSectionChange = (sectionId: string) => {
+    setActiveSection(sectionId);
+  }
+
+  return (
+    <div ref={scope} className="w-full h-auto flex flex-col items-start gap-4">
+      <Paragraph className="indent-0">
+        Here are some of my favorite features that I implemented as an intern at SupplyPike.
+      </Paragraph>
+      <SectionTabs sections={sections} storyTheme={SPStoryTheme} onSectionChange={handleSectionChange} />
+      {ActiveSectionContent && <ActiveSectionContent />}
+    </div>
+  )
+}
+
+export const Paragraph = ({ className, children, title }: { className?: string, children: React.ReactNode, title?: string }) => {
+  
+  return (
+    <div className="flex flex-col gap-2">
+      {title && (
+          <p className={cn("paragraph uppercase indent-0 text-neutral-300 dark:text-neutral-400 text-[15px] font-extrabold tracking-wide", className)} style={{ fontFamily: SPStoryTheme.font }}>
+            {title}
+          </p>
+      )}
+      <p className={cn("paragraph indent-4 text-inherit text-md font-semibold", "text-(" + SPStoryTheme.pText + ")", className)} style={{ fontFamily: SPStoryTheme.font }}>
+        {children}
+      </p>
+    </div>
   )
 }
 

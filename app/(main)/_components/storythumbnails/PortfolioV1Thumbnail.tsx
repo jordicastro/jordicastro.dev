@@ -95,7 +95,7 @@ const PortfolioV1Thumbnail = ({ isHovered, shouldPlayThumbnail }: StoryThumbnail
                     width={width}
                     height={height}
                     draggable={false}
-                    className="v1-logo"
+                    className="v1-logo pointer-events-none select-none"
                 />
                 <Eye className="left-eye left-7" />
                 <Eye className="right-eye right-7" />
