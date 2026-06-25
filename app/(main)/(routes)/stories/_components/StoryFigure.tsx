@@ -17,11 +17,6 @@ interface StoryFigureProps {
     desc?: string;
 }
 
-// TODO: instead of using gsap.flip, manually calculate the center, and build a tlRef to animate the image to the center of the screen, scale:2
-// onClick: tlRef.current.play(), onLeave: tlRef.current.reverse(), where onLeave is a 'ESC' keydown event listener or a click outside the image
-// think: do u want just the image or the image and the desc to be shown ?
-// add a wrapper to the image so when you translate it the text around it doesnt move. the wrapper is the exact size and shape of the image
-
 const StoryFigure = ({ src, alt, component: Component, className, desc}: StoryFigureProps) => {
     const scope = useRef<HTMLDivElement>(null);
     const showMask = useScreenMask((state) => state.showMask);
