@@ -10,11 +10,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const scrollTo = (id: string) => {
+export const scrollTo = (id: string, offsetY?: number) => {
     const el = document.getElementById(id);
     if (!el) return;
     
-    gsap.to(window, { scrollTo: { y: el, offsetY: 0 }, duration: 1, ease: "power4.inOut" });
+    gsap.to(window, { scrollTo: { y: el, offsetY: offsetY ?? 10 }, duration: 1, ease: "power4.inOut" });
 };
 
 export const getNextSectionId = (currentSectionId: string, direction: directionType) => {

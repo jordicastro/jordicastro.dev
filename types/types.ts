@@ -29,6 +29,7 @@ export type Section = {
     id: string;
     label: string;
     activeColor?: string;
+    offsetY?: number; // optional offset for scrolling to the section
 }
 
 export type timelineCardDataType = {

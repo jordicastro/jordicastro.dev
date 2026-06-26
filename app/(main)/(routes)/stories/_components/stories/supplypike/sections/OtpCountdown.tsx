@@ -1,13 +1,12 @@
 "use client"
 
 import { Check, Copy } from "lucide-react"
-import { Paragraph, SPStoryTheme } from "../SupplyPikeStory"
+import { Paragraph } from "../SupplyPikeStory"
 import { useEffect, useRef, useState } from "react"
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { DrawSVGPlugin } from 'gsap/all';
 import { cn } from "@/lib/utils";
-import StoryText from "@/app/(main)/_components/StoryText";
 import StoryFigure from "../../../StoryFigure";
 
 gsap.registerPlugin(useGSAP, DrawSVGPlugin);
@@ -45,6 +44,77 @@ const OtpDemo = () => {
   const copyTl = useRef<gsap.core.Timeline | null>(null);
   const customCursorHover = !hasCopied ? "pointer" : "default";
 
+  const getRandomOtp = () => {
+    return gsap.utils.random(100000, 999999, 1).toString();
+  }
+
+  const setRandomOtp = () => {
+    setOtp(getRandomOtp());
+  }
+
+  const refreshOTP = () => {
+    const otpText = scope.current?.querySelector(".otp-text") as HTMLSpanElement | null;
+    const otpTextNext = scope.current?.querySelector(".otp-text-next") as HTMLSpanElement | null;
+    
+    if (!otpText || !otpTextNext) return;
+
+    const nextOtp = getRandomOtp();
+    otpTextNext.textContent = nextOtp;
+
+    gsap.timeline({ defaults: { duration: 0.2, ease: "power1.inOut"}})
+    .fromTo(otpText, {
+      autoAlpha: 1,
+      scaleX: 1,
+    }, {
+      autoAlpha: 0,
+      scaleX: 0.9,
+    })
+    .fromTo(otpTextNext, {
+      autoAlpha: 0,
+      scaleX: 0.9,
+    }, {
+      autoAlpha: 1,
+      scaleX: 1,
+      rotateX: 0,
+    }, "<")
+
+    .set(otpText, {
+      autoAlpha: 1,
+      scaleX: 1,
+    })
+    .set(otpTextNext, {
+      autoAlpha: 0,
+      scaleX: 0.9,
+    })
+    .call(() => {
+      setOtp(nextOtp);
+    })
+  }
+
+  const copyWithFallback = async (text: string) => {
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.setAttribute("readonly", "");
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    textArea.style.pointerEvents = "none";
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    textArea.setSelectionRange(0, text.length);
+
+    const didCopy = document.execCommand("copy");
+    document.body.removeChild(textArea);
+
+    return didCopy;
+  }
+
   // timeout of 3 seconds to reset copy icon
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -61,7 +131,7 @@ const OtpDemo = () => {
   }, [hasCopied])
 
   // transition from copy and check icon on click
-  const { contextSafe } = useGSAP(() => {
+  useGSAP(() => {
     const root = scope.current;
     if (!root) return;
 
@@ -96,58 +166,17 @@ const OtpDemo = () => {
 
   }, {scope, dependencies: []})
 
-  const copyText = () => {
-    navigator.clipboard.writeText(otp);
-    setHasCopied(true);
-    copyTl.current?.play();
+  const copyText = async () => {
+    try {
+      const didCopy = await copyWithFallback(otp);
+      if (!didCopy) return;
+
+      setHasCopied(true);
+      copyTl.current?.restart();
+    } catch (error) {
+      console.error("Failed to copy OTP", error);
+    }
   }
-
-  const getRandomOtp = contextSafe(() => {
-    return gsap.utils.random(100000, 999999, 1).toString();
-  })
-
-  const setRandomOtp = () => {
-    setOtp(getRandomOtp());
-  }
-
-  const refreshOTP = contextSafe(() => {
-    const otpText = scope.current?.querySelector(".otp-text") as HTMLSpanElement | null;
-    const otpTextNext = scope.current?.querySelector(".otp-text-next") as HTMLSpanElement | null;
-    
-    if (!otpText || !otpTextNext) return;
-
-    const nextOtp = getRandomOtp();
-    otpTextNext.textContent = nextOtp;
-
-    const tl = gsap.timeline({ defaults: { duration: 0.2, ease: "power1.inOut"}})
-    .fromTo(otpText, {
-      autoAlpha: 1,
-      scaleX: 1,
-    }, {
-      autoAlpha: 0,
-      scaleX: 0.9,
-    })
-    .fromTo(otpTextNext, {
-      autoAlpha: 0,
-      scaleX: 0.9,
-    }, {
-      autoAlpha: 1,
-      scaleX: 1,
-      rotateX: 0,
-    }, "<")
-
-    .set(otpText, {
-      autoAlpha: 1,
-      scaleX: 1,
-    })
-    .set(otpTextNext, {
-      autoAlpha: 0,
-      scaleX: 0.9,
-    })
-    .call(() => {
-      setOtp(nextOtp);
-    })
-  });
 
   return (
     <div ref={scope} className="otp-demo-wrapper w-full h-auto flex-center">
@@ -222,7 +251,7 @@ const OTPCountdownTimer = ({ onCountdownReset }: { onCountdownReset?: () => void
       ringProgressTl.current?.kill();
 
       if (nextSeconds === duration) {
-        const tl = gsap.timeline()
+        gsap.timeline()
         .to(ringProgress, { drawSVG: "100%", duration: 0.3, ease: "power2.out", overwrite: true })
 
           ringProgressTl.current = null;

@@ -10,10 +10,10 @@ export const homeSections: Section[] = [
 ]
 
 export const spSections: Section[] = [
-    { id: "glance", label: "at a glance" },
-    { id: "abstract", label: "abstract" },
-    { id: "features", label: "favorite features" },
-    { id: "growth", label: "growth (what I learned)" },
+    { id: "overview", label: "overview", activeColor: "#0066FF" },
+    { id: "abstract", label: "abstract", offsetY: 40 },
+    { id: "features", label: "favorite features", offsetY: 40 },
+    { id: "growth", label: "growth (what I learned)", offsetY: 40 },
     { id: "conclusion", label: "conclusion" },
 ]
 

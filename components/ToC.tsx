@@ -13,9 +13,11 @@ import { optionHoverCn } from "@/constants/constants";
 
 interface ToCInterface {
     sections: Section[];
+    start?: string;
+    end?: string;
 }
 
-const ToC = ({ sections }: ToCInterface) => {
+const ToC = ({ sections, start, end }: ToCInterface) => {
     const { theme } = useTheme();
     
     const panelRef = useRef<HTMLDivElement>(null);
@@ -38,8 +40,8 @@ const ToC = ({ sections }: ToCInterface) => {
 
             return ScrollTrigger.create({
                 trigger: el,
-                start: "top center",
-                end: "bottom center",
+                start: start ?? "top 50%",
+                end: end ??"bottom 50%",
                 onEnter: () => setActiveSection(s.id),
                 onEnterBack: () => setActiveSection(s.id),
             })
@@ -100,7 +102,7 @@ const ToC = ({ sections }: ToCInterface) => {
                                 : "text-neutral-500 hover:text-neutral-600"
                             )}
                             onClick={() => {
-                                scrollTo(s.id)
+                                scrollTo(s.id, s.offsetY);
                             }}
                             data-cursor='pointer'
                         >

@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 const projectRoot = fileURLToPath(new URL(".", import.meta.url));
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["192.168.1.66"],
+  allowedDevOrigins: ["192.168.1.66", "192.168.100.63"],
   turbopack: {
     root: projectRoot,
   },

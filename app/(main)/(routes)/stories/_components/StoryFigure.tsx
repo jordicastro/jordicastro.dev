@@ -15,9 +15,10 @@ interface StoryFigureProps {
     component?: React.ComponentType;
     className?: string;
     desc?: string;
+    scaleMultiplier?: number; // optional prop to customize the scale multiplier
 }
 
-const StoryFigure = ({ src, alt, component: Component, className, desc}: StoryFigureProps) => {
+const StoryFigure = ({ src, alt, component: Component, className, desc, scaleMultiplier}: StoryFigureProps) => {
     const scope = useRef<HTMLDivElement>(null);
     const showMask = useScreenMask((state) => state.showMask);
     const hideMask = useScreenMask((state) => state.hideMask);
@@ -72,7 +73,8 @@ const StoryFigure = ({ src, alt, component: Component, className, desc}: StoryFi
                 const scaleY = window.innerHeight / imageRect.height;
                 const viewportScale = window.innerWidth >= 1024 ? 0.5 : 0.75;
 
-                return Math.min(scaleX, scaleY) * viewportScale;
+                return scaleMultiplier ? Math.min(scaleX, scaleY) * scaleMultiplier : Math.min(scaleX, scaleY) * viewportScale;
+
             }
 
             const syncExpandedFigure = () => {

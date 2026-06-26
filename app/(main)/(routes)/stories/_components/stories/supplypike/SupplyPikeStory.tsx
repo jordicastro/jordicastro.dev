@@ -24,6 +24,9 @@ import SectionTabs from "@/app/(main)/_components/SectionTabs";
 import OtpCountdown from "./sections/OtpCountdown";
 import AdminSearch from "./sections/AdminSearch";
 import KeyOrgRolesSection from "./sections/KeyOrgRoles";
+import StoryFigure from "../../StoryFigure";
+import CalloutMarathon from "@/app/(main)/_components/sections/CalloutMarathon";
+import Callout from "../../Callout";
 
 const spFont = Nunito({
   subsets: ["latin"],
@@ -270,7 +273,7 @@ const SupplyPikeStory = () => {
 
   return (
     <>
-      <ToC sections={spSections} />
+      <ToC sections={spSections} start="top 40%" end="top 0%"/>
       <div ref={scope} className="min-h-screen w-full">
         <div className="mx-auto w-full max-w-500 px-0">
           <SPTitle>
@@ -281,6 +284,9 @@ const SupplyPikeStory = () => {
             <AtAGlance glanceData={glanceData} />
             <AbstractSection />
             <FavoriteFeaturesSection />
+            <GrowthSection />
+            <ConclusionSection />
+            <BottomSection />
           </div>
         </div>
       </div>
@@ -291,7 +297,7 @@ const SupplyPikeStory = () => {
 const SPTitle = ({ children }: { children?: React.ReactNode }) => {
   
   return (
-    <div className="sp-title-parent relative mx-auto w-full h-125 flex-center">
+    <div id="overview" className="sp-title-parent relative mx-auto w-full h-125 flex-center">
       <div className="sp-title-wrapper relative w-auto h-auto flex flex-col gap-6">
         <div className="title-wrapper flex items-center gap-6 overflow-hidden">
           <SPLogo className="title w-18 h-18 sm:w-20 sm:h-20 2xl:w-24 2xl:h-24"/>
@@ -345,7 +351,7 @@ const SPShapes = () => {
 
 const AbstractSection = () => {
   return (
-    <div className="abstract-section w-full h-auto">
+    <div id="abstract" className="abstract-section w-full h-auto">
       <StoryText
         className=""
         title="abstract"
@@ -376,7 +382,7 @@ const AbstractSection = () => {
 
 const FavoriteFeaturesSection = () => {
   return (
-    <div className="favorite-features-section w-full h-full">
+    <div id="features" className="favorite-features-section w-full h-full">
       <StoryText
         className="h-auto"
         title="favorite features"
@@ -384,7 +390,7 @@ const FavoriteFeaturesSection = () => {
         columnFill="balance"
         storyTheme={SPStoryTheme}
       >
-        <div className="w-full min-h-0 flex flex-col items-start gap-4">
+        <div className="w-full min-h-0 flex flex-col items-start">
           <TabSections />
         </div>
       </StoryText>
@@ -433,6 +439,123 @@ const TabSections = () => {
       </Paragraph>
       <SectionTabs sections={sections} storyTheme={SPStoryTheme} onSectionChange={handleSectionChange} />
       {ActiveSectionContent && <ActiveSectionContent />}
+    </div>
+  )
+}
+
+const GrowthSection = () => {
+
+  return (
+    <div id="growth" className="growth-section w-full h-full">
+      <StoryText
+        className="h-auto"
+        title="Growth (What I Learned)"
+        cols={1}
+        storyTheme={SPStoryTheme}
+      >
+        <div className="w-full min-h-0 flex flex-col items-start gap-4">
+          <Paragraph title="Docker">
+            Docker is a tool enabling developers to package multi repo applications into containers. lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Paragraph>
+          <Paragraph>
+             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </Paragraph>
+          <div className="w-full h-auto flex flex-col lg:flex-row items-start 3xl:gap-10 lg:gap-8">
+            <div className="w-full h-auto flex-1 flex-center">
+              <div className="left-content flex flex-col gap-2 w-full h-auto">
+                <p className={cn("paragraph uppercase indent-0 text-neutral-300 dark:text-neutral-400 text-[15px] font-extrabold tracking-wide")} style={{ fontFamily: SPStoryTheme.font }}>
+                  Multi Repo Architecture
+                </p>
+                <StoryFigure
+                  src="/images/stories/supplypike/core-architecture.png"
+                  alt="core architecture diagram"
+                  className="scale-95"
+                  desc="Figure 2. Core multi-repo architecture"
+                  scaleMultiplier={0.9}
+                />
+              </div>
+            </div>
+            <div className="right-content w-full h-full flex-2">
+              <div className="w-full h-full flex flex-col gap-4 mt-4">
+                <Paragraph>
+                  The core team at SupplyPike has a multi-repo architecture, where each repo is handled with Docker. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
+                </Paragraph>
+                <Paragraph>
+                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
+                </Paragraph>
+                <Paragraph>
+                  Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
+                </Paragraph>
+                <Paragraph>
+                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
+                </Paragraph>
+                <Paragraph>
+                  Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+                </Paragraph>
+              </div>
+            </div>
+          </div>
+            <div className="w-full h-auto flex flex-col gap-4">
+              <Paragraph title="Debugging">
+                Debugging big workspaces can be a hassle. here are the top three best ways to approach a bug. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
+              </Paragraph>
+
+              <Callout icon="🔎" text="Use UI as the entry point" className="my-1" theme={SPStoryTheme} />
+
+              <Paragraph>
+                Look for searchable text on the page. Find visible text in the UI and search for it in the codebase to locate the corresponding component. Debugging big workspaces can be a hassle. here are the top three best ways to approach a bug. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
+              </Paragraph>
+
+              <Callout icon="🧠" text="Think in React" className="my-1" theme={SPStoryTheme} />
+
+              <Paragraph>
+                Reason in components, props, state, and data flow. Command-click into components. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
+              </Paragraph>
+              <Paragraph>
+                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
+              </Paragraph>
+
+              <Callout icon="💡" text="Isolate the bug" className="my-1" theme={SPStoryTheme} />
+
+              <Paragraph>
+                Recreate the issue in a minimal project to determine whether the bug is local or contextual.  If the component works in isolation, the bug is in the interaction, not the component itself. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
+              </Paragraph>
+            </div>
+        </div>
+      </StoryText>
+    </div>
+  )
+}
+
+const ConclusionSection = () => {
+
+  return (
+    <div id="conclusion" className="conclusion-section w-full h-full mt-8">
+      <StoryText
+        className=""
+        title="conclusion"
+        cols={1}
+        storyTheme={SPStoryTheme}
+      >
+        <Paragraph>
+          Listen up, here comes the conclusion. You can find more features and a deeper dive into the features and my lessons learned in the powerpoint attached. lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </Paragraph>
+        <Paragraph className="mt-4">
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </Paragraph>
+        <Paragraph className="mt-4">
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
+        </Paragraph>
+      </StoryText>
+    </div>
+  )
+}
+
+const BottomSection = () => {
+
+  return (
+    <div className="bottom-section w-full h-20 sm:h-40">
+
     </div>
   )
 }
