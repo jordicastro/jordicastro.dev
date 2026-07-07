@@ -220,7 +220,7 @@ const StoryFigure = ({ src, alt, component: Component, className, desc, scaleMul
                     alt={alt}
                     width={800}
                     height={600}
-                    className="max-w-90 h-auto lg:w-full object-contain"
+                    className="max-w-90 h-auto lg:w-full object-contain rounded-md"
                 />
             </div>
         )}

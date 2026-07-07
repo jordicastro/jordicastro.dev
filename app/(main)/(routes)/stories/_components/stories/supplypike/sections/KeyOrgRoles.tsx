@@ -3,25 +3,40 @@
 import { Paragraph } from "../SupplyPikeStory"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { cn } from "@/lib/utils";
-import { Search } from "lucide-react";
+import { Database, Search } from "lucide-react";
 import { useScreenMask } from "@/hooks/useScreenMask";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { SearchItem, SearchName } from "@/types/types";
+import CodeText from "@/components/CodeText";
+import { Arrow, DoubleArrow } from "@/components/svgs/svgs";
+import { Courier_Prime } from "next/font/google";
+
+const courierPrime = Courier_Prime({
+  subsets: ["latin"],
+  weight: "400",
+});
 
 const KeyOrgRoles = () => {
   return (
     <div className="w-full h-auto section-content flex flex-col items-start gap-4">
           <KeyOrgRolesDemo/>
           <Paragraph title="Guess Who?">
-            lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aliquam nibh. Mauris ac mauris sed pede pellentesque fermentum. Maecenas adipiscing ante non diam sodales hendrerit.
+            Every customer account in the SupplyPike platform has a team managing the account. However, the application's interface did not display which employees were assigned to each account. This made cross-team communication inefficient, as employees who needed to contact an account manager or another team member first had to ask around to identify who was responsible for that account.
           </Paragraph>
           <Paragraph>
-            lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aliquam nibh. Mauris ac mauris sed pede pellentesque fermentum. Maecenas adipiscing ante non diam sodales hendrerit.
+            A previous implementation partially addressed this issue by displaying the email addresses of the employees assigned to each account. However, it still lacked important context, as it did not display each employee's name or role. For example, if terry@supplypike.com appeared under the ABC Farms account, users had no easy way to determine which Terry it was or whether they were the account manager, customer success representative, or another member of the team.
           </Paragraph>
           <Paragraph title="Fetching & Fallback">
-            lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aliquam nibh. Mauris ac mauris sed pede pellentesque fermentum. Maecenas adipiscing ante non diam sodales hendrerit.
+            Since a full refactor was outside the scope of the feature, I worked within the constraints of the existing codebase. Using the account data already available in MongoDB, I created a backend route that returned the email addresses of an account's key organization roles when given the account ID.
           </Paragraph>
+          <Paragraph>
+            At the time, the company was preparing to migrate from SupplyPike email addresses to SPS Commerce email addresses, which resulted in inconsistent data throughout the database. Additionally, the account records only stored employee email addresses—not their names. To display each person's first and last name, I made a separate request to the Users API for every key organization role returned by the initial query.
+          </Paragraph>
+          <Paragraph>
+            Since the email migration was still in progress, I implemented a fallback mechanism to handle missing or outdated records. If a user could not be found by their email address or the request failed for any reason, the application displayed the email address instead of the user's name. This allowed the feature to remain functional despite temporary inconsistencies in the underlying data during the migration.
+          </Paragraph>
+          <FetchingDiagraph />
         </div>
   )
 }
@@ -103,5 +118,106 @@ const RoleItem = ({ role }: { role: Role }) => {
     </div>
   )
 }
+
+const FetchingDiagraph = () => {
+  const rowOneTexts = ["GET", "KEY ORG ROLES", "returns email list"];
+  const rowTwoTexts = ["GET", "USER FROM EMAIL", "returns user obj"];
+  const scope = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      // cascade animation when component mounts
+      const root = scope.current;
+      if (!root) return;
+
+      const rows = gsap.utils.toArray<HTMLDivElement>(".rows", root);
+
+      if (!rows.length) return;
+
+      console.log('rows, ', rows);
+
+      gsap.set(rows, { autoAlpha: 0, y: 15 });
+
+      const tl = gsap.timeline({ defaults: { duration: 0.6, ease: "power2.out" } });
+
+      rows.forEach((row, i) => {
+        const rowItem = row.querySelectorAll(".row-item");
+        if (!rowItem.length) return;
+        tl.fromTo(row, {
+          autoAlpha: 0,
+          y: 15
+        }, {
+          autoAlpha: 1,
+          y: 0,
+        }, i === 0 ? "0.1" : i === 1 ? "<=0.09" : "<=0.08")
+      })
+    },
+    { scope, dependencies: []}
+  )
+
+  return (
+    <div ref={scope} className="w-full h-auto flex-center">
+      <div className="fetching-diagraph-wrapper w-157 lg:w-full h-74 border border-bg-tertiary bg-none rounded-lg p-4 flex flex-col items-start justify-around gap-2 overflow-y-hidden overflow-x-auto">
+        <div className="rows w-full h-auto flex items-center gap-4">
+          <ClientBox className="row-item shrink-0" />
+          <DoubleArrowComponent texts={rowOneTexts} className="row-item min-w-0" />
+          <Database className="row-item w-6 h-auto shrink-0 text-orange" />
+        </div>
+        <div className="rows w-auto h-auto ml-8">
+          <Arrow className="row-item" />
+        </div>
+        <div className="rows w-full h-auto flex items-center gap-4">
+          <EmailsBox className="row-item" />
+          <DoubleArrowComponent texts={rowTwoTexts} className="row-item min-w-0" />
+          <Database className="row-item w-6 h-auto shrink-0 text-orange" />
+        </div>
+        <div className="rows w-auto h-auto ml-8">
+          <Arrow className="row-item" />
+        </div>
+        <div className="rows w-full h-autoflex-center">
+          <KeyOrgNamesBox className="row-item" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const ClientBox = ({ className }: { className?: string}) => (
+  <div className={cn("client-box row-one w-[75px] h-[40px] rounded-lg border-2 border-(--sp-blue) flex-center", className)}>
+    <p className="font-mono text-sm font-semibold tracking-wide">
+      Client
+    </p>
+  </div>
+)
+const EmailsBox = ({ className }: { className?: string}) => (
+  <div className={cn("client-box row-two w-[123px] h-[40px] rounded-lg border-2 border-(--sp-blue) flex-center", className)}>
+    <CodeText
+      text="emails.forEach"
+      className="font-mono tracking-wide font-light text-xs"
+    />  
+  </div>
+)
+const KeyOrgNamesBox = ({ className }: { className?: string}) => (
+  <div className={cn("client-box row-two w-[475px] h-[40px] rounded-lg border-2 border-(--sp-blue) flex-center", className)}>
+    <CodeText
+      text="const keyOrgNames = users.map((user, i) => user.name ?? emails[i]);"
+      className="font-mono font-semibold text-[11px] text-purple"
+    />  
+  </div>
+)
+const DoubleArrowComponent = ({ className, texts }: { className?: string, texts: string[] }) => (
+  <div className={cn("relative double-arrow-component min-w-0 flex-1 py-6", className)}>
+    <DoubleArrow className="w-full" />
+    <DiagramText text={texts[0]} className="absolute -top-2 left-0 text-md"/>
+    <DiagramText text={texts[1]} className="absolute -bottom-2 left-0 bg-bg-primary z-10"/>
+    <DiagramText text={texts[2]} className="absolute -bottom-2 right-0"/>
+  </div>
+)
+
+const DiagramText = ({ text, className }: { text: string; className?: string }) => (
+  <p className={cn("diagram-text tracking-wider text-xs font-semibold text-text-secondary", courierPrime.className, className)}>
+    {text}
+  </p>
+)
 
 export default KeyOrgRoles

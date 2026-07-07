@@ -466,6 +466,42 @@ const PowerpointIcon = ({className}: CustomSVGProps) => {
     )
 }
 
+const Arrow = ({className}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="33" viewBox="0 0 16 33" fill="none"
+            className={cn("arrow", className)}
+        >
+        <path d="M8 1L8 32" stroke="#79716B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M15 25.0005L8 32.0005L1 25.0005" stroke="#79716B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    )
+}
+
+const DoubleArrow = ({className}: CustomSVGProps) => {
+    return (
+        <div className={cn("double-arrow flex min-w-0 items-center", className)}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="8" height="16" viewBox="0 0 8 16" fill="none" className="shrink-0 translate-x-2">
+                <path d="M7 15L0 8L7 1" stroke="#79716B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <div className="-mx-px h-0.5 min-w-0 flex-1 bg-stone-500" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="8" height="16" viewBox="0 0 8 16" fill="none" className="shrink-0 -translate-x-2">
+                <path d="M1 1L8 8L1 15" stroke="#79716B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+        </div>
+    )
+}
+const Database = ({className}: CustomSVGProps) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="33" viewBox="0 0 30 33" fill="none"
+            className={cn("database", className)}
+        >
+        <path d="M15 10.5C22.4558 10.5 28.5 8.48528 28.5 6C28.5 3.51472 22.4558 1.5 15 1.5C7.54416 1.5 1.5 3.51472 1.5 6C1.5 8.48528 7.54416 10.5 15 10.5Z" stroke="#FF8904" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M1.5 6V27C1.5 28.1935 2.92232 29.3381 5.45406 30.182C7.9858 31.0259 11.4196 31.5 15 31.5C18.5804 31.5 22.0142 31.0259 24.5459 30.182C27.0777 29.3381 28.5 28.1935 28.5 27V6" stroke="#FF8904" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M1.5 16.5C1.5 17.6935 2.92232 18.8381 5.45406 19.682C7.9858 20.5259 11.4196 21 15 21C18.5804 21 22.0142 20.5259 24.5459 19.682C27.0777 18.8381 28.5 17.6935 28.5 16.5" stroke="#FF8904" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    )
+}
+
 export {
     LinkedInIcon, GitHubIcon, DragIcon, BoldIcon, ItalicIcon, UnderlineIcon, TextSizeIcon, UpIcon, DownIcon, FontIcon, BlueSquiggle,
     CustomMouse, CustomPointer, CustomHand, CustomGrab, CustomNotAllowed,
@@ -474,5 +510,6 @@ export {
     SquiggleYellow, TriangleYellow,
     SquiggleGreen, RectangleGreen,
     TrapezoidRed, CrossRed,
-    TimelineNodes, PowerpointIcon
+    TimelineNodes, PowerpointIcon,
+    Arrow, DoubleArrow, Database
 }

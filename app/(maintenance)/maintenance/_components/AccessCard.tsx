@@ -25,7 +25,7 @@ const AccessCard = ({ title, onAccessGranted, onComplete, isCorrectPassword }: A
     const inputRef = useRef<HTMLInputElement>(null); // the dot representation of the password
     const displayRef = useRef<HTMLDivElement>(null); // the static el that is used to replace the input for the stagger animation
 
-    const displayValue = password.length ? "• ".repeat(password.length) : "Enter password...";
+    const displayValue = password.length ? "•".repeat(password.length) : "Enter password...";
 
     useEffect(() => {
         if (password.length === 0) {
@@ -291,10 +291,10 @@ const AccessCard = ({ title, onAccessGranted, onComplete, isCorrectPassword }: A
     });
 
     const getDisplayValue = () => {
-        if (password.length < 20) {
+        if (password.length < 23) {
             return displayValue;
         } else {
-            return "• ".repeat(20); // make sure the stagger animation doesnt go on forever for long passwords
+            return "•".repeat(23); // make sure the stagger animation doesnt go on forever for long passwords
         }
 
     }

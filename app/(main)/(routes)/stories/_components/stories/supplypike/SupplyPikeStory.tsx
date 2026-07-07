@@ -25,8 +25,8 @@ import OtpCountdown from "./sections/OtpCountdown";
 import AdminSearch from "./sections/AdminSearch";
 import KeyOrgRolesSection from "./sections/KeyOrgRoles";
 import StoryFigure from "../../StoryFigure";
-import CalloutMarathon from "@/app/(main)/_components/sections/CalloutMarathon";
 import Callout from "../../Callout";
+import CodeText from "@/components/CodeText";
 
 const spFont = Nunito({
   subsets: ["latin"],
@@ -273,7 +273,7 @@ const SupplyPikeStory = () => {
 
   return (
     <>
-      <ToC sections={spSections} start="top 40%" end="top 0%"/>
+      <ToC sections={spSections} />
       <div ref={scope} className="min-h-screen w-full">
         <div className="mx-auto w-full max-w-500 px-0">
           <SPTitle>
@@ -359,21 +359,24 @@ const AbstractSection = () => {
         storyTheme={SPStoryTheme}
       >
         <Paragraph>
-          The SupplyPike
+          SupplyPike is a SaaS (Software as a Service) revenue recovery company that facilitates the dispute claims process for suppliers, recovering thousands in false claims. SupplyPike was acquired by
           {" "}
           (
-          <span className="underline underline-offset-4 font-bold hover:decoration-(--sp-blue) hover:cursor-pointer" role="button" onClick={() => window.open("https://www.spscommerce.com/", "_blank")}>
+          <span className="underline underline-offset-4 font-bold hover:decoration-(--sp-blue) hover:cursor-pointer" role="button" data-cursor="pointer" onClick={() => window.open("https://www.spscommerce.com/", "_blank")}>
             SPS Commerece
           </span>
           )
           {" "}
-          Software Engineer Internship is a twelve week Summer program. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+          in 2024. The software engineer internship is a twelve week summer program. During the twelve weeks, I was onboarded, trained, and quickly put on my first tasks. These tasks, or stories, were improvements to the admin facing pages. With an emphasis on attention to detail, readability, and efficiency, I was able to complete 31 high quality pull requests that facilitated admin’s use of the SupplyPike application.
         </Paragraph>
         <Paragraph className="mt-4">
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          At SupplyPike, interns are treated no differently than full-time employees. I was a member of the Core Team, which has the oldest codebase, including core endpoint, UI, and authentication, all integral for the function of the other teams’ repositories. During the internship, I actively participated in many meetings. On the Core Team, I met with the team daily for stand up, where we shared our progress on our current projects. I met weekly with the software developers on my team to brainstorm solutions to stubborn bugs we had encountered through the week. I had biweekly 1:1’s with my manager, where I received feedback on story throughput. I was also involved in company wide developer, general, and intern meetings. All of these meetings gave me professional experience and the soft skills required in a modern job.
         </Paragraph>
         <Paragraph className="mt-4">
-          Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
+          Most stories I completed followed the following procedure. I would start by identifying the problem, looking through the code space (frontend and backend) to see what was wrong or missing and brainstorm next steps. Next, I would expose an endpoint to get the data necessary to implement the feature. Once I finished the first pass, I would open a pull request (PR) and ask for feedback by my team and Copilot. The Core team used a CI/CD (Continuous integration continuous deployment) workflow, so as soon as I finished my revisions, the PR would go directly into production.
+        </Paragraph>
+        <Paragraph className="mt-4">
+          The purpose of this story is to provide a quick overview of the SupplyPike internship, specifically highlighting features that I implemented from start to finish, the technologies and tools I used to develop, and the technical and professional skills I developed along the way.
         </Paragraph>
       </StoryText>
     </div>
@@ -455,10 +458,10 @@ const GrowthSection = () => {
       >
         <div className="w-full min-h-0 flex flex-col items-start gap-4">
           <Paragraph title="Docker">
-            Docker is a tool enabling developers to package multi repo applications into containers. lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Docker was an essential part of the development environment, allowing each service in the application to run locally inside its own isolated container. Since the core architecture consisted of multiple repositories working together, Docker provided a stable environment where all services could communicate.
           </Paragraph>
           <Paragraph>
-             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            Throughout the internship, when I ran into a UI or API bug, I quickly learned to diagnose the problem to originate from either the code, a stale docker container, or a networking issue. Restarting Docker often restored the development environment and became an important part of my debugging workflow.
           </Paragraph>
           <div className="w-full h-auto flex flex-col lg:flex-row items-start 3xl:gap-10 lg:gap-8">
             <div className="w-full h-auto flex-1 flex-center">
@@ -478,49 +481,64 @@ const GrowthSection = () => {
             <div className="right-content w-full h-full flex-2">
               <div className="w-full h-full flex flex-col gap-4 mt-4">
                 <Paragraph>
-                  The core team at SupplyPike has a multi-repo architecture, where each repo is handled with Docker. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
+                  The core architecture is a multi-repo codebase shared across all SupplyPike engineering teams. It provides the user interface for all client and admin pages. The core team also maintains the application’s shared sidebar wrapper, which serves as the navigation for the entire website.
                 </Paragraph>
                 <Paragraph>
-                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
+                  The core team is the oldest repository at SupplyPike. Consequently, the legacy code contains vanilla CSS, plain JavaScript, and many depreciated (discontinued) packages. One of my responsibilities was migrating a deprecated package to its modern replacement. To do this, I identified all instances or inconsistencies of the old package across all files throughout the codebase and replaced them with the new version. This experience taught me that ongoing maintenance and modernization are essential to ensuring the longevity of a software application.
                 </Paragraph>
                 <Paragraph>
-                  Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
+                  The Core Endpoint repository served as the backend API and the entry point to the MongoDB database for all admins and users. Within this repo, I exposed new backend routes to extract the required data necessary from the database. I used API development tools, such as Bruno and Postman, to develop, test, and validate new endpoints. Before submitting each change, I implemented and ran integration tests to verify that the new routes behaved correctly and did not introduce regressions into the existing API.
                 </Paragraph>
                 <Paragraph>
-                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
+                  Core Auth was responsible for authenticating users and managing access to protected routes throughout the application.In any login-based application, users must be authenticated before accessing restricted pages, such as the dashboard page. The authentication service also handled user account creation and management (by querying the core-endpoint).
                 </Paragraph>
                 <Paragraph>
-                  Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+                  Finally, the Revloss repository is its own full-stack application with a Postgres database. The repo was used to display the revenue metrics dashboard for logged in users. I worked on this repo briefly when making a formatter to round numbers to the nearest dollar.
                 </Paragraph>
               </div>
             </div>
           </div>
-            <div className="w-full h-auto flex flex-col gap-4">
-              <Paragraph title="Debugging">
-                Debugging big workspaces can be a hassle. here are the top three best ways to approach a bug. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
-              </Paragraph>
+          <div className="w-full h-auto flex flex-col gap-4">
+            <Paragraph title="Git Continuous Deployment">
+              The Core team followed a continuous deployment workflow, where approved pull requests were automatically deployed to production after passing the required checks. Before each merge, all integration tests run to ensure that the commit won’t break other parts of the repository. On the rare occasion that an issue reached production despite these safeguards, the team would perform a rollback by reverting the deployment to a previously stable version.
+            </Paragraph>
+            <Paragraph>
+              During my internship, I experienced an instance where my changes introduced regressions that were not caught during testing. The issues were pretty quickly identified by an admin, and a rollback would occur while I investigated the root cause. This experience reinforced the importance of thoroughly testing changes, keeping my branch synchronized with the latest changes from the main branch, and merging pull requests earlier in the day so there was sufficient time to identify and resolve any unexpected production issues before the end of the workday.
+            </Paragraph>
+          </div>
+          <div className="w-full h-auto flex flex-col gap-4">
+            <Paragraph title="Debugging">
+              Debugging big multi-repo codespaces can be overwhelming at first. During my time at SupplyPike, I learned how to quickly and methodically approach a bug. Here are a couple ways to approach a bug. 
+            </Paragraph>
 
-              <Callout icon="🔎" text="Use UI as the entry point" className="my-1" theme={SPStoryTheme} />
+            <Callout icon="🔎" text="Use UI as the entry point" className="my-1" theme={SPStoryTheme} />
 
-              <Paragraph>
-                Look for searchable text on the page. Find visible text in the UI and search for it in the codebase to locate the corresponding component. Debugging big workspaces can be a hassle. here are the top three best ways to approach a bug. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
-              </Paragraph>
+            <Paragraph>
+              Look for searchable text on the page. Whether I was debugging an issue or implementing a new feature, I would identify a unique piece of visible text in the UI and search for it in the repository to find the corresponding component or page. If no searchable text exists, look for distinctive UI elements (brightly colored components, carousels, icons, or other recognizable visual cues) to narrow down the search. As a last resort, use Copilot to help identify the file that contains the relevant component or bug.
+            </Paragraph>
 
-              <Callout icon="🧠" text="Think in React" className="my-1" theme={SPStoryTheme} />
+            <Callout icon="🧠" text="Think in React" className="my-1" theme={SPStoryTheme} />
 
-              <Paragraph>
-                Reason in components, props, state, and data flow. Command-click into components. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-              </Paragraph>
-              <Paragraph>
-                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
-              </Paragraph>
+            <Paragraph>
+              Reason in components, props, state, and data flow. My previous experience with React made it easier to recognize reusable components, mapped data, and common component patterns. Approaching problems from this perspective significantly reduced the time it took to trace bugs back to their source. 
+            </Paragraph>
+            <Paragraph>
+              My typical workflow involved navigating the component tree by Command-clicking into components, identifying key variables, and skimming files to find every reference of that variable. This helps me identify where the variable originated, where it is used in hooks and JS logic, and ultimately where it is rendered in the JSX (JavaScript Executable).
+            </Paragraph>
 
-              <Callout icon="💡" text="Isolate the bug" className="my-1" theme={SPStoryTheme} />
+            <Callout icon="💡" text="Isolate the bug" className="my-1" theme={SPStoryTheme} />
 
-              <Paragraph>
-                Recreate the issue in a minimal project to determine whether the bug is local or contextual.  If the component works in isolation, the bug is in the interaction, not the component itself. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-              </Paragraph>
-            </div>
+            <Paragraph>
+              Recreate the issue in a separate project to determine whether the bug is local or contextual.  If the component works in isolation, the bug is in the interaction, not the component itself. While I was implementing my features, I had a separate local repository where I would implement and test components. Here, I would develop the self-contained component properties (state, css, interactability). Once a had a functionally solid component, I would transfer it over to the core repository. Even if I did get bugs when hooking up the component, I knew that none of them were self-contained bugs, but rather interactability bugs. I use this isolating developing technique every time I program in a complex codespace, including this website.
+            </Paragraph>
+            <Paragraph>
+              Debugging requires using every source of information available—not just the code editor. While reading the code is important, many bugs become much easier to diagnose by examining the application's runtime behavior. Throughout my internship, I regularly inspected backend logs, verified that the required Docker containers were running, and used browser developer tools to gather additional clues. Browser DevTools was especially valuable for tracing issues. The Network tab helped identify failed API requests, the Elements panel allowed me to inspect rendered components and their properties, and Local Storage and Cookies made it easy to verify authentication tokens and client-side state. When necessary, I supplemented these tools with
+              {" "}
+              <CodeText text="console.log()" className="" />
+              {" "}
+              statements and debugger breakpoints to step through the execution flow and understand how data moved through the application. For more complex bugs, I found it helpful to sketch the sequence of method calls and the flow of data, making it easier to reason about where the application diverged from the expected behavior.
+            </Paragraph>
+          </div>
         </div>
       </StoryText>
     </div>
@@ -538,13 +556,13 @@ const ConclusionSection = () => {
         storyTheme={SPStoryTheme}
       >
         <Paragraph>
-          Listen up, here comes the conclusion. You can find more features and a deeper dive into the features and my lessons learned in the powerpoint attached. lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          My twelve-week internship at SupplyPike gave me a firsthand look at what it is like to work as a professional software engineer. Throughout the internship, I participated in sprint planning, daily standups, code reviews, and design decisions while collaborating closely with experienced engineers. Receiving continuous feedback on my pull requests and features taught me how to communicate technical decisions, iterate on solutions, and contribute effectively as part of an engineering team.
         </Paragraph>
         <Paragraph className="mt-4">
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          From a technical perspective, I gained experience developing and maintaining full-stack features within a large, multi-repository codebase. I worked with React, TypeScript, MongoDB, REST APIs, Docker, Git, and integration testing while contributing features that improved the experience of both admins and clients. Just as importantly, I learned how to navigate legacy systems and debug complex issues across multiple services.
         </Paragraph>
         <Paragraph className="mt-4">
-          Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
+          Looking back, the most valuable takeaway was learning how to think like a software engineer—not just how to write code, but how to reason through problems, communicate technical decisions, and build reliable software that other engineers can confidently maintain. The experience gave me the confidence to contribute to large-scale production systems and laid a strong foundation for my future career in software engineering.
         </Paragraph>
       </StoryText>
     </div>
@@ -565,7 +583,7 @@ export const Paragraph = ({ className, children, title }: { className?: string, 
   return (
     <div className="flex flex-col gap-2">
       {title && (
-          <p className={cn("paragraph uppercase indent-0 text-neutral-300 dark:text-neutral-400 text-[15px] font-extrabold tracking-wide", className)} style={{ fontFamily: SPStoryTheme.font }}>
+          <p className={cn("paragraph uppercase indent-0 text-neutral-300 dark:text-neutral-500 text-[15px] font-extrabold tracking-wide", className)} style={{ fontFamily: SPStoryTheme.font }}>
             {title}
           </p>
       )}
