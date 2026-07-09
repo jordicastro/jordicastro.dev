@@ -3,8 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import { CustomEase, CustomWiggle, MotionPathPlugin, SplitText } from "gsap/all";
 import gsap from "gsap";
-import { CornerDownLeft } from "lucide-react";
-import Image from "next/image";
+import { CircleAlert, CornerDownLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Logo from "@/components/Logo";
 import { cn } from "@/lib/utils";
@@ -316,10 +315,25 @@ const AccessCard = ({ title, onAccessGranted, onComplete, isCorrectPassword }: A
     return (
         <div ref={scopeRef}>
             {/* access-card */}
-            <div className="access-card abs-center z-50 h-50 w-11/12 max-w-125 rounded-xl bg-bg-secondary flex-center-col gap-11">
+            <div className="access-card abs-center z-50 h-54 w-11/12 max-w-125 rounded-xl bg-bg-secondary flex-center-col gap-6">
                 {/* title */}
-                <h2 className="access-title text-xl w-3/4 sm:text-2xl sm:w-auto text-text-primary text-center tracking-wide font-medium">{title}</h2>
-
+                <div className="w-auto h-auto flex flex-col gap-4 items-center justify-center">
+                    <h2 className="access-title text-xl w-3/4 sm:text-2xl sm:w-auto text-text-primary text-center tracking-wide font-medium">{title}</h2>
+                    <div className="w-auto h-auto flex items-center justify-center gap-2 text-text-secondary">
+                        <CircleAlert className="text-inherit w-4 h-4"/>
+                        <p className="text-[13px]">
+                            Recruiters, please
+                            {" "}
+                            <span className="underline underline-offset-4 hover:decoration-blue-500 hover:font-medium cursor-pointer" role="button" onClick={() => window.location.href = "mailto: jordi.castro003@gmail.com?subject=Recruiter%20Portfolio%20Access%20Request"}>
+                                {"contact me"}
+                            </span>
+                            {" "}
+                            for access
+                        </p>
+                        {/* <CircleAlert className="text-inherit w-4 h-4"/> */}
+                    </div>
+                </div>
+                
                 {/* input password */}
                 <div className="password-input-container relative flex h-11 w-1/2 items-center justify-start rounded-full border-2 border-text-secondary px-4 transition-colors focus-within:border-sky-400 overflow-hidden">
                     <input
@@ -363,7 +377,7 @@ const AccessCard = ({ title, onAccessGranted, onComplete, isCorrectPassword }: A
             {/* logo on access (correctPassword) */}
             <div className="welcome-wrapper abs-center z-60 w-35 h-35 hidden">
                 <Logo className="welcome-logo abs-center" width={81} height={81}/>
-                <h2 className="welcome-text abs-x-center bottom-0 w-max whitespace-nowrap text-2xl tracking-widest text-neutral-200 pointer-events-auto font-medium select-none">
+                <h2 className="welcome-text abs-x-center bottom-0 w-max whitespace-nowrap text-2xl tracking-widest text-text-secondary pointer-events-auto font-medium select-none">
                     Welcome
                 </h2>
                 <svg xmlns="http://www.w3.org/2000/svg" width="101" height="21" viewBox="0 0 101 21" fill="none" className="abs-x-center bottom-7 left-16 opacity-0">

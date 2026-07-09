@@ -1,13 +1,11 @@
 "use client"
 
 import { Paragraph } from "../SupplyPikeStory"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils";
 import { Database, Search } from "lucide-react";
-import { useScreenMask } from "@/hooks/useScreenMask";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { SearchItem, SearchName } from "@/types/types";
 import CodeText from "@/components/CodeText";
 import { Arrow, DoubleArrow } from "@/components/svgs/svgs";
 import { Courier_Prime } from "next/font/google";
@@ -160,7 +158,7 @@ const FetchingDiagraph = () => {
       <div className="fetching-diagraph-wrapper w-157 lg:w-full h-74 border border-bg-tertiary bg-none rounded-lg p-4 flex flex-col items-start justify-around gap-2 overflow-y-hidden overflow-x-auto">
         <div className="rows w-full h-auto flex items-center gap-4">
           <ClientBox className="row-item shrink-0" />
-          <DoubleArrowComponent texts={rowOneTexts} className="row-item min-w-0" />
+          <DoubleArrowComponent texts={rowOneTexts} className="row-item min-w-0" parentContainer={scope} />
           <Database className="row-item w-6 h-auto shrink-0 text-orange" />
         </div>
         <div className="rows w-auto h-auto ml-8">
@@ -168,7 +166,7 @@ const FetchingDiagraph = () => {
         </div>
         <div className="rows w-full h-auto flex items-center gap-4">
           <EmailsBox className="row-item" />
-          <DoubleArrowComponent texts={rowTwoTexts} className="row-item min-w-0" />
+          <DoubleArrowComponent texts={rowTwoTexts} className="row-item min-w-0" parentContainer={scope}/>
           <Database className="row-item w-6 h-auto shrink-0 text-orange" />
         </div>
         <div className="rows w-auto h-auto ml-8">
@@ -198,21 +196,50 @@ const EmailsBox = ({ className }: { className?: string}) => (
   </div>
 )
 const KeyOrgNamesBox = ({ className }: { className?: string}) => (
-  <div className={cn("client-box row-two w-[475px] h-[40px] rounded-lg border-2 border-(--sp-blue) flex-center", className)}>
+  <div className={cn("client-box row-two w-118.75 h-10 rounded-lg border-2 border-(--sp-blue) flex-center", className)}>
     <CodeText
       text="const keyOrgNames = users.map((user, i) => user.name ?? emails[i]);"
       className="font-mono font-semibold text-[11px] text-purple"
     />  
   </div>
 )
-const DoubleArrowComponent = ({ className, texts }: { className?: string, texts: string[] }) => (
-  <div className={cn("relative double-arrow-component min-w-0 flex-1 py-6", className)}>
-    <DoubleArrow className="w-full" />
-    <DiagramText text={texts[0]} className="absolute -top-2 left-0 text-md"/>
-    <DiagramText text={texts[1]} className="absolute -bottom-2 left-0 bg-bg-primary z-10"/>
-    <DiagramText text={texts[2]} className="absolute -bottom-2 right-0"/>
-  </div>
-)
+const DoubleArrowComponent = ({ className, texts, parentContainer }: { className?: string, texts: string[], parentContainer?: React.RefObject<HTMLDivElement | null>}) => {
+  const [rightPos, setRightPos] = useState("right-0");
+
+  useEffect(() => {
+    const container = parentContainer?.current;
+    if (!container) return;
+
+    console.log('container.offsetWidth, ', container.offsetWidth);
+  }, [parentContainer?.current?.offsetWidth])
+
+  useEffect(() => {
+    const container = parentContainer?.current;
+    if (!container) return;
+
+    const updateRightPos = () => {
+      setRightPos(container.offsetWidth < 415 ? "-right-28" : container.offsetWidth < 460 ? "-right-12" : "right-0");
+    };
+
+    updateRightPos();
+
+    const resizeObserver = new ResizeObserver(updateRightPos);
+    resizeObserver.observe(container);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [parentContainer]);
+
+  return (
+    <div className={cn("relative double-arrow-component min-w-0 flex-1 py-6", className)}>
+      <DoubleArrow className="w-full" />
+      <DiagramText text={texts[0]} className="absolute -top-2 left-0 text-md"/>
+      <DiagramText text={texts[1]} className="absolute -bottom-2 left-0 bg-bg-primary z-10"/>
+      <DiagramText text={texts[2]} className={cn("absolute -bottom-2", rightPos)}/>
+    </div>
+  )
+}
 
 const DiagramText = ({ text, className }: { text: string; className?: string }) => (
   <p className={cn("diagram-text tracking-wider text-xs font-semibold text-text-secondary", courierPrime.className, className)}>

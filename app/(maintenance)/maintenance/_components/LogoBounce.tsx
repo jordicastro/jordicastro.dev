@@ -315,7 +315,7 @@ const LogoBounce = ({ onComplete, isCorrectPassword }: LogoBounceProps) => {
         <div ref={scopeRef} className="relative w-full h-full">
             <Logo className="bounce-logo absolute hidden"/>
             <AccessCard
-                title="App currently under maintenance."
+                title="App currently under maintenance"
                 onAccessGranted={() => {
                     killRef.current = true;
                     clearScheduledBounces();
