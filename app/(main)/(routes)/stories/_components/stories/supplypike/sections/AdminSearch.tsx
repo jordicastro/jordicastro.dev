@@ -92,12 +92,11 @@ const AdminSearch = () => {
         Reworked the admin search results to contain accurate recent searches and organized the suppliers by retailer.
         {" "}
         <span
-          className="relative p-2 previous-search-text underline underline-offset-4 font-bold hover:decoration-(--sp-blue)"
+          className="relative inline-block whitespace-nowrap indent-0 previous-search-text underline underline-offset-4 font-bold hover:decoration-(--sp-blue)"
           onMouseEnter={handleMouseEnter}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-        >
-          The previous admin search
+        >The previous admin search
           <Image
             src="/images/stories/supplypike/prev-admin-search.png"
             alt="previous-admin-search"
@@ -107,16 +106,16 @@ const AdminSearch = () => {
           />
         </span>
         {" "}
-        was disorganized, inefficient, and difficult to read. I was given creative freedom to rework the search results.
+        was disorganized and difficult to read. I was given creative freedom to rework the search results.
       </Paragraph>
       <Paragraph title="Local Storage Stack">
-        Inspecting the recent results logic for the admin search page, I found that local storage was being used to display the top three recent results. However, only one out of the three were updating after each search. Local storage is built into browsers and enables websites to save data locally using key-value pairs. The reason two of three results were not updating was because the code was using an incorrect data structure. Instead of using a queue, which would get rid of the oldest search result first (first in, first out), the recent search logic was using a stack, which replaces only the most recent result (first in, last out). With this previous logic, once there are at least three recent results, the only updated item would be the most recent one. This leaves the two oldest results untouched and is not the intended behavior, so the solution is to swap the stack for a queue.
+        Inspecting the recent results logic for the admin search page, I found that local storage was being used to display the top three recent results. However, only one out of the three were updating after each search. Local storage is built into browsers and enables websites to save data locally using key-value pairs. The reason two of three results were not updating was because the code was using an incorrect data structure. Instead of using a queue, which would get rid of the oldest search result first (first in, first out), the recent search logic was using a stack, which replaces only the most recent result (last in, first out). This leaves the two oldest results untouched, so the solution is to swap the stack for a queue.
       </Paragraph>
       <Paragraph title="Readability & Functionality">
-        Working on my feature, I began by improving readability by adding more space between the result text. The ID of each search result was placed at the end of its row. The team was looking to phase out the retailer name being included in the supplier name. To help prepare this refactor and to make the results cleaner and more efficient, I sorted each supplier by retailer in alphabetical order. Instead of relying on the supplier name to see the retailer name (which is not the intended purpose of the supplier name), admins could now easily view all the suppliers for a specific retailer. And our team can now ultimately safely refactor the supplier name.
+        I began by improving readability by adding more space between the result text. The ID of each search result was placed at the end of its row. The team was looking to phase out the retailer name being included in the supplier name. To help prepare this refactor and to make the results cleaner, I sorted each supplier by retailer in alphabetical order. Instead of relying on the supplier name to see the retailer name, admins could now easily view all the suppliers for a specific retailer. And our team could now safely refactor the supplier name.
       </Paragraph>
       <Paragraph title="Reduce & Map">
-        To sort by retailer in alphabetical order, the search results are filtered client side. The results are fetched from the backend as normal, but are displayed on the client with the JavaScript
+        To sort by retailer in alphabetical order, the results are fetched from the backend as normal but are formatted on the client with the JavaScript
         {" "}
         <CodeText text=".map" className="" />
         {" "}

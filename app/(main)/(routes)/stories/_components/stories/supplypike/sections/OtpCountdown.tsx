@@ -22,17 +22,17 @@ const OtpCountdown = () => {
         Admins would copy expired tokens and fail to log into client accounts. The admin-facing side of the SupplyPike application contains information for each supplier, including the people on our team that are assigned to the account. Each account page contains a one time password (OTP) that admins use to log into the supplier’s account to fetch their revenue data. This data is then fed into the client viewing dashboard of the application.
       </Paragraph>
       <Paragraph>
-        Admins often have the page open for longer than 30 seconds, meaning the OTP will expire and the admin will have no way of knowing it did. Previously, admins would just refresh the page when attempting to copy another OTP. But reloading the entire page to refresh a sole component of the page is not efficient. And it is also not intuitive, because admins with no prior knowledge of TOTP don’t know that the token expires in 30 seconds. The admins are clueless to when the token will expire. if they copy a token too close to a refresh, by the time they navigate to the supplier page and enter the password, it will have already expired. The previous solution was just a “trick” that managers would show the new hires.
+        Admins often have the page open for longer than 30 seconds, meaning the OTP will expire and the admin will have no way of knowing it did. Previously, admins would just refresh the page when attempting to copy another OTP. But reloading the entire page to refresh a sole component of the page is not efficient. And it is also not intuitive, because admins with no prior knowledge of TOTP would not know that the token expires in 30 seconds. If they copy a token too close to a refresh, by the time they navigate to the supplier page and enter the password, it will have already expired. 
       </Paragraph>
       <Paragraph title="The solution">
-        A visual countdown with the progress in seconds and a circular progress clock underneath the OTP field. Inspired by a one time password manager, this solution provides a clear and concise way of viewing when the password will refresh. This prevents an entire page reload and eliminates expired tokens. If the password is about to refresh, the admin can simply wait for the refresh before copying.
+        A visual countdown with the progress in seconds underneath the OTP field. Inspired by most one time password managers, this solution provides a clear and concise way of viewing when the password will refresh. This prevents an entire page reload and eliminates expired tokens. If the password is about to refresh, the admin can simply wait for the refresh before copying.
       </Paragraph>
       <div className="columns-1 lg:columns-2 w-full h-auto ">
         <Paragraph title="TOTP & State">
           Time based one time password (TOTP) is an industry standard for two factor authentication (2FA). The passwords, length 6-8, are generated using a secret key and are refreshed every 30 seconds. ‘totp-generator’ is an NPM library that creates a TOTP using a secret key. 
         </Paragraph>
         <Paragraph>
-          Syncing the circular progress state with the actual countdown is tricky, because TOTP updates every 30 seconds in accordance to planck time NOT when the page is refreshed. When the page is loaded, the ‘expires’ variable is used to set the circular progress and the seconds remaining. Once both states are synced, the TOTP library will handle the refreshing of the true OTP state.
+          Syncing the circular progress state with the actual countdown is tricky, because TOTP updates every 30 seconds based on the system clock, not when the page is refreshed. When the page is loaded, the ‘expires’ variable is used to set the circular progress and the seconds remaining. Once both states are synced, the TOTP library will handle the refreshing of the true OTP state.
         </Paragraph>
         <StoryFigure src="/images/stories/supplypike/otp-code-demo.png" alt="otp-code-demo" className="" desc="Figure 1:  Creating a TOTP token and setting state." />
       </div>

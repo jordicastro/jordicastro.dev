@@ -23,16 +23,16 @@ const KeyOrgRoles = () => {
             Every customer account in the SupplyPike platform has a team managing the account. However, the application's interface did not display which employees were assigned to each account. This made cross-team communication inefficient, as employees who needed to contact an account manager or another team member first had to ask around to identify who was responsible for that account.
           </Paragraph>
           <Paragraph>
-            A previous implementation partially addressed this issue by displaying the email addresses of the employees assigned to each account. However, it still lacked important context, as it did not display each employee's name or role. For example, if terry@supplypike.com appeared under the ABC Farms account, users had no easy way to determine which Terry it was or whether they were the account manager, customer success representative, or another member of the team.
+            A previous implementation partially addressed this issue by displaying the email addresses of the employees assigned to each account. However, it still lacked important context because it did not display each employee's name or role. For example, if terry@supplypike.com appeared under the ABC Farms account, admins had no easy way to determine which Terry it was or whether they were the account manager, customer success representative, or another member of the team.
           </Paragraph>
           <Paragraph title="Fetching & Fallback">
             Since a full refactor was outside the scope of the feature, I worked within the constraints of the existing codebase. Using the account data already available in MongoDB, I created a backend route that returned the email addresses of an account's key organization roles when given the account ID.
           </Paragraph>
           <Paragraph>
-            At the time, the company was preparing to migrate from SupplyPike email addresses to SPS Commerce email addresses, which resulted in inconsistent data throughout the database. Additionally, the account records only stored employee email addresses—not their names. To display each person's first and last name, I made a separate request to the Users API for every key organization role returned by the initial query.
+            At the time, the company was preparing to migrate from SupplyPike email addresses to SPS Commerce email addresses, which resulted in inconsistent data throughout the database. Additionally, the database only stored employee email addresses—not their full names. To display each team member’s name, I made a separate request to the Users route for each key organization role returned by the initial query.
           </Paragraph>
           <Paragraph>
-            Since the email migration was still in progress, I implemented a fallback mechanism to handle missing or outdated records. If a user could not be found by their email address or the request failed for any reason, the application displayed the email address instead of the user's name. This allowed the feature to remain functional despite temporary inconsistencies in the underlying data during the migration.
+            Since the email migration was still in progress, I implemented a fallback mechanism to handle missing or outdated records. If a user could not be found by their email address or the request failed for any reason, the application displayed the email address instead of the name. This allowed the feature to remain functional despite temporary inconsistencies during the migration.
           </Paragraph>
           <FetchingDiagraph />
         </div>
