@@ -3,12 +3,13 @@
 import { cn } from "@/lib/utils";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { MorphSVGPlugin } from "gsap/all";
+import { MorphSVGPlugin, Observer } from "gsap/all";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
+import { useMediaQuery } from "usehooks-ts";
 
-gsap.registerPlugin(useGSAP, MorphSVGPlugin);
+gsap.registerPlugin(useGSAP, MorphSVGPlugin, Observer);
 
 interface CarouselProps {
     slides: React.ReactNode[];
@@ -22,12 +23,15 @@ interface CarouselProps {
 const Carousel = ({ slides, autoPlay, autoPlayInterval, pagination, activePaginationColor="#0066FF", className }: CarouselProps) => {
   const scope = useRef<HTMLDivElement>(null);
   const autoPlayTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const touchControlsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const animateSlidesRef = useRef<((direction: "left" | "right") => void) | null>(null);
   const isAnimatingRef = useRef(false);
   const numPaginationDots = Math.min(slides.length, 5);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [areTouchControlsVisible, setAreTouchControlsVisible] = useState(false);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [shouldAutoPlay, setShouldAutoPlay] = useState(autoPlay ?? false);
+  const isMobile = useMediaQuery("(max-width: 463px)", { initializeWithValue: false });
   const { resolvedTheme } = useTheme();
   const paginationInactiveColor = resolvedTheme === "dark" ? "#262626": "#e5e5e5";
   const playButtonRef = useRef<HTMLButtonElement>(null);
@@ -90,6 +94,13 @@ const Carousel = ({ slides, autoPlay, autoPlayInterval, pagination, activePagina
     autoPlayTimerRef.current = null;
   };
 
+  const clearTouchControlsTimer = () => {
+    if (!touchControlsTimerRef.current) return;
+
+    clearTimeout(touchControlsTimerRef.current);
+    touchControlsTimerRef.current = null;
+  };
+
   const resetAutoPlayTimer = () => {
     clearAutoPlayTimer();
 
@@ -142,10 +153,35 @@ const Carousel = ({ slides, autoPlay, autoPlayInterval, pagination, activePagina
   const { contextSafe } = useGSAP(
     () => {
       const root = scope.current;
+      const vTolerance = isMobile ? 1800: 5000;
       if (!root) return;
 
       syncSlidePositions(currentSlideIndex);
 
+      // the swipe observer for mobile
+      const swipeObserver = Observer.create({
+        target: root,
+        type: "pointer,touch",
+        tolerance: 24,
+        dragMinimum: 8,
+        ignore: '.ignore-swipe',
+        onRight: (self) => {
+          const v = Math.abs(self.velocityX)
+          if (v > vTolerance) {
+            animateSlidesRef.current?.("left")
+          }
+        },
+        onLeft: (self) => {
+          const v = Math.abs(self.velocityX)
+          if (v > vTolerance) {
+            animateSlidesRef.current?.("right")
+          }
+        }
+      });
+      
+    return () => {
+      swipeObserver.kill();
+    }
     },
     { scope, dependencies: [currentSlideIndex, slides.length]}
   )
@@ -210,6 +246,51 @@ const Carousel = ({ slides, autoPlay, autoPlayInterval, pagination, activePagina
     return () => clearAutoPlayTimer();
   }, [shouldAutoPlay, autoPlayInterval, slides.length]);
 
+  useEffect(() => {
+    const root = scope.current;
+    if (!root) return;
+
+    const isTouchDevice = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    if (!isTouchDevice) return;
+
+    const showTouchControls = (event: TouchEvent) => {
+      const target = event.target;
+      const tappedControl = target instanceof Element && target.closest('[data-carousel-control="true"]');
+
+      clearTouchControlsTimer();
+
+      if (tappedControl) {
+        setAreTouchControlsVisible(true);
+        touchControlsTimerRef.current = setTimeout(() => {
+          setAreTouchControlsVisible(false);
+          touchControlsTimerRef.current = null;
+        }, 3000);
+        return;
+      }
+
+      let shouldShowControls = true;
+
+      setAreTouchControlsVisible((prev) => {
+        shouldShowControls = !prev;
+        return shouldShowControls;
+      });
+
+      if (!shouldShowControls) return;
+
+      touchControlsTimerRef.current = setTimeout(() => {
+        setAreTouchControlsVisible(false);
+        touchControlsTimerRef.current = null;
+      }, 4000);
+    };
+
+    root.addEventListener("touchstart", showTouchControls, { passive: true });
+
+    return () => {
+      root.removeEventListener("touchstart", showTouchControls);
+      clearTouchControlsTimer();
+    };
+  }, []);
+
   const moveLeft = () => {
     resetAutoPlayTimer();
     animateSlides("left");
@@ -233,6 +314,8 @@ const Carousel = ({ slides, autoPlay, autoPlayInterval, pagination, activePagina
 
   }
 
+  const controlsVisibilityClassName = areTouchControlsVisible ? "opacity-100" : "opacity-0 group-hover/carousel:opacity-100";
+
   return (
     <div ref={scope} className={cn("carousel group/carousel relative w-full h-auto flex-center flex-col gap-8", className)}>
       <div className="relative carousel-slides w-full h-auto flex-center">
@@ -244,27 +327,30 @@ const Carousel = ({ slides, autoPlay, autoPlayInterval, pagination, activePagina
           ))}
           {/* carousel controls */}
           <div
-            className="abs-y-center left-0 z-10 w-10 h-7 rounded-full bg-bg-tertiary/75 flex-center cursor-pointer opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-250 ease-in-out"
+            className={cn("back-button ignore-swipe abs-y-center left-4 z-10 w-10 h-7 rounded-full bg-bg-tertiary/75 flex-center cursor-pointer transition-opacity duration-250 ease-in-out", controlsVisibilityClassName)}
             role="button"
+            data-carousel-control="true"
             data-cursor="pointer"
             onClick={moveLeft}
           >
             <ChevronLeft className="w-5 h-5 stroke-3 text-text-secondary" />
           </div>
           <div
-            className="abs-y-center right-0 z-10 w-10 h-7 rounded-full bg-bg-tertiary/75 flex-center cursor-pointer opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-250 ease-in-out"
+            className={cn("forward-button ignore-swipe abs-y-center right-4 z-10 w-10 h-7 rounded-full bg-bg-tertiary/75 flex-center cursor-pointer transition-opacity duration-250 ease-in-out", controlsVisibilityClassName)}
             role="button"
+            data-carousel-control="true"
             data-cursor="pointer"
             onClick={moveRight}
           >
             <ChevronRight className="w-5 h-5 stroke-3 text-text-secondary" />
           </div>
         </div>
-        <div className="pointer-events-none absolute top-0 left-1/2 z-30 h-50 w-full max-w-130 -translate-x-1/2">
+        <div className="pause-button ignore-swipe pointer-events-none absolute top-1 left-1/2 z-30 h-50 w-full max-w-130 -translate-x-1/2">
           <button
             type="button"
             ref={playButtonRef}
-            className="pointer-events-auto absolute top-0 right-4 w-10 h-7 rounded-full bg-bg-tertiary/75 flex-center cursor-pointer opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-250 ease-in-out"
+            className={cn("pointer-events-auto absolute top-0 right-4 w-10 h-7 rounded-full bg-bg-tertiary/75 flex-center cursor-pointer transition-opacity duration-250 ease-in-out", controlsVisibilityClassName)}
+            data-carousel-control="true"
             data-cursor="pointer"
             onClick={handlePauseClick}
           >

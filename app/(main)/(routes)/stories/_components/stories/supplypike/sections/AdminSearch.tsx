@@ -140,7 +140,22 @@ const AdminSearchDemo = () => {
   const modalTl = useRef<gsap.core.Timeline | null>(null);
 
   const getUUID = () => {
-    return crypto.randomUUID();
+    // TODO: just use this and delete the rest when done testing non secure http dev build
+    // return crypto.randomUUID()
+
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+
+    const bytes = typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function"
+      ? crypto.getRandomValues(new Uint8Array(16))
+      : Uint8Array.from({ length: 16 }, () => Math.floor(Math.random() * 256));
+
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+    const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
   }
 
   const searchNames: SearchName[] = [
@@ -291,7 +306,7 @@ const SearchResultItem = ({ i, searchName, id }: { i:number, searchName: SearchN
 const CodeCarousel = () => {
   const slides = [
     <CodeBlock
-      className="w-130 h-50 flex items-center"
+      className="w-130 h-50 flex items-center overflow-auto sm:pr-0 pr-8"
       description="1. The suppliers object is fetched from the backend."
     >
       <span className="text-red-code">
@@ -348,7 +363,7 @@ const CodeCarousel = () => {
       ]
     </CodeBlock>,
     <CodeBlock
-      className="w-130 h-50"
+      className="w-130 h-50 overflow-auto sm:pr-0 pr-8"
       absolute="absolute top-0"
       description="2. The suppliers are grouped by retailer."
     >
@@ -412,7 +427,7 @@ const CodeCarousel = () => {
       </span>
     </CodeBlock>,
     <CodeBlock
-      className="w-130 h-50 overflow-y-auto"
+      className="w-130 h-50 overflow-auto sm:pr-0 pr-18"
       absolute="absolute top-0"
       description="3. The result is a list of supplier arrays."
     >
@@ -514,7 +529,7 @@ const CodeCarousel = () => {
       {"}"}
     </CodeBlock>,
     <CodeBlock
-      className="w-130 h-50 py-10"
+      className="w-130 h-50 py-10 overflow-auto sm:pr-0 pr-8"
       absolute="absolute top-0"
       description="4. The result is sorted alphabetically."
     >
@@ -574,7 +589,7 @@ const CodeCarousel = () => {
       </span>
     </CodeBlock>,
     <CodeBlock
-      className="w-130 h-50 overflow-y-auto"
+      className="w-130 h-50 overflow-auto sm:pr-20 pr-34"
       absolute="absolute top-0"
       description="5. The sorted suppliers are mapped to the DOM."
       >
